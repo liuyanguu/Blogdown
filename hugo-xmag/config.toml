@@ -3,8 +3,8 @@ publishDir  = "D:/OneDrive/R_Blog_Pub/liuyanguu.github.io"
 languageCode = "en-us"
 title = "Welcome to my blog"
 theme = "hugo-xmag"
-googleAnalytics = ""
-disqusShortname = ""
+googleAnalytics = "UA-122668586-1"
+disqusShortname = "https-liuyanguu-github-io"
 ignoreFiles = ["\\.Rmd$", "_files$", "_cache$"]
 preserveTaxonomyNames = true
 footnotereturnlinkcontents = "↩"
@@ -19,10 +19,6 @@ paginate = 6
     name = "Home"
     url = "/"
     weight = 1
-[[menu.main]]
-    name = "About Blogdown"
-    url = "/about hugo/"
-    weight = 4
 [[menu.main]]
     name = "Categories"
     url = "/categories/"
