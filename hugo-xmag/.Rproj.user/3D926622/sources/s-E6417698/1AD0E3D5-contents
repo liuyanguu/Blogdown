@@ -1,0 +1,71 @@
+# Fragmentation: Saturation  (Built-up Area/Urban Extent) in each ring
+# install.packages('raster')
+library('raster') # get raster from GIS image file
+library('rgdal')
+library('Hmisc') # cut2, loads ggplot2 as well
+
+parent_directory <- c("C:/Users/Roxy/OneDrive - nyu.edu/NYU Marron/180716_Draw Circle/Data/")
+setwd(parent_directory)
+# Get all the folder names (names of the cities) in the directory
+city_list <- list.files()
+# replace " " with "_"
+city_list <- sub(" ", "_", city_list)
+
+sat_out <- data.frame()
+
+for (i in 1:2){
+  city1 <- city_list[i]
+  setwd(paste(parent_directory, city1, sep = ""))
+  
+  # s1 <- readOGR(dsn = ".",
+  #               layer = "Baku_studyArea")
+  # summary(s1);plot(s1)
+  # crs(s1)
+  # area(s1)
+  image <- raster("./city_urbFootprint_clp_t3.img")
+  # mydata: coordinate and category
+  mydata <- as.data.frame(rasterToPoints(image))
+  names(mydata) <- c("x", "y", "type")
+  pts <- as.matrix(mydata[,1:2])
+  
+  # cbd
+  cbd <-  readOGR(dsn = ".", layer = paste(city1, "_CBD_Project", sep=""))
+  cbdpoint <- SpatialPoints(cbd)
+  # plot
+  plot(image)
+  points(cbdpoint)
+  
+  # distance to the cbd
+  mydata$cbd_dist <- spDistsN1(pts, cbdpoint, longlat = F)
+  # library('Hmisc') # cut2
+  mydata$ring <- (cut2(mydata$cbd_dist,g = 10))
+  mydata$type <- as.factor(mydata$type)
+  mydata$ring <- as.factor(mydata$ring)
+  
+  # get saturation
+  get_sat <- function(x){
+    x <- as.factor(x)
+    # (1 + 2 + 3) / (1 + 2 + 3 + 4 + 5 + 6 + 7)
+    sum(x==1|x==2|x==3)/length(x)
+  }
+  
+  sat_output <- aggregate(mydata$type, by = list(mydata$ring), FUN = get_sat)
+  sat_output$City <- city1
+  sat_output$City_Saturation <- get_sat(mydata$type)
+  names(sat_output) <- c("Ring", "Ring_Saturation","City", "City_Saturation")
+  sat_out <- rbind(sat_out, sat_output)
+}
+
+sat_out
+
+# if plot 10%. faster, a little bit worse-looking
+
+set.seed(123)
+mydata2 <- mydata[sample(nrow(mydata), nrow(mydata)/10),]
+ggplot(data = mydata2, aes(x=x, y=y, group = ring, color = ring))+
+  geom_point() + 
+  theme_classic()
+
+# city_map <- get_map(location = 'Baku', zoom = 12)
+# ggmap(city_map)+
+#   geom_point(data = mydata2, aes(x=x, y=y, group = ring, color = ring))

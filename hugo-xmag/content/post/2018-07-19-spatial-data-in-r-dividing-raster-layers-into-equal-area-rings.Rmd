@@ -1,0 +1,155 @@
+---
+title: 'Spatial data in R: Dividing raster layers into equal-area rings'
+author: Yang Liu
+date: '2018-07-20'
+slug: spatial-data-in-r-dividing-raster-layers-into-equal-area-rings
+categories:
+  - Data Visualization
+  - Spatial Data
+tags:
+  - R
+  - Geographic
+  - Spatial
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = FALSE, message = FALSE)
+```
+
+__This data visualization example include:__  
+* Import `.img` file as a raster  
+* Turn raster into a dataframe of points (coordinates) and values  
+* Dividing the points into 100 equal-area rings  
+* Calculate _Built-up Area/Urban Extent_ for each ring  
+* Turn dataframe into raster  
+* Plot multiple figures on the same color scale. 
+
+## Saturation in 10 cities with equal-area rings
+* The 1000 rings have a minimum saturation of 30.5% and a maximum of 99.9%. 
+* Same color scale for every map, with a boundary of [0.3, 1].  
+* Dark green corresponds to a ring saturation of 0.3, and dark red corresponds to 1.  
+
+![](/post/2018-07-19-spatial-data-in-r-dividing-raster-layers-into-equal-area-rings_files/ten cities 100 rings.jpeg)
+  
+## R Code for one city
+```{r c2, echo = T}
+library('raster')   # obtain raster from GIS image file, and plot
+library('rgdal')    # readOGR: read ArcGIS vector maps into Spatial objects
+library('Hmisc')    # cut2: cut vector into equal-length
+library('plyr')     # join
+library('RColorBrewer') # for `brewer.pal` in ggplot2
+library('knitr')    # kable
+options(digits = 4)
+
+parent_dir <- c("D:/OneDrive - nyu.edu/NYU Marron/180716_Draw Circle/Data/")
+# Get all the folder names (names of the cities) in the directory
+# Used to scan all the cities
+city_list <- list.files(parent_dir)
+
+# Hong Kong as an example
+  city1 <- city_list[6]
+  newdir <- paste(parent_dir, city1, sep = "")
+  image <- raster(paste(newdir, c("./city_urbFootprint_clp_t3.img"), sep = ""))
+```
+  
+* Read raster as points: `rasterToPoints`  
+```{r}
+  # mydata contains coordinate (x,y) and category (type)
+  mydata <- as.data.frame(rasterToPoints(image))
+  names(mydata) <- c("x", "y", "type")
+  pts <- as.matrix(mydata[,1:2])
+  
+  # A point that shows the center of the city
+  cbd <-  readOGR(dsn = newdir, layer = paste(city1, "_CBD_Project", sep=""))
+  cbdpoint <- SpatialPoints(cbd)
+```
+   
+* Divide points into ten equal-size rings  
+* Calculate distances using `sp::spDistsN1`
+```{r}
+  # calculate distance to the cbd from every point
+  mydata$cbd_dist <- spDistsN1(pts, cbdpoint, longlat = F)
+  # library('Hmisc') # cut2
+  mydata$ring <- as.numeric(cut2(mydata$cbd_dist,g = 100)) # get 1:100
+  mydata$type <- as.factor(mydata$type)
+  mydata$ring <- as.factor(mydata$ring)
+
+  # Function to get saturation, as the raster have 7 layers, 1 to 3 belong to built-up area
+  get_sat <- function(x){
+    x <- as.factor(x)
+    # (1 + 2 + 3) / (1 + 2 + 3 + 4 + 5 + 6 + 7)
+    sum(x==1|x==2|x==3)/length(x)
+  }
+
+  # get saturation by rings
+  sat_output <- aggregate(mydata$type, by = list(mydata$ring), FUN = get_sat)
+  names(sat_output) <- c("ring", "ring_saturation")
+  # join back to mydata2 so we can later plot by values of ring_saturation
+  mydata2 <- join(mydata, sat_output, by = "ring")
+  kable(head(mydata2))  
+  
+```
+  
+* Turn dataframe (`mydata2`) into raster using `rasterFromXYZ`  
+* Numeric columns are automatically assigned as values in the raster, and if we plot it directly:
+```{r}
+  r1 <- rasterFromXYZ(mydata2)
+  plot(r1)
+  
+  # choose a color scale from `RColorBrewer`
+  color_scale <- brewer.pal(n = 10, name = "RdYlGn")
+  myPalette <- colorRampPalette(rev(color_scale)) # reverse the order so highly value ~ dark red
+  # set col and breaks to align color scale across figures
+  plot(r1$ring_saturation, col=myPalette(70), breaks = c(30:100)/100,
+       legend=FALSE,  main = city1)
+  plot(cbdpoint, add = TRUE, size = 3) # drawn on top of a map using `add = TRUE`
+  
+  # if need to output the raster
+  # writeRaster(r1, paste(raster_dir, city1, sep = ""), format = "HFA", overwrite=TRUE)
+
+  # To preview the color panel:
+  # display.brewer.pal(n = 12, name = 'RdYlGn')
+
+```
+
+## Results for the ring saturations
+* I run the code using a loop for ten cities  
+* Ring saturation in the 10 cities has a minimum of 30.5% and a maximum of 99.9%. 
+```{r, echo = F}
+sat <- read.csv(file = "D:/OneDrive - nyu.edu/NYU Marron/180716_Draw Circle/180720_Ring Saturation100.csv")
+sat$idx <- rep(c(1:100),10)
+```
+```{r, echo = T}
+summary(sat$ring_saturation)
+```
+
+## Average saturation in each ring  
+* There is a clear declining trend in saturation as we move towards the boundary of the cities  
+```{r, echo = F}
+# linear regression smoothing
+ggplot(sat, aes(x=idx, y=ring_saturation)) +
+  geom_point(size = 0.5, color = 'blue') +  
+  geom_smooth(method = 'lm')+
+  theme_classic() + 
+  geom_hline(yintercept = 0) +
+  scale_y_continuous(limits = c(0,1)) +
+  labs(x = "Equal-Area Rings from CBD", y = "Average Built-up Area/Urban Extent") +
+  ggtitle("Average Saturation in the 100 Rings")
+
+
+```
+
+
+## Methodology
+(Summarized by Alejandro Blei, my colleague)  
+1. Take the file: `city_urbFootprint_clp_t3.img`. This file is made up of many pixels. Pixels with values 1-3 = built up, pixels with values 4-6 = open space, and pixels with value 7 = water. In other words, 1 - 3 = built up, and 4 - 7 = not built.   
+2. Convert the pixels to points. This operation preserves the value associated with the pixel.  
+3. Calculate the distance from each point to the CBD.   
+4. Create 10 groups from these pixels, where each group has the same area. These groups  radiate outward from the CBD. Since each pixel has the same size, all we need are ten groups with the same number of pixels, where the pixels in one group are closer to the CBD than the pixels in the next group.  
+5. Once we have the groups, we can calculate the saturation value in each group. Saturation is Built Up / (Built Up - Open Space), in other words, saturation is Pixels (1 + 2 + 3) / (1 + 2 + 3 + 4 + 5 + 6 + 7). Each of the ten groups now has a saturation value associated with it.
