@@ -40,12 +40,13 @@ paginate = 6
 [params]
     description = "Yang's research blog built through R blogdown and R Markdown."
     summary_length = 300
-    github_edit = "https://github.com/yihui/hugo-xmag/edit/master/exampleSite/content/"
-    footer = "Acknowledgement to Yihui Xie for this hugo theme: yihui/hugo-xmag"
+    github_edit = "https://github.com/liuyanguu/Blogdown/edit/master/hugo-xmag/content/"
+    footer = "Acknowledgement to Yihui Xie for R Blogdown and hugo-xmag theme"
 
 [params.text]
-    back = "&larr; Back to Home" 
-    truncated = "&hellip;"  
+    back = "&larr; Back to Home"
+    edit = "Edit this page &rarr;"
+    truncated = "&hellip;"
     
 [params.banner]
     src = "ocean 2.jpg"
