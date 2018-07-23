@@ -39,6 +39,11 @@ __This data visualization example include:__
   
 ## R Code for one city
 ```{r c2, echo = T}
+
+list.of.packages <- c("raster", "rgdal","Hmisc","plyr", "RColorBrewer")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
 library('raster')   # obtain raster from GIS image file, and plot
 library('rgdal')    # readOGR: read ArcGIS vector maps into Spatial objects
 library('Hmisc')    # cut2: cut vector into equal-length
