@@ -13,10 +13,7 @@ tags:
 output:
   blogdown::html_page:
     toc: true
-    toc_depth: 2
 ---
-
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = T, warning = FALSE, message = FALSE)
@@ -24,23 +21,24 @@ knitr::opts_chunk$set(echo = T, warning = FALSE, message = FALSE)
 
 __This data visualization example include:__  
 * Import `.img` file as a raster  
-* Turn raster into a dataframe of points (coordinates) and values  
+* Turn raster into a _data.frame_ of points (coordinates) and values  
 * Dividing the points into 100 equal-area rings  
 * Calculate _Built-up Area/Urban Extent_ for each ring  
 * Turn dataframe into raster  
-* Plot multiple figures on the same color scale. 
+* Plot multiple figures on the same color scale  
 
 ## Saturation in 10 cities with equal-area rings
-* The 1000 rings have a minimum saturation of 30.5% and a maximum of 99.9%. 
-* Same color scale for every map, with a boundary of [0.3, 1].  
-* Dark green corresponds to a ring saturation of 0.3, and dark red corresponds to 1.  
+* The 1000 rings have a minimum saturation of 30.5% and a maximum of 99.9%  
+* Same color scale for every map, with a boundary of [0.3, 1]  
+* Dark green corresponds to a ring saturation of 0.3, and dark red corresponds to 1  
 
 ![](/post/2018-07-19-spatial-data-in-r-dividing-raster-layers-into-equal-area-rings_files/ten cities 100 rings.jpeg)
   
 ## R Code for one city
-```{r c2, echo = T}
+* The setting of the code can loop around several different cities, here we only load one city.
+```{r libs, echo = T}
 
-list.of.packages <- c("raster", "rgdal","Hmisc","plyr", "RColorBrewer")
+list.of.packages <- c("raster", "rgdal", "Hmisc", "plyr", "RColorBrewer")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -51,39 +49,56 @@ library('plyr')     # join
 library('RColorBrewer') # for `brewer.pal` in ggplot2
 library('knitr')    # kable
 options(digits = 4)
-
+```
+* The local version:   
+```{r, eval = FALSE}
+# Where are all the data files located:
 parent_dir <- c("D:/OneDrive - nyu.edu/NYU Marron/180716_Draw Circle/Data/")
-# Get all the folder names (names of the cities) in the directory
-# Used to scan all the cities
+# Get all the folder names (names of the cities) in the directory, used to scan all the cities
 city_list <- list.files(parent_dir)
 
-# Hong Kong as an example
+# If use Hong Kong as an example
   city1 <- city_list[6]
   newdir <- paste(parent_dir, city1, sep = "")
   image <- raster(paste(newdir, c("./city_urbFootprint_clp_t3.img"), sep = ""))
-```
-  
-* Read raster as points: `rasterToPoints`  
-```{r}
-  # mydata contains coordinate (x,y) and category (type)
-  mydata <- as.data.frame(rasterToPoints(image))
-  names(mydata) <- c("x", "y", "type")
-  pts <- as.matrix(mydata[,1:2])
-  
+    
   # A point that shows the center of the city
   cbd <-  readOGR(dsn = newdir, layer = paste(city1, "_CBD_Project", sep=""))
   cbdpoint <- SpatialPoints(cbd)
+```
+
+* In this blog data is downloaded from googledrive  
+```{r}
+library(googledrive)
+temp <- tempfile(fileext = ".zip")
+dl <- drive_download(as_id("1z-aD2orN2k2BINkDD6whEhHFga_4HIu8"), path = temp, overwrite = TRUE)
+out <- unzip(temp, exdir = tempdir())
+image <- raster(out[1])
+cbdpoint <- SpatialPoints(readOGR(dsn = paste(tempdir(),"\\Hong_Kong",sep = ""),
+                                  layer = "Hong_Kong_CBD_Project"))
+
+```
+
+
+* Read raster as points: `rasterToPoints`  
+```{r}
+  # mydata_HK contains coordinate (x,y) and category (type)
+  mydata_HK <- as.data.frame(rasterToPoints(image))
+  names(mydata_HK) <- c("x", "y", "type")
+
 ```
    
 * Divide points into ten equal-size rings  
 * Calculate distances using `sp::spDistsN1`
 ```{r}
   # calculate distance to the cbd from every point
-  mydata$cbd_dist <- spDistsN1(pts, cbdpoint, longlat = F)
+  pts <- as.matrix(mydata_HK[,1:2])
+  mydata_HK$cbd_dist <- spDistsN1(pts, cbdpoint, longlat = F)
+  
   # library('Hmisc') # cut2
-  mydata$ring <- as.numeric(cut2(mydata$cbd_dist,g = 100)) # get 1:100
-  mydata$type <- as.factor(mydata$type)
-  mydata$ring <- as.factor(mydata$ring)
+  mydata_HK$ring <- as.numeric(cut2(mydata_HK$cbd_dist,g = 100)) # get 1:100
+  mydata_HK$type <- as.factor(mydata_HK$type)
+  mydata_HK$ring <- as.factor(mydata_HK$ring)
 
   # Function to get saturation, as the raster have 7 layers, 1 to 3 belong to built-up area
   get_sat <- function(x){
@@ -93,18 +108,18 @@ city_list <- list.files(parent_dir)
   }
 
   # get saturation by rings
-  sat_output <- aggregate(mydata$type, by = list(mydata$ring), FUN = get_sat)
+  sat_output <- aggregate(mydata_HK$type, by = list(mydata_HK$ring), FUN = get_sat)
   names(sat_output) <- c("ring", "ring_saturation")
-  # join back to mydata2 so we can later plot by values of ring_saturation
-  mydata2 <- join(mydata, sat_output, by = "ring")
-  kable(head(mydata2))  
+  # join back to mydata_HK2 so we can later plot by values of ring_saturation
+  mydata_HK2 <- join(mydata_HK, sat_output, by = "ring")
+  kable(head(mydata_HK2))  
   
 ```
   
-* Turn dataframe (`mydata2`) into raster using `rasterFromXYZ`  
+* Turn dataframe (`mydata_HK2`) into raster using `rasterFromXYZ`  
 * Numeric columns are automatically assigned as values in the raster, and if we plot it directly:
 ```{r}
-  r1 <- rasterFromXYZ(mydata2)
+  r1 <- rasterFromXYZ(mydata_HK2)
   plot(r1)
   
   # choose a color scale from `RColorBrewer`

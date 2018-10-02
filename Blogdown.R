@@ -1,9 +1,10 @@
+# some quick commend to use 
+
 getwd()
-setwd("D:/OneDrive/Blogdown/hugo-xmag")
 library(blogdown)
 serve_site()
 build_site()
 
 
 # blogdown::new_site(theme = 'alanorth/hugo-theme-bootstrap4-blog')
-setwd("D:/OneDrive/Blogdown/Academic")
+# setwd("D:/OneDrive/Blogdown/Academic")
