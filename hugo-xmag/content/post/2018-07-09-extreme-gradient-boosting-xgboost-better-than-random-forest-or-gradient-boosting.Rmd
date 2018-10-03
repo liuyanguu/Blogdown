@@ -12,7 +12,6 @@ tags:
 output:
   blogdown::html_page:
     toc: true
-    toc_depth: 2
 ---
 
 
@@ -59,7 +58,10 @@ options(digits = 4)
 options(tinytex.verbose = TRUE)
 
 # Data Preparation using data.table -----------------------------
-mydata <- fread("D:/OneDrive - nyu.edu/NYU Marron/Data/20180618_sdi 2.csv", stringsAsFactors = TRUE)
+# https://drive.google.com/open?id=1pHE8ktykKfBN2_yo8FNxYX_BFKp1S0SN
+id <- "1pHE8ktykKfBN2_yo8FNxYX_BFKp1S0SN" # google file ID
+mydata <- fread(sprintf("https://docs.google.com/uc?id=%s&export=download", id),
+                stringsAsFactors = TRUE)
 
 # clean variables names, remove "/".
 names(mydata) <- gsub("/", "", names(mydata)) 
@@ -102,33 +104,33 @@ Y_test <- Y2[-train_idx]
 data_train <- data.frame(X2, Y2)[train_idx,] 
 mydata2 <- data.frame(X2, Y2)
 
-```
-
-# 1. Extreme Gradient Boosting 
-* Tuning by simulation: randomized parameters and update the record with best ones. 
-* It turns out to be a very interesting and good method to scan for hyperparameters.
-* The package `xgboost` is really fast.
-```{r xgboost}
-library(xgboost)
 # Matrix for xgb: dtrain
 dtrain <- xgb.DMatrix(X_train, label = Y_train)
 dtest <- xgb.DMatrix(X_test, label = Y_test)
+```
+
+# 1. Extreme Gradient Boosting 
+* Random search: randomized parameters and update the record with best ones. 
+* It turns out to be a very interesting method to scan for hyperparameters. It will take a while for 100 iters.
+* The package `xgboost` is really fast.
+```{r xgboost, eval = F}
+library(xgboost)
 # Randomize and bound
 best_param <- list()
 best_seednumber <- 1234
 best_rmse <- Inf
 best_rmse_index <- 0
 
-time_now <- Sys.time()
 set.seed(1234)
-for (iter in 1:10) {
+# In reality, might need 100 or 200 iters
+for (iter in 1:100) {
   param <- list(objective = "reg:linear",  # For regression
                 eval_metric = "rmse",      # rmse is used for regression
                 max_depth = sample(6:10, 1),
                 eta = runif(1, .01, .1),   # Learning rate, default: 0.3
                 subsample = runif(1, .6, .9),
                 colsample_bytree = runif(1, .5, .8), 
-                min_child_weight = sample(1:10, 1), # These two are important
+                min_child_weight = sample(5:10, 1), # These two are important
                 max_delta_step = sample(5:10, 1)    # Can help to focus error
                                                     # into a small range.
   )
@@ -150,10 +152,19 @@ for (iter in 1:10) {
     best_param <- param
   }
 }
-Sys.time() - time_now
 ```
 
 * The best tuning parameters  
+```{r echo = FALSE}
+best_rmse_index <- 228
+best_rmse <- 0.2143
+best_seednumber <- 7187
+best_param <- list()
+
+```
+
+
+
 ```{r echo = FALSE}
 data.frame(best_param, best_rmse_index, best_rmse, best_seednumber)
 
