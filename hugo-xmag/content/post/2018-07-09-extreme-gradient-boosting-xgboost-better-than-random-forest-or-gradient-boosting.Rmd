@@ -24,7 +24,7 @@ The ensemble method is powerful as it combines the predictions from multiple mac
 Boosting takes slower steps, making predictors sequentially instead of independently. It repetitively leverages the patterns in residuals, strengthens the model with weak predictions, and make it better. 
 By combining the advantages from both random forest and gradient boosting, XGBoost gave the a prediction error __ten times__ lower than boosting or random forest in my case. 
 
-(__Correction!__) 18.10.3. When I further test this dataset I realized it was a __mistake__. There is indeed no magic in machine learning. When I got a testing error ten-time smaller than other methods, I should question first if this is a mistake. I used the same dataset for training and testing. In the correct result XGBoost still gave the lowest testing rmse but was close to other two methods. 
+(__Correction!__) 18.10.3. When I further test this dataset I realized it was a __mistake__. There is indeed no magic in machine learning. When I got a testing error ten-time smaller than other methods, I should question first if this is a mistake. In the correct result XGBoost still gave the lowest testing rmse but was close to other two methods. 
 
 Link to the earlier version: _[Model Selection using Lasso and Best Subset](https://yangliuresearch.blogspot.com/2018/06/modeling-of-slums-model-selection-using.html)_
 
@@ -373,7 +373,9 @@ coef_table_bs[order(abs(coef_table_bs$stb), decreasing = T),]
 
 
 # Compare MSEs 
-* The advantage of XGboost is highly distinguishing.
+* ~~The advantage of XGboost is highly distinguishing.~~  
+* XGBoost shows advantage in rmse but not too distinguishing  
+* XGBoost's real advantages include its speed and ability to handle missing values  
 ```{r, echo = F}
 (MSE <- data.frame(MSE_xgb, MSE_boost,  MSE_Lasso, 
                    MSE_rForest, MSE_best.subset ))
