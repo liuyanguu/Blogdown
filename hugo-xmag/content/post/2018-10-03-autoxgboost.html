@@ -1,0 +1,106 @@
+---
+title: 'autoxgboost: Bayesian Optimization'
+author: Yang Liu
+date: '2018-10-03'
+slug: autoxgboost-bayesian-optimization
+categories:
+  - Machine Learning
+  - Tuning
+tags:
+  - XGBoost
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#background">Background</a></li>
+<li><a href="#original-result">Original Result</a></li>
+<li><a href="#using-autoxgboost">Using <code>autoxgboost</code></a></li>
+<li><a href="#new-result">New Result</a></li>
+</ul>
+</div>
+
+<div id="background" class="section level1">
+<h1>Background</h1>
+<p>It has been a while since my last update. I have been working on lots of interesting projects since I joined Mount Sinai in August. We have a great team here and obviously I can learn a lot from everyone around me. Most of my job so far focuses on extreme gradient boosting and visualization of results. Suggested by Allan, I recently tested <code>autoxgboost</code>, which is so easy to use and runs much faster than the naive grid or random search illustrated in my <a href="https://liuyanguu.github.io/post/2018/07/09/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/">earlier post on XGBoost</a>. The results are also as good as the best effort we could obtain from the time-consuming random search (when the dataset is large). This short illustration actually produces a counter-example.</p>
+<p>I use the same dataset to exemplify <code>autoxgboost</code><br />
+To install the package, run <code>devtools::install_github(&quot;ja-thomas/autoxgboost&quot;)</code></p>
+</div>
+<div id="original-result" class="section level1">
+<h1>Original Result</h1>
+<ul>
+<li>Parameters</li>
+</ul>
+<pre><code>##   nrounds max_depth   eta gamma colsample_bytree min_child_weight
+## 1     228         8 0.034     0           0.7208                7
+##   subsample
+## 1    0.7017</code></pre>
+<ul>
+<li>rmse</li>
+</ul>
+<pre class="r"><code># 0.0433</code></pre>
+</div>
+<div id="using-autoxgboost" class="section level1">
+<h1>Using <code>autoxgboost</code></h1>
+<ul>
+<li>A paper on <em><a href="https://arxiv.org/pdf/1807.02811.pdf">Bayesian Optimization</a></em><br />
+</li>
+<li>A presentation: <em><a href="http://gpss.cc/gpmc17/slides/LancasterMasterclass_1.pdf">Introduction to Bayesian Optimization</a></em><br />
+</li>
+<li>By default, the optimizer runs for for 160 iterations or 1 hour, results using 80 iterations are good enough<br />
+</li>
+<li>By default, <code>par.set</code>: parameter set to tune over, is <code>autoxgbparset</code>:</li>
+</ul>
+<pre class="r"><code>autoxgbparset</code></pre>
+<pre><code>##                      Type len Def      Constr Req Tunable Trafo
+## eta               numeric   -   - 0.01 to 0.2   -    TRUE     -
+## gamma             numeric   -   -     -7 to 6   -    TRUE     Y
+## max_depth         integer   -   -     3 to 20   -    TRUE     -
+## colsample_bytree  numeric   -   -    0.5 to 1   -    TRUE     -
+## colsample_bylevel numeric   -   -    0.5 to 1   -    TRUE     -
+## lambda            numeric   -   -   -10 to 10   -    TRUE     Y
+## alpha             numeric   -   -   -10 to 10   -    TRUE     Y
+## subsample         numeric   -   -    0.5 to 1   -    TRUE     -</code></pre>
+<ul>
+<li>This dataset is a regression problem, for classification, just use <code>reg_task &lt;- makeClassifTask</code>. There are more options for different tasks<br />
+</li>
+<li>Use all as default, input a <em>data.frame</em>, and that’s it…</li>
+</ul>
+<pre class="r"><code>library(autoxgboost)
+reg_task &lt;- makeRegrTask(data = data_train, target = &quot;Share_Temporary&quot;)
+set.seed(1234)
+system.time(reg_auto &lt;- autoxgboost(reg_task))
+# If need to change iterations or control, all are very easy:
+# MBOctrl &lt;- makeMBOControl()
+# ctrl &lt;- setMBOControlTermination(control = MBOctrl, iters = 160L)
+# system.time(reg_auto &lt;- autoxgboost(reg_task, control = ctrl))
+# saveRDS(reg_auto, file = &quot;D:/SDIautoxgboost_80.rds&quot;)</code></pre>
+</div>
+<div id="new-result" class="section level1">
+<h1>New Result</h1>
+<pre><code>## Autoxgboost tuning result
+## 
+## Recommended parameters:
+##               eta: 0.118
+##             gamma: 0.035
+##         max_depth: 7
+##  colsample_bytree: 0.860
+## colsample_bylevel: 0.671
+##            lambda: 7.731
+##             alpha: 0.236
+##         subsample: 0.642
+##           nrounds: 57
+## 
+## 
+## Preprocessing pipeline:
+## dropconst(rel.tol = 1e-08, abs.tol = 1e-08, ignore.na = FALSE)
+## 
+## With tuning result: mse = 0.044</code></pre>
+<ul>
+<li>Testing rmse: 0.1097 compared to 0.043, it is actually much worse than the result from random search (in my dataset from work, <code>autoxgboost</code> did no worse). I suspect this is because the number of observations is not abundant compared to the number of features (316 x 88).</li>
+</ul>
+<pre><code>## [1] 0.109729</code></pre>
+</div>

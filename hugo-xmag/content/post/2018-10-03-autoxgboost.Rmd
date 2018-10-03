@@ -1,8 +1,8 @@
 ---
-title: autoxgboost: Bayesian Optimization 
+title: 'autoxgboost: Bayesian Optimization'
 author: Yang Liu
 date: '2018-10-03'
-slug: autoxgboost
+slug: autoxgboost-bayesian-optimization
 categories:
   - Machine Learning
   - Tuning
@@ -15,26 +15,53 @@ output:
 
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, fig.width = 10, fig.height = 8)
-knitr::opts_knit$set(root.dir = "../")
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
 ```
+# Background
 
-It has been a while since I have been working on lots of interesting projects since I joined in Mount Sinai in August. We have a great team here and obviously I can learn a lot from everyone around me. Most of my job so far focuses on extreme gradient boosting and related visualizations. Suggested by Allan, I recently tested `autoxgboost`, which is so easy to use and runs much faster than the naive grid or random search illustrated in my [earlier post on `xgboost`](https://liuyanguu.github.io/post/2018/07/09/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/). The results are also as good as the best effort we could obtain from the time-consuming random search.
+It has been a while since my last update. I have been working on lots of interesting projects since I joined Mount Sinai in August. We have a great team here and obviously I can learn a lot from everyone around me. Most of my job so far focuses on extreme gradient boosting and visualization of results. Suggested by Allan, I recently tested `autoxgboost`, which is so easy to use and runs much faster than the naive grid or random search illustrated in my [earlier post on XGBoost](https://liuyanguu.github.io/post/2018/07/09/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/). The results are also as good as the best effort we could obtain from the time-consuming random search (when the dataset is large). This short illustration actually produces a counter-example.
 
-I use the same dataset to exemplify 'autoxgboost`.   
-* To install the package, run `devtools::install_github("ja-thomas/autoxgboost")`
+I use the same dataset to exemplify `autoxgboost`  
+To install the package, run `devtools::install_github("ja-thomas/autoxgboost")`
 ```{r libs, include = FALSE}
 # Column Water Vapor correction - Modified script for correcting AOD measurements 
 # The original script is 07_feature_selection_MOD1a.R, also included in this repo.
 library(autoxgboost) # for auto xgboost
+library(googledrive)
+library(data.table)
 options(digits = 6)
 ```
 
 ```{r data, include = FALSE}
-# https://drive.google.com/open?id=1-sxXA2oS_SbDxRuh017b4s9PHprKtQFR
-id <- "1-sxXA2oS_SbDxRuh017b4s9PHprKtQFR" # google file ID
+# Data Preparation using data.table -----------------------------
+# https://drive.google.com/open?id=1pHE8ktykKfBN2_yo8FNxYX_BFKp1S0SN
+id <- "1pHE8ktykKfBN2_yo8FNxYX_BFKp1S0SN" # google file ID
 mydata <- fread(sprintf("https://docs.google.com/uc?id=%s&export=download", id),
                 stringsAsFactors = TRUE)
+
+# clean variables names, remove "/".
+names(mydata) <- gsub("/", "", names(mydata)) 
+
+# create variable: Share_Temporary
+# The dependent variable to be modeled: Share of temporary structure in slums
+mydata[, Share_Temporary := CC7_Structures_Temporary / (CC7_Structures_Temporary + CC6_Structures_Permanent)]
+
+# remove variables with over 20% NA, var_keeps those is.na < 20%
+var_keep <- sapply(mydata, function(x) sum(is.na(x))) < dim(mydata)[1]*0.2
+var_keep[length(var_keep)] <- TRUE # keep "Share_Temporary"
+mydata[, names(mydata)[!var_keep]:= NULL]
+mydata <- na.omit(mydata) # remove rest N.A.
+# fix some format issue
+Factor_List <- c("GG4_Toilets_Pay_Amount", "CC11_Population_Estimate", "CC10_Household_Size",
+                 "CC12_Total_Population")
+mydata[, (Factor_List) := lapply(.SD, as.numeric), .SDcols = Factor_List]
+
+# remove useless factor
+mydata[, c("Obs. Count", "City", "Country",
+                       names(mydata)[grepl("Structure", names(mydata))],
+                       names(mydata)[grepl("Ownership", names(mydata))]):=NULL]
+# remove what are highly correlated to dependent variable
+# write.csv(mydata, file = "D:/mydata_slum.csv")
 
 # divide training and test dataset
 set.seed(123)
@@ -43,20 +70,18 @@ train_idx <- sample(dim(mydata)[1], dim(mydata)[1]* 0.6)
 # The model.matrix() function is used in many regression packages for building 
 # an "X" matrix from data.
 # need matrix for glmnet
-X2 <- model.matrix(Share_Temporary~., data = mydata)[,-1]
-X2 <- X2[,-1]
+X2 <- model.matrix(Share_Temporary~., data = mydata)
 Y2 <- as.matrix(mydata[,"Share_Temporary"])
 X_train <- X2[train_idx,]
 X_test <- X2[-train_idx,]
 Y_train <- Y2[train_idx]
 Y_test <- Y2[-train_idx]
-# merge back to df again, as df is required for regsubsets (best subset) / and autoxgboost
-data_train <- data.frame(X2, Y2)[train_idx,]; dim(data_train)
-data_test <- data.frame(X2, Y2)[-train_idx,];dim(data_test)
-
+# merge back to df again, as df is required for regsubsets (best subset)
+data_train <- data.frame(X2, Y2)[train_idx,] 
+data_test <- data.frame(X2, Y2)[-train_idx,] 
 ```
 
-## Original Result  
+# Original Result  
 * Parameters  
 ```{r}
 tunegrid <- structure(list(nrounds = 228, max_depth = 8, eta = 0.034, gamma = 0, 
@@ -69,10 +94,10 @@ tunegrid
 ```
 * rmse   
 ```{r, echo = T}
-# 0.002841
+# 0.0433
 ```
 
-## Using `autoxgboost` 
+# Using `autoxgboost` 
 * A paper on _[Bayesian Optimization](https://arxiv.org/pdf/1807.02811.pdf)_  
 * A presentation: _[Introduction to Bayesian Optimization](http://gpss.cc/gpmc17/slides/LancasterMasterclass_1.pdf)_  
 * By default, the optimizer runs for for 160 iterations or 1 hour, results using 80 iterations are good enough    
@@ -80,63 +105,33 @@ tunegrid
 ```{r echo = T}
 autoxgbparset
 ```
-* This dataset is a simple regression problem, for classification, just use `reg_task <- makeClassifTask`  
-* There are more options for different tasks  
+* This dataset is a regression problem, for classification, just use `reg_task <- makeClassifTask`. There are more options for different tasks  
 * Use all as default, input a _data.frame_, and that's it...   
 ```{r, echo = T, eval = F}
 library(autoxgboost)
 reg_task <- makeRegrTask(data = data_train, target = "Share_Temporary")
 set.seed(1234)
 system.time(reg_auto <- autoxgboost(reg_task))
-
 # If need to change iterations or control, all are very easy:
-MBOctrl <- makeMBOControl()
-ctrl <- setMBOControlTermination(control = MBOctrl, iters = 160L)
-system.time(reg_auto <- autoxgboost(reg_task, control = ctrl))
-saveRDS(reg_auto, file = "D:/SDIautoxgboost_80.rds")
+# MBOctrl <- makeMBOControl()
+# ctrl <- setMBOControlTermination(control = MBOctrl, iters = 160L)
+# system.time(reg_auto <- autoxgboost(reg_task, control = ctrl))
+# saveRDS(reg_auto, file = "D:/SDIautoxgboost_80.rds")
 ```
  
 
-### Results 
+# New Result 
 ```{r}
 library(googledrive)
 # https://drive.google.com/open?id=1_ton-II-XxncnDBB2fNOT3MtDolOAQtT
 temp <- tempfile(fileext = ".rds")
 drive_download(as_id("1_ton-II-XxncnDBB2fNOT3MtDolOAQtT"), path = temp, overwrite = T)
-reg_auto_80 <- readRDS(temp)
-print(reg_auto_80)
+reg_auto <- readRDS(temp)
+print(reg_auto)
 ```
-* Testing rmse: 0.0484
+* Testing rmse: 0.1097 compared to 0.043, it is actually much worse than the result from random search (in my dataset from work, `autoxgboost` did no worse). I suspect this is because the number of observations is not abundant compared to the number of features (316 x 88).
 ```{r}
-xgb_pred <- predict(reg_auto_80, data_test) 
-sqrt(mean((xgb_pred$data$response - data_test$Share_Temporary)^2)) 
-
-```
-
-### Results for __aqua__  
-```{r data2, include = FALSE}
-# import prepared dataset
-modeldt <- read_fst("/home/liuy29/Jdrive/PM/Just_Lab/projects/ECHO_PM/data/intermediate/MAIACAAOT_MOD1a_CWV_v2018-08-02.fst", as.data.table = TRUE)
-# restrict to non-missing
-modeldt <- modeldt[!is.na(col_water_cm)]
-modeldt <- modeldt[!is.na(AOT_Uncertainty)]
-modeldt[, diffcwv := Column_WV - col_water_cm]
-set.seed(785959908)
-meanobsday <- modeldt[, .N, by = "dayint"][, mean(N)]
-daytest <- sample(modeldt[, unique(dayint)], trunc(nrow(modeldt)*0.15)/meanobsday) 
-rm(meanobsday)
-length(daytest) # 396 days (AQUA) - 454 (TERRA)
-traindt <- modeldt[!dayint %in% daytest]
-testdt <- modeldt[dayint %in% daytest]
-```
-
-```{r}
-reg_auto_aqua <- readRDS("~/Intermediate/1002_reg_auto_aqua.rds")
-print(reg_auto_aqua)
-```
-* Testing rmse: 0.1452 (0.1464 for 80 iters) compared to 0.1449
-```{r}
-xgb_pred <- predict(reg_auto_aqua, as.data.frame(testdt[, ..features])) 
-sqrt(mean((testdt$diffcwv - xgb_pred$data$response)^2)) 
+xgb_pred <- predict(reg_auto, data_test) 
+sqrt(mean((xgb_pred$data$response - Y_test))) 
 
 ```

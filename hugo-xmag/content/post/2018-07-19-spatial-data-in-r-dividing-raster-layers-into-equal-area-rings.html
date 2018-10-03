@@ -85,7 +85,6 @@ city_list &lt;- list.files(parent_dir)
 </ul>
 <pre class="r"><code>city1 &lt;-&quot;Hong_Kong&quot;
 library(googledrive)
-options(httr_oauth_cache = F)
 temp &lt;- tempfile(fileext = &quot;.zip&quot;)
 dl &lt;- drive_download(as_id(&quot;1z-aD2orN2k2BINkDD6whEhHFga_4HIu8&quot;), path = temp, overwrite = TRUE)
 out &lt;- unzip(temp, exdir = tempdir())
@@ -93,7 +92,7 @@ image &lt;- raster(out[1])
 cbdpoint &lt;- SpatialPoints(readOGR(dsn = paste(tempdir(),&quot;\\Hong_Kong&quot;,sep = &quot;&quot;),
                                   layer = &quot;Hong_Kong_CBD_Project&quot;))</code></pre>
 <pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;C:\Users\lyhel\AppData\Local\Temp\RtmpUR7YjO\Hong_Kong&quot;, layer: &quot;Hong_Kong_CBD_Project&quot;
+## Source: &quot;C:\Users\lyhel\AppData\Local\Temp\RtmpGcMe1l\Hong_Kong&quot;, layer: &quot;Hong_Kong_CBD_Project&quot;
 ## with 1 features
 ## It has 6 fields
 ## Integer64 fields read as strings:  Id</code></pre>

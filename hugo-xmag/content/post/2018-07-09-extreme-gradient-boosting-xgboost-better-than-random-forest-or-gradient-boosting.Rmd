@@ -22,7 +22,9 @@ I recently had the great pleasure to meet with Professor Allan Just and he intro
 The ensemble method is powerful as it combines the predictions from multiple machine learning algorithms together to make more accurate predictions than an individual model. Random Forest is among the most famous ones and it is easy to use. Random Forest is based on bagging (bootstrap aggregation) which averages the results over many decision trees from sub-samples. It further limits its search to only 1/3 of the features (in regression) to fit each tree, weakening the correlations among decision trees. It is easy to get a lower testing error compared to linear models. 
 
 Boosting takes slower steps, making predictors sequentially instead of independently. It repetitively leverages the patterns in residuals, strengthens the model with weak predictions, and make it better. 
-By combining the advantages from both random forest and gradient boosting, XGBoost gave the lowest prediction error in my case. (__Correction__) Actually it is similar to random forest. 
+By combining the advantages from both random forest and gradient boosting, XGBoost gave the a prediction error __ten times__ lower than boosting or random forest in my case. 
+
+(__Correction!__) 18.10.3. When I further test this dataset I realized it was a __mistake__. There is indeed no magic in machine learning. When I got a testing error ten-time smaller than other methods, I should question first if this is a mistake. I used the same dataset for training and testing. In the correct result XGBoost still gave the lowest testing rmse but was close to other two methods. 
 
 Link to the earlier version: _[Model Selection using Lasso and Best Subset](https://yangliuresearch.blogspot.com/2018/06/modeling-of-slums-model-selection-using.html)_
 
@@ -156,17 +158,17 @@ for (iter in 1:10) {
 
 * The best tuning parameters  
 ```{r echo = FALSE}
-best_rmse_index <- 228
-best_rmse <- 0.2143
-best_seednumber <- 7187
+best_rmse_index <- 56
+best_rmse <- 0.2102
+best_seednumber <- 3660
 best_param <- list(objective = "reg:linear",  # For regression
                 eval_metric = "rmse",      # rmse is used for regression
-                max_depth = 8,
-                eta = 0.034,   # Learning rate, default: 0.3
-                subsample = 0.7017,
-                colsample_bytree = 0.7208, 
-                min_child_weight = 7, # These two are important
-                max_delta_step = 5)
+                max_depth = 9,
+                eta = 0.09822,   # Learning rate, default: 0.3
+                subsample = 0.64,
+                colsample_bytree = 0.6853, 
+                min_child_weight = 6, # These two are important
+                max_delta_step = 8)
 
 ```
 
@@ -186,6 +188,7 @@ xg_mod <- xgboost(data = dtrain, params = best_param, nround = nround, verbose =
 # MSE
 yhat_xg <- predict(xg_mod, dtest)
 (MSE_xgb <- mean((yhat_xg - Y_test)^2))
+
 ```
 
 * Feature Importance  
