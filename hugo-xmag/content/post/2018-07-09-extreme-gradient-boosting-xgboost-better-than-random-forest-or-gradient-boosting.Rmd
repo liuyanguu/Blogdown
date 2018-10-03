@@ -5,10 +5,9 @@ author: Yang Liu
 date: '2018-07-09'
 slug: extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting
 categories:
-  - Statistical Learning
-tags:
-  - R
   - Machine Learning
+tags:
+  - XGBoost
 output:
   blogdown::html_page:
     toc: true
@@ -23,7 +22,7 @@ I recently had the great pleasure to meet with Professor Allan Just and he intro
 The ensemble method is powerful as it combines the predictions from multiple machine learning algorithms together to make more accurate predictions than an individual model. Random Forest is among the most famous ones and it is easy to use. Random Forest is based on bagging (bootstrap aggregation) which averages the results over many decision trees from sub-samples. It further limits its search to only 1/3 of the features (in regression) to fit each tree, weakening the correlations among decision trees. It is easy to get a lower testing error compared to linear models. 
 
 Boosting takes slower steps, making predictors sequentially instead of independently. It repetitively leverages the patterns in residuals, strengthens the model with weak predictions, and make it better. 
-By combining the advantages from both random forest and gradient boosting, XGBoost gives prediction error 10-times lower than random forest or gradient boosting alone in my case. 
+By combining the advantages from both random forest and gradient boosting, XGBoost gave the lowest prediction error in my case. (__Correction__) Actually it is similar to random forest. 
 
 Link to the earlier version: _[Model Selection using Lasso and Best Subset](https://yangliuresearch.blogspot.com/2018/06/modeling-of-slums-model-selection-using.html)_
 
@@ -85,7 +84,7 @@ mydata[, c("Obs. Count", "City", "Country",
                        names(mydata)[grepl("Structure", names(mydata))],
                        names(mydata)[grepl("Ownership", names(mydata))]):=NULL]
 # remove what are highly correlated to dependent variable
-
+# write.csv(mydata, file = "D:/mydata_slum.csv")
 
 # divide training and test dataset
 set.seed(123)
@@ -102,6 +101,7 @@ Y_train <- Y2[train_idx]
 Y_test <- Y2[-train_idx]
 # merge back to df again, as df is required for regsubsets (best subset)
 data_train <- data.frame(X2, Y2)[train_idx,] 
+data_test <- data.frame(X2, Y2)[-train_idx,] 
 mydata2 <- data.frame(X2, Y2)
 
 # Matrix for xgb: dtrain
@@ -123,7 +123,7 @@ best_rmse_index <- 0
 
 set.seed(1234)
 # In reality, might need 100 or 200 iters
-for (iter in 1:100) {
+for (iter in 1:10) {
   param <- list(objective = "reg:linear",  # For regression
                 eval_metric = "rmse",      # rmse is used for regression
                 max_depth = sample(6:10, 1),
@@ -159,7 +159,14 @@ for (iter in 1:100) {
 best_rmse_index <- 228
 best_rmse <- 0.2143
 best_seednumber <- 7187
-best_param <- list()
+best_param <- list(objective = "reg:linear",  # For regression
+                eval_metric = "rmse",      # rmse is used for regression
+                max_depth = 8,
+                eta = 0.034,   # Learning rate, default: 0.3
+                subsample = 0.7017,
+                colsample_bytree = 0.7208, 
+                min_child_weight = 7, # These two are important
+                max_delta_step = 5)
 
 ```
 
@@ -175,7 +182,7 @@ data.frame(best_param, best_rmse_index, best_rmse, best_seednumber)
 # The best index (min_rmse_index) is the best "nround" in the model
 nround <- best_rmse_index
 set.seed(best_seednumber)
-xg_mod <- xgboost(data = dtest, params = best_param, nround = nround, verbose = F)
+xg_mod <- xgboost(data = dtrain, params = best_param, nround = nround, verbose = F)
 # MSE
 yhat_xg <- predict(xg_mod, dtest)
 (MSE_xgb <- mean((yhat_xg - Y_test)^2))
@@ -193,10 +200,10 @@ xgb.ggplot.importance(importance_matrix, top_n = 15, measure = "Gain")
 ```{r boostplot}
 library("DiagrammeR")
 xgb.plot.tree(model = xg_mod, trees = 1, feature_names = colnames(X_train))
-
-# xgb.plot.tree needs to be revised a little bit by adding `fontcolor ="black"` in the `nodes <- DiagrammeR::create_node_df` line
-source("D:/OneDrive - nyu.edu/NYU Marron/R/xgb.plot.tree2.R")
-xgb.plot.tree2(model = xg_mod, n_first_tree = 1, feature_names = colnames(X_train))
+# 
+# # xgb.plot.tree needs to be revised a little bit by adding `fontcolor ="black"` in the `nodes <- DiagrammeR::create_node_df` line
+# source("D:/OneDrive - nyu.edu/NYU Marron/R/xgb.plot.tree2.R")
+# xgb.plot.tree2(model = xg_mod, n_first_tree = 1, feature_names = colnames(X_train))
 
 ```
 
@@ -371,7 +378,7 @@ coef_table_bs[order(abs(coef_table_bs$stb), decreasing = T),]
 ```
 
 
-# Code
+# Original Code
 ```{r eval = FALSE}
 ## Working Sample: Predicting Share of Temporary Structure in Slums Settlements ##
 # 07/09/2018

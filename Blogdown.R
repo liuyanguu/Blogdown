@@ -7,4 +7,4 @@ build_site()
 
 
 # blogdown::new_site(theme = 'alanorth/hugo-theme-bootstrap4-blog')
-# setwd("D:/OneDrive/Blogdown/Academic")
+setwd("D:/liuyanguu/Blogdown/hugo-xmag/")

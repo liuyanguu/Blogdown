@@ -1,7 +1,24 @@
+---
+title: 'Spatial data in R: Dividing raster layers into equal-area rings'
+author: Yang Liu
+date: '2018-07-20'
+slug: spatial-data-in-r-dividing-raster-layers-into-equal-area-rings
+categories:
+  - Data Visualization
+  - Spatial Data
+tags:
+  - R
+  - Geographic
+  - Spatial
+output:
+  blogdown::html_page:
+    toc: true
+---
+
 
 <div id="TOC">
 <ul>
-<li><a href="#saturation-in-10-cities-with-equal-area-rings">Saturation in 10 cities with equal-area rings</a></li>
+<li><a href="#saturation-in-ten-cities-with-equal-area-rings">Saturation in ten cities with equal-area rings</a></li>
 <li><a href="#r-code-for-one-city">R Code for one city</a></li>
 <li><a href="#results-for-the-ring-saturations">Results for the ring saturations</a></li>
 <li><a href="#average-saturation-in-each-ring">Average saturation in each ring</a></li>
@@ -17,8 +34,8 @@
 * Calculate <em>Built-up Area/Urban Extent</em> for each ring<br />
 * Turn dataframe into raster<br />
 * Plot multiple figures on the same color scale</p>
-<div id="saturation-in-10-cities-with-equal-area-rings" class="section level2">
-<h2>Saturation in 10 cities with equal-area rings</h2>
+<div id="saturation-in-ten-cities-with-equal-area-rings" class="section level2">
+<h2>Saturation in ten cities with equal-area rings</h2>
 <ul>
 <li>The 1000 rings have a minimum saturation of 30.5% and a maximum of 99.9%<br />
 </li>
@@ -76,7 +93,7 @@ image &lt;- raster(out[1])
 cbdpoint &lt;- SpatialPoints(readOGR(dsn = paste(tempdir(),&quot;\\Hong_Kong&quot;,sep = &quot;&quot;),
                                   layer = &quot;Hong_Kong_CBD_Project&quot;))</code></pre>
 <pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;C:\Users\Roxy\AppData\Local\Temp\RtmpCQyqeX\Hong_Kong&quot;, layer: &quot;Hong_Kong_CBD_Project&quot;
+## Source: &quot;C:\Users\lyhel\AppData\Local\Temp\RtmpUR7YjO\Hong_Kong&quot;, layer: &quot;Hong_Kong_CBD_Project&quot;
 ## with 1 features
 ## It has 6 fields
 ## Integer64 fields read as strings:  Id</code></pre>
@@ -182,7 +199,7 @@ cbdpoint &lt;- SpatialPoints(readOGR(dsn = paste(tempdir(),&quot;\\Hong_Kong&quo
 </ul>
 <pre class="r"><code>  r1 &lt;- rasterFromXYZ(mydata_HK2)
   plot(r1)</code></pre>
-<p><img src="2018-07-19-spatial-data-in-r-dividing-raster-layers-into-equal-area-rings_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/post/2018-07-19-spatial-data-in-r-dividing-raster-layers-into-equal-area-rings_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <pre class="r"><code>  # choose a color scale from `RColorBrewer`
   color_scale &lt;- brewer.pal(n = 10, name = &quot;RdYlGn&quot;)
   myPalette &lt;- colorRampPalette(rev(color_scale)) # reverse the order so highly value ~ dark red
@@ -190,7 +207,7 @@ cbdpoint &lt;- SpatialPoints(readOGR(dsn = paste(tempdir(),&quot;\\Hong_Kong&quo
   plot(r1$ring_saturation, col=myPalette(70), breaks = c(30:100)/100,
        legend=FALSE,  main = city1)
   plot(cbdpoint, add = TRUE, size = 3) # drawn on top of a map using `add = TRUE`</code></pre>
-<p><img src="2018-07-19-spatial-data-in-r-dividing-raster-layers-into-equal-area-rings_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<p><img src="/post/2018-07-19-spatial-data-in-r-dividing-raster-layers-into-equal-area-rings_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
 <pre class="r"><code>  # if need to output the raster
   # writeRaster(r1, paste(raster_dir, city1, sep = &quot;&quot;), format = &quot;HFA&quot;, overwrite=TRUE)
 
@@ -211,7 +228,7 @@ cbdpoint &lt;- SpatialPoints(readOGR(dsn = paste(tempdir(),&quot;\\Hong_Kong&quo
 <h2>Average saturation in each ring</h2>
 <ul>
 <li>There is a clear declining trend in saturation as we move towards the boundary of the cities<br />
-<img src="2018-07-19-spatial-data-in-r-dividing-raster-layers-into-equal-area-rings_files/figure-html/unnamed-chunk-8-1.png" width="672" /></li>
+<img src="/post/2018-07-19-spatial-data-in-r-dividing-raster-layers-into-equal-area-rings_files/figure-html/unnamed-chunk-8-1.png" width="672" /></li>
 </ul>
 </div>
 <div id="methodology" class="section level2">

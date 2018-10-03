@@ -27,7 +27,7 @@ __This data visualization example include:__
 * Turn dataframe into raster  
 * Plot multiple figures on the same color scale  
 
-## Saturation in 10 cities with equal-area rings
+## Saturation in ten cities with equal-area rings
 * The 1000 rings have a minimum saturation of 30.5% and a maximum of 99.9%  
 * Same color scale for every map, with a boundary of [0.3, 1]  
 * Dark green corresponds to a ring saturation of 0.3, and dark red corresponds to 1  
@@ -71,7 +71,6 @@ city_list <- list.files(parent_dir)
 ```{r}
 city1 <-"Hong_Kong"
 library(googledrive)
-options(httr_oauth_cache = F)
 temp <- tempfile(fileext = ".zip")
 dl <- drive_download(as_id("1z-aD2orN2k2BINkDD6whEhHFga_4HIu8"), path = temp, overwrite = TRUE)
 out <- unzip(temp, exdir = tempdir())
