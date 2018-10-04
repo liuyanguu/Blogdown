@@ -21,7 +21,9 @@ knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
 
 It has been a while since my last update. I have been working on lots of interesting projects since I joined Mount Sinai in August. We have a great team here and obviously I can learn a lot from everyone around me. Most of my job so far focuses on extreme gradient boosting and visualization of results. Suggested by Allan, I recently tested `autoxgboost`, which is so easy to use and runs much faster than the naive grid or random search illustrated in my [earlier post on XGBoost](https://liuyanguu.github.io/post/2018/07/09/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/). The results are also as good as the best effort we could obtain from the time-consuming random search (when the dataset is large). This short illustration actually produces a counter-example.
 
-I use the same dataset to exemplify `autoxgboost`  
+Bayesian optimization (BayesOpt) has become very popular for tuning hyperparameters in machine learning algorithms, especially deep neural network. 
+
+I use the same dataset as in earlier post to exemplify `autoxgboost`  
 To install the package, run `devtools::install_github("ja-thomas/autoxgboost")`
 ```{r libs, include = FALSE}
 # Column Water Vapor correction - Modified script for correcting AOD measurements 
