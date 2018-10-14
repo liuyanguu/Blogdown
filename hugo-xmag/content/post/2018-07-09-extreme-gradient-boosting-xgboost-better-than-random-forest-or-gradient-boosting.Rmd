@@ -184,9 +184,9 @@ data.frame(best_param, best_rmse_index, best_rmse, best_seednumber)
 # The best index (min_rmse_index) is the best "nround" in the model
 nround <- best_rmse_index
 set.seed(best_seednumber)
-xg_mod <- xgboost(data = dtrain, params = best_param, nround = nround, verbose = F)
+xg_mod <- xgboost(data = X_train, label = Y_train, params = best_param, nround = nround, verbose = T)
 # MSE
-yhat_xg <- predict(xg_mod, dtest)
+yhat_xg <- predict(xg_mod, newdata = X_test)
 (MSE_xgb <- mean((yhat_xg - Y_test)^2))
 
 ```

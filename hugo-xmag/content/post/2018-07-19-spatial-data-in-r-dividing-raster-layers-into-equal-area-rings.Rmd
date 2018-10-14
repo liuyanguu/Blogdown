@@ -51,7 +51,7 @@ library('knitr')    # kable
 options(digits = 4)
 ```
 * The local version:   
-```{r, eval = FALSE}
+```{r, eval = T}
 # Where are all the data files located:
 parent_dir <- c("D:/OneDrive - nyu.edu/NYU Marron/180716_Draw Circle/Data/")
 # Get all the folder names (names of the cities) in the directory, used to scan all the cities
@@ -68,7 +68,7 @@ city_list <- list.files(parent_dir)
 ```
 
 * In this blog data is downloaded from googledrive  
-```{r}
+```{r, eval = F}
 city1 <-"Hong_Kong"
 library(googledrive)
 temp <- tempfile(fileext = ".zip")
