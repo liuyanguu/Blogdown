@@ -1,11 +1,11 @@
 ---
-title: 'autoxgboost: Bayesian Optimization'
+title: 'autoxgboost: Automatic XGBoost using Bayesian Optimization'
 author: Yang Liu
 date: '2018-10-03'
 slug: autoxgboost-bayesian-optimization
 categories:
   - Machine Learning
-  - Tuning
+  - Parameter Tuning
 tags:
   - XGBoost
 output:
