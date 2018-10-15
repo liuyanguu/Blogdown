@@ -20,17 +20,11 @@ knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
 ```
 # Background
 
-It has been a while since my last update. I have been working on lots of interesting projects since I joined Mount Sinai in August. We have a great team here and obviously I can learn a lot from everyone around me. Most of my job so far focuses on extreme gradient boosting and visualization of results. Suggested by Allan, I recently tested `autoxgboost`, which is so easy to use and runs much faster than the naive grid or random search illustrated in my [earlier post on XGBoost](https://liuyanguu.github.io/post/2018/07/09/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/). The results are also as good as the best effort we could obtain from the time-consuming random search (when the dataset is large). This short illustration actually produces a counter-example.
+It has been a while since my last update. I have been working on lots of interesting projects since I joined Mount Sinai in August. We have a great team here and obviously I can learn a lot from everyone around me. Most of my job so far focuses on extreme gradient boosting and visualization of results. Suggested by Allan, I recently tested `autoxgboost`, which is so easy to use and runs much faster than the naive grid or random search illustrated in my [earlier post on XGBoost](https://liuyanguu.github.io/post/2018/07/09/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/). The results are also as good as the best effort we could obtain from the time-consuming random search.
 
-<<<<<<< HEAD
 I use the same dataset to exemplify `autoxgboost`  
 To install the package, run _`devtools::install_github("ja-thomas/autoxgboost")`_
-=======
-Bayesian optimization (BayesOpt) has become very popular for tuning hyperparameters in machine learning algorithms, especially deep neural network. 
 
-I use the same dataset as in earlier post to exemplify `autoxgboost`  
-To install the package, run `devtools::install_github("ja-thomas/autoxgboost")`
->>>>>>> 6d94a88e7140980c26308c12021108c5328de773
 ```{r libs, include = FALSE}
 # Column Water Vapor correction - Modified script for correcting AOD measurements 
 # The original script is 07_feature_selection_MOD1a.R, also included in this repo.
@@ -173,7 +167,7 @@ system.time(reg_auto_dart <- autoxgboost(reg_task, par.set = autoxgbparset.mixed
 
 ```
 
-* Interesting enough, a model with dart booster has been chosen, but the results are pretty much the same. Tuning mse = 0.044, and testing mse = 0.048. It means a result around 0.044 is about the best we can achieve through `xgboost`.  
+* Interestingly enough, a model with dart booster has been chosen, but the results are pretty much the same. Tuning mse = 0.044, and testing mse = 0.048. It means a result around 0.044 is about the best we can achieve through `xgboost`.  
 ```{r}
 # saveRDS(reg_auto_dart, file = "D:/liuyanguu/Blogdown/SDIautoxgboost_80_dart.rds")
 reg_auto_dart <- readRDS("D:/liuyanguu/Blogdown/SDIautoxgboost_80_dart.rds")

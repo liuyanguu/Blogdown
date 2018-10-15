@@ -27,11 +27,9 @@ output:
 <p>(updated on Oct 14)</p>
 <div id="background" class="section level1">
 <h1>Background</h1>
-<p>It has been a while since my last update. I have been working on lots of interesting projects since I joined Mount Sinai in August. We have a great team here and obviously I can learn a lot from everyone around me. Most of my job so far focuses on extreme gradient boosting and visualization of results. Suggested by Allan, I recently tested <code>autoxgboost</code>, which is so easy to use and runs much faster than the naive grid or random search illustrated in my <a href="https://liuyanguu.github.io/post/2018/07/09/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/">earlier post on XGBoost</a>. The results are also as good as the best effort we could obtain from the time-consuming random search (when the dataset is large). This short illustration actually produces a counter-example.</p>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD I use the same dataset to exemplify <code>autoxgboost</code><br />
-To install the package, run <em><code>devtools::install_github(&quot;ja-thomas/autoxgboost&quot;)</code></em> ======= Bayesian optimization (BayesOpt) has become very popular for tuning hyperparameters in machine learning algorithms, especially deep neural network.</p>
-<p>I use the same dataset as in earlier post to exemplify <code>autoxgboost</code><br />
-To install the package, run <code>devtools::install_github(&quot;ja-thomas/autoxgboost&quot;)</code> &gt;&gt;&gt;&gt;&gt;&gt;&gt; 6d94a88e7140980c26308c12021108c5328de773</p>
+<p>It has been a while since my last update. I have been working on lots of interesting projects since I joined Mount Sinai in August. We have a great team here and obviously I can learn a lot from everyone around me. Most of my job so far focuses on extreme gradient boosting and visualization of results. Suggested by Allan, I recently tested <code>autoxgboost</code>, which is so easy to use and runs much faster than the naive grid or random search illustrated in my <a href="https://liuyanguu.github.io/post/2018/07/09/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/">earlier post on XGBoost</a>. The results are also as good as the best effort we could obtain from the time-consuming random search.</p>
+<p>I use the same dataset to exemplify <code>autoxgboost</code><br />
+To install the package, run <em><code>devtools::install_github(&quot;ja-thomas/autoxgboost&quot;)</code></em></p>
 </div>
 <div id="old-result" class="section level1">
 <h1>Old Result</h1>
@@ -135,7 +133,7 @@ autoxgbparset.mixed = makeParamSet(
 )
 system.time(reg_auto_dart &lt;- autoxgboost(reg_task, par.set = autoxgbparset.mixed))</code></pre>
 <ul>
-<li>Interesting enough, a model with dart booster has been chosen, but the results are pretty much the same. Tuning mse = 0.044, and testing mse = 0.048. It means a result around 0.044 is about the best we can achieve through <code>xgboost</code>.</li>
+<li>Interestingly enough, a model with dart booster has been chosen, but the results are pretty much the same. Tuning mse = 0.044, and testing mse = 0.048. It means a result around 0.044 is about the best we can achieve through <code>xgboost</code>.</li>
 </ul>
 <pre><code>## Autoxgboost tuning result
 ## 
