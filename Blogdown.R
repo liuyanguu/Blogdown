@@ -2,7 +2,7 @@
 
 getwd()
 library(blogdown)
-# serve_site()
+serve_site()
 build_site()
 
 

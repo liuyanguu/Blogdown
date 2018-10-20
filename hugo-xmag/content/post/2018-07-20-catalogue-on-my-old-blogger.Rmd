@@ -1,8 +1,8 @@
 ---
-title: Catalog of my old blogger
+title: Catalog of my old blog
 author: Yang Liu
 date: '2018-07-01'
-slug: catalogue-of-my-old-blogger
+slug: catalogue-of-my-old-blog
 categories:
   - Catalog
 tags:
@@ -10,7 +10,7 @@ tags:
 ---
 
 # Introducing my new blog written solely in __R Markdown__
-When I realized it is so convenient to write blog directly using R Markdown, I searched if there is a specialized tool for it. And I found __Blogdown__, an R package developed by Yihui Xie, who is also the author of R Markdown. 
+When I realized it was so convenient to write blog directly using R Markdown, I searched if there is a specific tool for it. And I found __Blogdown__, an R package developed by Yihui Xie, who is also the author of R Markdown. 
 
 # Catalog
 As a summary, I would like to create a catalog for the main topics I wrote on google blogger before July 2018. I included some figures too, most are created in R.
