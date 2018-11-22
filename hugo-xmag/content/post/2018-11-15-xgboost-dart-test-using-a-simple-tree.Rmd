@@ -86,7 +86,7 @@ simple.xgb.output(param_gbtree)
 DART ([paper on JMLR](http://proceedings.mlr.press/v38/korlakaivinayak15.pdf)) adopted dropout method from neural networks to boosted regression rees (i.e.,MART: Multiple Additive Regression Trees). DART aims to further prevent over-specialization. It requires select `booster = 'dart'` in `xgboost` and tune several hyper-parameters ([Ref: R documents](https://xgboost.readthedocs.io/en/latest/parameter.html#additional-parameters-for-dart-booster-booster-dart)).  
   
 ## `skip_drop`  
-* The `skip_drop`(default = 0, range [0, 1]) is the probability of skipping dropout. It has a higher priority. If `skip_drop` = 1, the dropout procedure would be skipped and `dart` is the same as `gbtree`. The setting below gives the same result as the `gbtree` above (results omitted):
+* The `skip_drop`(default = 0, range [0, 1]) is the probability of skipping dropout. It has a higher priority than other DART parameters. If `skip_drop` = 1, the dropout procedure would be skipped and `dart` is the same as `gbtree`. The setting below gives the same result as the `gbtree` above (results omitted):
 ```{r}
 param_gbtree <- list(objective = 'reg:linear', nrounds = 3, 
                    eta = 2,
@@ -99,9 +99,9 @@ param_gbtree <- list(objective = 'reg:linear', nrounds = 3,
 ```
   
 ## `rate_drop`  
-* If `skip_drop`$\ne0$, `rate_drop (default = 0, range [0, 1])` will drop a fraction of the trees before every iteration. 
-* The DART paper [JMLR](http://proceedings.mlr.press/v38/korlakaivinayak15.pdf) said DART is between CART and random forest: (Quote) If no tree is dropped, DART is the same as MART (`gbtree`); if all the trees are dropped, DART is no different than random forest.  
-* If `rate_drop` = 1 then all the trees are dropped, a random forest of trees are built. In our case of a very simple dataset, the 'random forest' just repeats the same tree `nrounds` times:   
+* If `skip_drop`$\ne0$, `rate_drop (default = 0, range [0, 1])` will drop a fraction of the trees before the model update in every iteration. 
+* The DART paper [JMLR](http://proceedings.mlr.press/v38/korlakaivinayak15.pdf) said the dropout makes DART between gbtree and random forest: "If no tree is dropped, DART is the same as MART (`gbtree`); if all the trees are dropped, DART is no different than random forest."
+* If `rate_drop` = 1 then all the trees are dropped, a random forest of trees is built. In our case of a very simple dataset, the 'random forest' just repeats the same tree `nrounds` times:   
 ```{r}
 param_dart1 <- list(objective = 'reg:linear', nrounds = 3, 
                    eta = 2,
