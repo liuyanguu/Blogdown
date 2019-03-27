@@ -320,8 +320,82 @@ shap.stack.plot(shapobs = shapobs,
                 zoom_in_location  = 50,
                 # y_parent_limit = c(-1,1),
                 y_limit = c(-0.3, 0.5),
-                zoom_in = T)
+                zoom_in = F)
 ```
 
   
-  
+```{r,eval = F}
+library("reticulate")
+py_install('jupyter')
+
+write.csv(cbind(X_train, Y_train), "D:/liuyanguu/Blogdown/shapdata.csv")
+
+```
+
+```{python, eval = F}
+import pandas
+import xgboost
+import shap
+
+data = pandas.read_csv("D:/liuyanguu/Blogdown/shapdata.csv")
+data_Y = data[data.columns[-1]]
+data_X = data[data.columns[2:data.shape[1]-1]]
+data_X.head(1)
+
+# train XGBoost model
+model = xgboost.train(params = {"learning_rate": 0.09822,
+                      "max_depth": 9,
+                       "subsample": 0.64,
+                       "colsample_bytree": 0.6853,
+                       "min_child_weight": 6,
+                       "max_delta_step" :8
+                      }, 
+                      dtrain = xgboost.DMatrix(data_X, label=data_Y), 
+                      num_boost_round = 3660)
+
+
+# explain the model's predictions using SHAP values
+# (same syntax works for LightGBM, CatBoost, and scikit-learn models)
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(data_X)
+
+# visualize the first prediction's explanation (use matplotlib=True to avoid Javascript)
+shap.force_plot(explainer.expected_value, shap_values, data_X)
+
+import pandas as pd
+import numpy as np
+import scipy as sp
+from scipy.spatial.distance import pdist
+    
+D = sp.spatial.distance.pdist(shap_values, metric="sqeuclidean")
+cluster_matrix = sp.cluster.hierarchy.complete(D)
+cluster_matrix[0:3,]
+cluster_matrix
+metric="sqeuclidean" 
+X = shap_values
+sets = [[i] for i in range(X.shape[0])]
+for i in range(cluster_matrix.shape[0]):
+        s1 = sets[int(cluster_matrix[i,0])]
+        s2 = sets[int(cluster_matrix[i,1])]
+        
+        # compute distances between thse end points of the lists
+        d_s1_s2 = pdist(np.vstack([X[s1[-1],:], X[s2[0],:]]), metric)[0]
+        d_s2_s1 = pdist(np.vstack([X[s1[0],:], X[s2[-1],:]]), metric)[0]
+        d_s1r_s2 = pdist(np.vstack([X[s1[0],:], X[s2[0],:]]), metric)[0]
+        d_s1_s2r = pdist(np.vstack([X[s1[-1],:], X[s2[-1],:]]), metric)[0]
+
+        # concatenete the lists in the way the minimizes the difference between
+        # the samples at the junction
+        best = min(d_s1_s2, d_s2_s1, d_s1r_s2, d_s1_s2r)
+        if best == d_s1_s2:
+            sets.append(s1 + s2)
+        elif best == d_s2_s1:
+            sets.append(s2 + s1)
+        elif best == d_s1r_s2:
+            sets.append(list(reversed(s1)) + s2)
+        else:
+            sets.append(s1 + list(reversed(s2)))
+            
+            sets[-1]
+```
+

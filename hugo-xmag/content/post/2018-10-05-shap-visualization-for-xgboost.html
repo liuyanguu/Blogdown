@@ -1,19 +1,3 @@
----
-title: 'SHAP Visualization for XGBoost'
-author: Yang Liu
-date: '2018-10-14'
-slug: shap-visualization-for-xgboost
-categories:
-  - Machine Learning
-  - Data Visualization
-tags:
-  - XGBoost
-  - SHAP
-output:
-  blogdown::html_page:
-    toc: true
----
-
 
 <div id="TOC">
 <ul>
@@ -168,7 +152,7 @@ print(shap_long)</code></pre>
 ## 3160: DD1_Location_Problemscanal -0.01016       0 0.0000000    0.01726</code></pre>
 <pre class="r"><code>## make summary plot
 plot.shap.summary(data_long = shap_long)</code></pre>
-<p><img src="/post/2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 </div>
 <div id="shap-plot-for-each-feature" class="section level1">
@@ -179,7 +163,7 @@ plot.shap.summary(data_long = shap_long)</code></pre>
 </ul>
 <pre class="r"><code>f_ranked &lt;- names(shap_result$mean_shap_score)
 xgb.plot.shap(data = X_train, model = xg_mod, features = f_ranked[1:6], n_col = 3)</code></pre>
-<p><img src="/post/2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="shap-stack-plot-for-observation" class="section level1">
 <h1>SHAP stack plot for observation</h1>
@@ -284,6 +268,29 @@ shap.stack.plot(shapobs = shapobs,
                 y_limit = c(-0.3, 0.5),
                 zoom_in = T)</code></pre>
 <pre><code>## Data has N: 316 | zoom in length is 50 at location 50</code></pre>
-<p><img src="/post/2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
+<pre class="r"><code>library(&quot;reticulate&quot;)</code></pre>
+<pre class="python"><code>import xgboost
+import shap
+
+# load JS visualization code to notebook
+shap.initjs()
+
+# train XGBoost model</code></pre>
+<pre><code>## &lt;IPython.core.display.HTML object&gt;</code></pre>
+<pre class="python"><code>X,y = shap.datasets.boston()
+model = xgboost.train({&quot;learning_rate&quot;: 0.01}, xgboost.DMatrix(X, label=y), 100)
+
+# explain the model&#39;s predictions using SHAP values
+# (same syntax works for LightGBM, CatBoost, and scikit-learn models)
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X)
+
+# visualize the first prediction&#39;s explanation (use matplotlib=True to avoid Javascript)
+shap.force_plot(explainer.expected_value, shap_values[0,:], X.iloc[0,:])</code></pre>
+<pre><code>## &lt;IPython.core.display.HTML object&gt;</code></pre>
+<pre class="python"><code>shap.force_plot(explainer.expected_value, shap_values, X)
+</code></pre>
+<pre><code>## &lt;IPython.core.display.HTML object&gt;</code></pre>
 </div>
 </div>
