@@ -1,5 +1,5 @@
 ---
-title: 'SHAP Visualization for XGBoost'
+title: 'SHAP Stackplot'
 author: Yang Liu
 date: '2018-10-14'
 slug: shap-visualization-for-xgboost
@@ -18,14 +18,11 @@ output:
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 ```
-(Under further updating ...)
+(Under further revise)
 
 # Background
 I will illustrate the application of SHAP (SHapley Additive exPlnation) values to visualize the efforts of features on the outcome variable in a XGBoost model.  
 The function was developed by [_Scott Lundberg_ in Python and explained here](https://github.com/slundberg/shap). SHAP was combined into _xgboost_ with one visualization function _xgb.plot.shap_. But we can make better summary figures as in the Python package in more flexible ways by extracting the SHAP values. 
-
-Code is also hosted on [Github](hugo-xmag/content/post/2018-10-05-shap-visualization-for-xgboost.Rmd)
-
 
 ```{r libs, include = FALSE}
 # Column Water Vapor correction - Modified script for correcting AOD measurements 
@@ -229,7 +226,7 @@ xgb.plot.shap(data = X_train, model = xg_mod, features = f_ranked[1:6], n_col = 
 # SHAP stack plot for observation  
 * Use `geom_col` to "show features each contributing to push the model output from the base value (the average model output) to the model output."  
 * Have tried `geom_area` but dones't work very well due to gaps in the plot caused by fluctuation of positive and negative values  
-* apply the order of clustering to group observations under similar influences closer  
+* Use the order of clustering to group observations under similar influences closer  
        
 ### Function for stack plot   
 ```{r, fig.width = 8, fig.height = 6}
@@ -270,14 +267,14 @@ shap.stack.data <- function(shap_contrib, top_n, data_percent = 1,
   return(shapobs)
 }
 
-## make the stack plot
+## make the stack plot, optional to zoom in at certain x or certain cluster
 shap.stack.plot <- function(shapobs, id = 'id',
                             zoom_in_location = NULL, # where to zoom in, default at place of 60% of the data
                             y_parent_limit = NULL,
                             y_zoomin_limit = NULL,   # c(a,b) to limit the y-axis in zoom-in
                             zoom_in = TRUE,  # default zoom in to zoom_in_location
                             zoom_in_group = NULL # if is set (!NULL), zoom-in to the defined cluster
-){         
+                            ){         
   require(data.table)
   require(ggplot2)
   require(ggforce)  
@@ -324,42 +321,26 @@ shap.stack.plot <- function(shapobs, id = 'id',
       ) +
       theme(zoom.y = element_blank(), validate = FALSE) # zoom in using this line
   }
-  else{
+    else{
     cat("Data has N:", shapobs[,.N],"| no zoom in\n")
   }
   return(p)
 }
 
-# use the SHAP value matrix created above and stored in object `shap_result`  
-## Prepare data:
-shap_result <- shap.score.rank(xgb_model = xg_mod, shap_approx = F, 
-                               X_train = X_train)
-shapobs <- shap.stack.data(shap_contrib = shap_result$shap_score, top_n = 7, data_percent = 1, cluster_method = 'ward.D')
-shap.stack.plot(shapobs = shapobs,
-                zoom_in_location  = 50,
-                y_parent_limit = c(-0.3,0.4),
-                # y_zoomin_limit = c(-0.3, 0.5),
-                zoom_in = T)
-```
-
-### Stack plot by clustering groups
-
-Default to show 10 groups, within each group the features present a similar pattern of contribution to prediction  
-
-```{r, fig.width = 8, fig.height = 6}
 # zoomed in plot: one plot of each cluster
+## make the stack plot, optional to zoom in at certain x or certain cluster
 shap.stack.plot.by.group <- function(shapobs, id = 'id',
-                                     y_parent_limit = NULL
-){         
+                            y_parent_limit = NULL,
+                            zoom_in_group = NULL # if is set (!NULL), zoom-in to the defined cluster
+                            ){         
   require(data.table)
   require(ggplot2)
   require(ggforce)  
   # optional: location to zoom in certain part of the plot
-  shapobs_long <- melt.data.table(shapobs, id.vars = c(id,"group"))
+  shapobs_long <- melt.data.table(shapobs[group==zoom_in_group,], id.vars = c(id,"group"))
   require(RColorBrewer)
   p <- ggplot(shapobs_long, aes_string(x = id, y = "value" , fill = "variable")) + 
     geom_col(width =1, alpha = 0.9) +
-    facet_wrap(~ group, scales = "free", ncol = 2) +
     # geom_area() +
     labs(fill = 'Feature', x = 'Observation', 
          y = "") + 
@@ -378,10 +359,29 @@ shap.stack.plot.by.group <- function(shapobs, id = 'id',
   }
   return(p)
 }
+shap.stack.plot.by.group(shapobs = shapobs, zoom_in_group = 2L)
 
-# default to cluster into 10 groups, here we show 8. Within each cluster, the patterns of how the predictors drive prediction are closer.
+fig_list <- lapply(1:max(shapobs$group), shap.stack.plot.by.group, shapobs = shapobs, id = 'id',y_parent_limit = NULL)
+fit_grid <- gridExtra::arrangeGrob(grobs = fig_list, ncol = 2)
+ggsave(fit_grid, file = "D:/liuyanguu/Figures/SHAP_grid_group.png", width = 16, height = 16)
+```
 
-shapobs <- shap.stack.data(shap_contrib = shap_result$shap_score, top_n = 7, data_percent = 1, cluster_method = 'ward.D', n_groups = 8)
-shap.stack.plot.by.group(shapobs = shapobs)
+
+```{r}
+# use the SHAP value matrix created above and stored in object `shap_result`  
+## Prepare data:
+shap_result <- shap.score.rank(xgb_model = xg_mod, shap_approx = F, 
+                               X_train = X_train)
+shapobs <- shap.stack.data(shap_contrib = shap_result$shap_score, top_n = 7, data_percent = 1, cluster_method = 'ward.D')
+shap.stack.plot(shapobs = shapobs,
+                zoom_in_location  = 50,
+                # y_parent_limit = c(-0.3,0.4),
+                # y_zoomin_limit = c(-0.3, 0.5),
+                zoom_in = T,
+                zoom_in_group = 4)
+
+
+
+
 ```
 
