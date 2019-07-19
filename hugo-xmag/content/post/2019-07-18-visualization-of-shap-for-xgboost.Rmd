@@ -1,0 +1,117 @@
+---
+title: 'SHAP visualization package for XGBoost in R'
+author: Yang Liu
+date: '2019-07-18'
+slug: visualization-of-shap-for-xgboost
+categories:
+  - Machine Learning
+  - Data Visualization
+tags:
+  - XGBoost
+  - SHAP
+  - shapforxgboost
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
+```
+
+# SHAP values: local explanation to global understanding
+
+Tree-based machine learning models (random forest, gradient boosting, XGBoost) are the most popular non-linear models today. SHAP (SHapley Additive exPlnation) values is claimed to be the most advanced method to interpret results from tree-based models. It was based on Shaply values from game theory. 
+
+Main papers for reference:  
+1. 2017 [A Unified Approach to Interpreting Model Predictions](https://arxiv.org/abs/1705.07874)  
+2. 2019 [Consistent Individualized Feature Attribution for Tree
+Ensembles](https://arxiv.org/abs/1802.03888)  
+3. 2019 [Explainable AI for Trees: From Local Explanations to Global Understanding](https://arxiv.org/abs/1905.04610)  
+The [github page](https://github.com/slundberg/shap) that explains these visualization functions developed by _Scott Lundberg_ in Python. Here we do them in R. In r package _xgboost_ there is only one simple function _xgb.plot.shap_ that can make the dependence plot.
+
+There are the two main advantages according the paper 3:  
+**Local Explanation**
+
+
+**Consistency**
+
+
+```{r}
+source(here::here("Code","prepare_data_model.R"))
+```
+
+# SHAP values structure
+
+The SHAP values dataset has the same dimention (`r paste(dim(dataX), collapse = ',')`) as the dataset of the independent variables (`r paste(dim(shap_values_mod$shap_score), collapse = ',')`) fit into the xgboost model.  
+
+The sum of each row's SHAP values (plus the bias, which is like an intercept) is the predicted value from the model. As in the following table of SHAP values, `rowSum` equals the `predict(xgb_mod)`.  
+
+```{r}
+shap_data <- copy(shap_values_mod$shap_score)
+shap_data[, BIAS := shap_values_mod$BIAS0]
+shap_data[, `:=`(rowSum = round(rowSums(shap_data),6), pred_mod = round(pred_mod,6))]
+rmarkdown::paged_table(shap_data[1:100,])
+```
+
+
+
+# SHAP plots
+
+## Stack plot
+
+```{r, fig.width = 8, fig.height = 6}
+shap_stack <- shap.stack.data(shap_values_mod$shap_score, n_groups = 6)
+shap.stack.plot(shap_stack)
+shap.stack.plot.by.group(shap_stack)
+```
+
+
+## Summary plot
+
+In the summary plot, sina plots show the distribution of feature contributions to predictions of CWV measurement error using SHAP values of each feature for every observation. 
+
+```{r, fig.width = 10, fig.height = 6}
+plot.summary.plot <- function(shap_long2, sat_name){
+  # levels_origin <- levels(shap_long2$variable) 
+  summary_labels_list <- list(dayint = 'Time trend',
+                        Column_WV = 'MAIAC CWV',
+                        AOT_Uncertainty = 'Blue band\nuncertainty',
+                        aod = "AOD",
+                        elev = "Elevation",
+                        dist_water_km = "Distance to\nwater",
+                        DevAll_P1km = "% Developed",
+                        forestProp_1km = "% Forest",
+                        RelAZ = "Relative\nazimuth angle"
+  )
+  levels(shap_long2$variable) <- unlist(summary_labels_list[levels(shap_long2$variable)])
+  # make the summary plot: 
+  p <-  plot.shap.summary(shap_long2, x_bound_given = 0.9)
+  return(p + ggtitle(sat_name))
+}
+g1 <- plot.summary.plot(shap_long_mod, "Aqua (Model)")
+g2 <- plot.summary.plot(shap_long, "Aqua (CV)")
+library(gridExtra)
+grid.arrange(g1,g2, ncol=2)
+ggsave(grid.arrange(g1,g2, ncol=2), filename = here("Figure", paste0("Figure_5_",date0,"_SHAP_Summary_Plot.png")), width = 10, height = 5)
+```
+
+
+## Dependence plot
+
+```{r}
+fig_list <- lapply(var_list_a, plot.shap.feature2, data_long = shap_long_mod)
+fig_list[[1]]
+```
+
+If plot all the predictors  
+
+```{r, fig.width = 8, fig.height = 10}
+library("grid")
+fig_grid_a <- grid.arrange(grobs = fig_list, ncol = 2, top=textGrob("Aqua", gp=gpar(fontsize=14)))
+ggsave(fig_grid_a, file = here("Figure", paste0("Figure_7_",date0,"_SHAP_byFeature_Aqua.png")), width = 6, height = 10)
+
+```
+
+

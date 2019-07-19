@@ -246,7 +246,7 @@ geojsonMap(dat = china_map_pop, mapName = "china",
 ```
 
 
-It is possible to get China's map_data from `maps (ggplot2)`, as we did with the US map. But I don't think it has province information associated.(to be further investigated)  
+Moreover, it is possible to get China's map_data from `maps (ggplot2)`, as we did with the US map. But I don't think it has province information associated.(to be further investigated)  
 
 ```{r, eval = F}
 dt3 <- ggplot2::map_data("china")
