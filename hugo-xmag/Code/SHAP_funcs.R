@@ -8,6 +8,7 @@
 #' return matrix of shap score and mean ranked score list
 #' @param xgb_model a xgboost model object
 #' @param X_train the dataset of predictors used for the xgboost model 
+#' @output
 #' 
 shap.score.rank <- function(xgb_model = xgb_mod, 
                             X_train){
@@ -96,12 +97,9 @@ std1 <- function(x){
 #' if nobs > 10,000. if dilute, it will use at most 1000 observations
 plot.shap.summary <- function(data_long, x_bound_given = NULL, 
                               dilute = F, scientific = F){
-  if (scientific){label_format = "%.1e"} 
-  else {label_format = "%.3f"}
+  if (scientific){label_format = "%.1e"} else {label_format = "%.3f"}
   require('ggforce') # for `geom_sina`
-  if (packageVersion("ggforce")!="0.2.1.9000"){
-  message("To make sina plot work, must install `ggforce` from github, cran version has a bug\nuse `devtools::install_github(\"thomasp85/ggforce\")`")
-  }
+  if (packageVersion("ggforce")<"0.2.1.9000"){message("To make sina plot work make sure ggforce is updated")}
   N_features <- setDT(data_long)[,uniqueN(variable)]
   N_obs <- nrow(data_long)/N_features
   if (dilute){
@@ -117,6 +115,7 @@ plot.shap.summary <- function(data_long, x_bound_given = NULL,
   plot1 <- ggplot(data = data_long)+
     coord_flip() + 
     # sina plot: 
+    # geom_point(aes(x = variable, y = value, color = stdfvalue)) + 
     geom_sina(aes(x = variable, y = value, color = stdfvalue),
               method = "counts", maxwidth = 0.7, alpha = 0.7) +
     # print the mean absolute value: 

@@ -13,11 +13,9 @@ suppressPackageStartupMessages({
 })
 
 source(here("Code", "SHAP_funcs.R"))
-
-date0 <- format(Sys.Date(), "%Y_%m_%d")
-
-rferesults_Aqua <-  readRDS(here("Intermediate", "cwv_10by10_aqua_new_f9"))
+if (!dir.exists(here("Figure/"))) dir.create(here("Figure/"))
 y_var = "diffcwv"
+rferesults_Aqua <- readRDS(here("Intermediate/cwv_10by10_aqua_new_f9"))
 dataXY_df <- rferesults_Aqua$dataXY_df
 dataX <- dataXY_df[,-..y_var]
 # hyperparameter tuning results
@@ -46,4 +44,24 @@ shap_long <- shap.long.data.prep(shap_values, dataX)
 
 # variable list 
 var_list_a <- rferesults_Aqua$features_rank_full_model
+
+
+# Simple sample: Model A --------------------------------------------------
+
+# model A
+d <- as.data.table(cbind(Fever = c(0,0,1,1),
+                         Cough = c(0,1,0,1),
+                         y = c(0,0,0,80)
+))
+
+X1 = as.matrix(d[,.(Fever, Cough)])
+X2 = as.matrix(d[,.(Cough, Fever)])
+
+set.seed(1234)
+m1 = xgboost(
+  data = X1, label = d$y,base_score = 0, gamma = 0, eta = 1, lambda = 0,nrounds = 1,objective = "reg:linear")
+shap_m <- shap.score.rank(m1, X1)
+shap_long_m <- shap.long.data.prep(shap_m, X1)
+names(shap_m$shap_score) <- paste0("SHAP.", names(shap_m$shap_score))
+output_simple <- cbind(x = X1, y.actual = d$y, y.pred = predict(m1, X1), shap_m$shap_score, BIAS = shap_m$BIAS0)
 

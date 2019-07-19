@@ -1,5 +1,5 @@
 ---
-title: 'SHAP Visualization for XGBoost'
+title: 'SHAP Visualization in R (First post)'
 author: Yang Liu
 date: '2018-10-14'
 slug: shap-visualization-for-xgboost
@@ -16,9 +16,10 @@ output:
 
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
 ```
-(Under further updating ...)
+
+An updated version has been posted in a later post
 
 # Background
 I will illustrate the application of SHAP (SHapley Additive exPlnation) values to visualize the efforts of features on the outcome variable in a XGBoost model.  
