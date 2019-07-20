@@ -32,11 +32,12 @@ This data visualization example include:
 
 ## Version 1: Color both the branches and labels
 ```{r}
+suppressPackageStartupMessages({
 library(curl)       # read file from google drive
 library(gplots)     # heatmap.2
 library(dendextend) # make and color dendrogram
 library(colorspace) # diverge_hcl / rainbow_hcl / heat_hcl color palettes
-
+})
 id <- "1pIPphAGJcjKxkgWKrS_heLyjEPxOEYl4" # google file ID
 Fasted <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
 # The ID is contained in the sharing link copied from google drive:

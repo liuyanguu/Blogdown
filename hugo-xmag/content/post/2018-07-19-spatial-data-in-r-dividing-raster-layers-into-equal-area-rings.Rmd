@@ -42,12 +42,14 @@ list.of.packages <- c("raster", "rgdal", "Hmisc", "plyr", "RColorBrewer", "googl
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
+suppressPackageStartupMessages({
 library('raster')   # obtain raster from GIS image file, and plot
 library('rgdal')    # readOGR: read ArcGIS vector maps into Spatial objects
 library('Hmisc')    # cut2: cut vector into equal-length
 library('plyr')     # join
 library('RColorBrewer') # for `brewer.pal` in ggplot2
 library('knitr')    # kable
+})
 options(digits = 4)
 ```
 * The local version:   

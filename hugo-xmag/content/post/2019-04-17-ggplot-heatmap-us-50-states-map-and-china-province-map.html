@@ -43,12 +43,13 @@ I will show</p>
 <h1>1.1. US Map (50 states) using usmap</h1>
 <p>The easiest way is by using <code>usmap</code>, in which adding abbraviation or not is optional in the <code>plot_usmap</code> function. The population data is from state.x77, data of a US census in 1977.</p>
 <pre class="r"><code>#51 states including Alaska and Hawaii
+suppressPackageStartupMessages({
 library(ggplot2)
 library(usmap)
 library(data.table)
 library(ggsn) # for scale bar `scalebar`
 library(ggrepel) # if need to repel labels 
-
+})
 dt1 &lt;- as.data.table(copy(state.x77))
 dt1$state &lt;- tolower(rownames(state.x77))
 dt1 &lt;- dt1[,.(state, Population)]
@@ -157,10 +158,10 @@ ggplot(data = dt2, aes(x=long, y=lat, group=group))+
 参考的统计之都上的博客都是十年前的了。希望将来能看到<code>mapchina</code> package的出现。</p>
 <pre class="r"><code># China -------------------------------------------------------------------
 library(maptools)
-local_fir_dir &lt;- &quot;D:/OneDrive/David/China/&quot; # local the .shp file is stored  
+local_fir_dir &lt;- &quot;D:/OneDrive/David/China.shp/&quot; # local the .shp file is stored  
 china_map &lt;- rgdal::readOGR(paste0(local_fir_dir, &quot;bou2_4p.shp&quot;))</code></pre>
 <pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;D:\OneDrive\David\China\bou2_4p.shp&quot;, layer: &quot;bou2_4p&quot;
+## Source: &quot;D:\OneDrive\David\China.shp\bou2_4p.shp&quot;, layer: &quot;bou2_4p&quot;
 ## with 925 features
 ## It has 7 fields
 ## Integer64 fields read as strings:  BOU2_4M_ BOU2_4M_ID</code></pre>

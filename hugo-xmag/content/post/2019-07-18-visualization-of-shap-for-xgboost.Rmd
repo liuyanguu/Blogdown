@@ -20,19 +20,20 @@ output:
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
 ```
 
-# SHAP values: local explanation to global understanding  
+# Why SHAP values
 
+SHAP's main advantages are **local explanation** and **consistency** in global model structure.
+  
 Tree-based machine learning models (random forest, gradient boosted trees, XGBoost) are the most popular non-linear models today. SHAP (SHapley Additive exPlnation) values is claimed to be the most advanced method to interpret results from tree-based models. It was based on Shaply values from game theory. 
+  
+The [github page](https://github.com/slundberg/shap) that explains the Python package developed by _Scott Lundberg_. Here we show all the visualizations in R. In r package _xgboost_ there is only one function _xgb.plot.shap_ that can make some simple dependence plots.
 
 Main references by Slundberg:  
 Paper 1. 2017 [A Unified Approach to Interpreting Model Predictions](https://arxiv.org/abs/1705.07874)  
 Paper 2. 2019 [Consistent Individualized Feature Attribution for Tree
 Ensembles](https://arxiv.org/abs/1802.03888)  
-Paper 3. 2019 [Explainable AI for Trees: From Local Explanations to Global Understanding](https://arxiv.org/abs/1905.04610)  
-The [github page](https://github.com/slundberg/shap) that explains these visualization functions developed by _Scott Lundberg_ in Python. Here we do them in R. In r package _xgboost_ there is only one simple function _xgb.plot.shap_ that can make the dependence plot.
-
-According the paper 3, SHAP's main advantages are **local explanation** and **consistency** in global model structure.
-
+Paper 3. 2019 [Explainable AI for Trees: From Local Explanations to Global Understanding](https://arxiv.org/abs/1905.04610)
+    
 ## Local Explanation  
 
 ```{r}
@@ -42,7 +43,6 @@ source(here::here("Code","prepare_data_model.R"))
 Shapley values are caculated across the entire dataset. The SHAP values dataset has the same dimention (`r paste(dim(dataX), collapse = ',')`) as the dataset of the independent variables (`r paste(dim(shap_values_mod$shap_score), collapse = ',')`) fit into the xgboost model.  
 
 The sum of each row's SHAP values (plus the bias, which is like an intercept) is the predicted model output. As in the following table of SHAP values, `rowSum` equals the output `predict(xgb_mod)`.  I.e., the explanation's attribution values sum up to the model output.
-
 
 
 ```{r}
@@ -55,8 +55,9 @@ rmarkdown::paged_table(shap_data[1:30,])
 
 This offers model explanation for each observation in the dataset. And offers lots of flexibility when summarizing the whole model. 
 
-**Consistency in Feature Importance**   
-(**And why feature importance by Gain is inconsistent**)
+
+## Consistency in Global Feature Importance 
+**And why feature importance by Gain is inconsistent**
 
 Consistency means it is legitimate to compare feature importance across different models. When we modify the model to make a feature more important, the feature importance should increase. The paper used the following example:
 
@@ -65,11 +66,14 @@ _paper 2, [S. Lundberg 2019 arXiv:1905.04610](https://arxiv.org/abs/1905.04610)_
 
 Use the dataset of Model A as a simple example, which feature goes **first** into the dataset generates **opposite** feature importance by Gain: whichever goes later (lower in the tree) gets more credit. Notice the results from `xgb.importance` were flipped.
 
-```{r, echo  = T}
+The simple example: 
+```{r}
 knitr::kable(d)
+```
+
+```{r, echo  = T}
 X1 = as.matrix(d[,.(Fever, Cough)])
 X2 = as.matrix(d[,.(Cough, Fever)])
-
 m1 = xgboost(
   data = X1, label = d$y,base_score = 0, gamma = 0, eta = 1, lambda = 0,nrounds = 1,objective = "reg:linear",  verbose = F)
 m2 = xgboost(
@@ -79,20 +83,18 @@ xgb.importance(model = m1)
 xgb.importance(model = m2)
 ```
 
-The key message is, the order/structure of how the tree is built doesn't matter for SHAP, but matters for Gain and Saabas. The explanation in the paper is a little bit confusing.
-
-While for SHAP, the mean absolute SHAP is always the same (20 vs. 20). 
-
-Moreover, comparing Model B to Model A, Model B was revised in a way that it relies more on a given feature (Cough), so cough should be a more important feature. But of course Gain still get it wrong, and only SHAP gives the correct global feature importance. 
+The key message is, the order/structure of how the tree is built doesn't matter for SHAP, but matters for Gain, since the mean absolute SHAP is always the same (20 vs. 20). The explanation in the paper is a little bit confusing.
 
 ```{r}
 knitr::kable(output_simple)
 ```
 
+Moreover, comparing Model B to Model A, Model B was revised in a way that it relies more on a given feature (Cough), so cough should be a more important feature. But of course Gain still get it wrong, and only SHAP gives the correct global feature importance. 
+
 
 # SHAP plots
 
-## SHAP force plot (stack plot)
+## SHAP force plot
 
 The SHAP force plot basically stacks these SHAP values for each observation, and show how the final output was obtained as a sum of each predictor's attribution.
 
@@ -101,7 +103,7 @@ How the plot looks like in python package by running
 shap.force_plot(explainer.expected_value, shap_values, data_X)
 ```
 
-![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Python.stackplot.JPG)  
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Python.stackplot.PNG)
 
 Using my function in R: 
 
@@ -142,23 +144,23 @@ library(gridExtra)
 grid.arrange(g1,g2, ncol=2)
 ```
 
-Same as in Python `shap.summary_plot(shap_values, data_X)`:  
-![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Python.summaryplot.JPG)
+Offers visualization improvement compared to its Python version:  
+```{python, eval = F, echo = T}
+shap.summary_plot(shap_values, data_X)
+```
 
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Python.summaryplot.PNG){width=60%}
+  
 ## Dependence plot  
 
-It plots the SHAP values against the feature values for each variable  
+It plots the SHAP values against the feature values for each variable. Again, each dot is a station-day observation.  
 
 ```{r}
 fig_list <- lapply(var_list_a, plot.shap.dependence, data_long = shap_long_mod)
 fig_list[[1]]
 ```
 
-We can also select another feature for coloring 
-
-In this example dot is a station-day observation.   
-(LEFT) SHAP values showing the contribution of the time trend to predictions. The color represents the MAIAC CWV for each observation (purple high, yellow low). The LOESS (locally estimated scatterplot smoothing) curve is overlaid in red.  
-(RIGHT) SHAP values showing the contribution of the MAIAC CWV to predictions of CWV measurement error shown across the time period of the study. Note distinct y-axis scales for Terra and Aqua datasets. The color represents the MAIAC CWV for each observation (purple high, yellow low).  
+We can also select another feature for coloring to show some interaction.
 
 ```{r, fig.width = 10, fig.height = 4}
 g3 <- plot.shap.dependence.color(data_long = shap_long_mod, x = 'dayint', y_shap = 'dayint', color_feature = 'Column_WV') + ggtitle("SHAP of Date vs. Feature values of Date")
@@ -169,7 +171,10 @@ grid.arrange(g3, g4, ncol=2)
 
 ```
 
-To compare Terra vs. Aqua
+(LEFT) SHAP values showing the contribution of the time trend to predictions. The color represents the MAIAC CWV for each observation (purple high, yellow low). The LOESS (locally estimated scatterplot smoothing) curve is overlaid in red.  
+(RIGHT) SHAP values showing the contribution of the MAIAC CWV to predictions of CWV measurement error shown across the time period of the study. Note distinct y-axis scales for Terra and Aqua datasets. The color represents the MAIAC CWV for each observation (purple high, yellow low).  
+
+To compare Terra vs. Aqua (As in our paper)
 ![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Figure_6a_2019_06_14_SHAP_interaction.png)
 ![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Figure_6b_2019_06_14_SHAP_interaction.png)
 
@@ -180,11 +185,12 @@ SHAP interaction values separate the impact of variable into main effects and in
 Quote paper 2: "SHAP **interaction values** can be interpreted as the difference between the SHAP values for feature i when feature j is **present** and
 the SHAP values for feature i when feature j is **absent**."
 
+* Under work: my version doesn't seem correct ...  
 
 ```{r, fig.width = 10, fig.height = 4}
 # interaction feature j: Column_WV
 
-i_feature = "dayint"
+i_feature = "AOT_Uncertainty"
 j_feature = "Column_WV"
 # 
 # plot.shap.dependence.color(data_long = shap_long_mod, x = i_feature, y_shap = i_feature, color_feature = j_feature)
@@ -240,6 +246,26 @@ plot.shap.interact(i_feature, j_feature, T)
 
 ```
 
-The example in the paper
+* The correct interaction plot from Python:
+
+```{python, eval = F, echo = T}
+shap_interaction_values = shap.TreeExplainer(model).shap_interaction_values(data_X) 
+shap.dependence_plot(("dayint", "Column_WV"),
+    shap_interaction_values, data_X, dot_size=1)
+```
+
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/int1.PNG)
+
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/int2.PNG)
+
+```{python, eval = F, echo = T}
+shap.summary_plot(shap_interaction_values, data_X)
+```
+
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Python_summary_interaction_values.png)
+
+
+The example in the paper 2: It shows again that the SHAP values = SHAP values without the interaction variable age + Interactive effects by age. In this example the interactive effects are highly visible. 
+
 ![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/interactionSHAPplot.JPG)
 

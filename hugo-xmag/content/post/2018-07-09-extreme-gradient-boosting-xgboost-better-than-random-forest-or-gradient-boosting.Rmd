@@ -42,6 +42,7 @@ list.of.packages <- c("ggplot2", "data.table","plyr","QuantPsyc",
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
+suppressPackageStartupMessages({
 library(data.table)    #
 library(plyr)          
 library(ggplot2)
@@ -55,6 +56,7 @@ library(xgboost)       # for Extreme Gradient boosting
 library(Ckmeans.1d.dp) # for xgb.ggplot.importance in xgboost
 library(DiagrammeR)    # for xgb.plot.tree in xgboost
 library(knitr)
+})
 options(digits = 4)
 options(tinytex.verbose = TRUE)
 

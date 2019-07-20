@@ -28,10 +28,12 @@ To install the package, run _`devtools::install_github("ja-thomas/autoxgboost")`
 ```{r libs, include = FALSE}
 # Column Water Vapor correction - Modified script for correcting AOD measurements 
 # The original script is 07_feature_selection_MOD1a.R, also included in this repo.
+suppressPackageStartupMessages({
 library(autoxgboost) # for auto xgboost
 library(xgboost)
 library(googledrive)
 library(data.table)
+})
 options(digits = 6)
 ```
 

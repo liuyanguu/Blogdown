@@ -32,12 +32,13 @@ The easiest way is by using `usmap`, in which adding abbraviation or not is opti
 
 ```{r}
 #51 states including Alaska and Hawaii
+suppressPackageStartupMessages({
 library(ggplot2)
 library(usmap)
 library(data.table)
 library(ggsn) # for scale bar `scalebar`
 library(ggrepel) # if need to repel labels 
-
+})
 dt1 <- as.data.table(copy(state.x77))
 dt1$state <- tolower(rownames(state.x77))
 dt1 <- dt1[,.(state, Population)]
@@ -151,7 +152,7 @@ Printing Chinese is indeed sometimes a problem. The key is to aline in the dataf
 ```{r}
 # China -------------------------------------------------------------------
 library(maptools)
-local_fir_dir <- "D:/OneDrive/David/China/" # local the .shp file is stored  
+local_fir_dir <- "D:/OneDrive/David/China.shp/" # local the .shp file is stored  
 china_map <- rgdal::readOGR(paste0(local_fir_dir, "bou2_4p.shp"))
 
 # extract province information from shap file

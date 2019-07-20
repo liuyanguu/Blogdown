@@ -31,12 +31,14 @@ Code is also hosted on [Github](hugo-xmag/content/post/2018-10-05-shap-visualiza
 ```{r libs, include = FALSE}
 # Column Water Vapor correction - Modified script for correcting AOD measurements 
 # The original script is 07_feature_selection_MOD1a.R, also included in this repo.
+suppressPackageStartupMessages({
 library(autoxgboost) # for auto xgboost
 library(googledrive)
 library(data.table)
 library(xgboost)
 library(ggforce)
 library(ggplot2)
+})
 options(digits = 4)
 
 # Data Preparation using data.table -----------------------------
