@@ -238,7 +238,7 @@ plot.label <- function(plot1, show_feature){
 }
 
 # feature plot with histogram and customized labels
-plot.shap.feature2 <- function(show_feature, data_long, 
+plot.shap.dependence <- function(show_feature, data_long, 
                                dilute = F, customize_label = F,
                                by100 = F){
   setkey(data_long, variable)
@@ -261,10 +261,12 @@ plot.shap.feature2 <- function(show_feature, data_long,
   plot2 <- ggMarginal(plot1, type = "histogram", bins = 50, size = 10, color="white")
   plot2
 }
-# plot.shap.feature2('dayint', shap_long2)
+# plot.shap.dependence('dayint', shap_long2)
+
+
 
 # interaction shown by color of a selcted feature value
-plot.shap.interact <- function(data_long , x,  y_shap, color_feature){
+plot.shap.dependence.color <- function(data_long , x,  y_shap, color_feature){
   data0 <- data_long[variable == y_shap] # contains the shap value to plot:"value"
   data0$x_feature <- data_long[variable == x, rfvalue]
   data0$color_value <- data_long[variable == color_feature, rfvalue]
@@ -290,7 +292,7 @@ plot.shap.interact <- function(data_long , x,  y_shap, color_feature){
   plot1 <- plot.label(plot1, show_feature = x)
   plot1
 }
-# plot.shap.interact(data_long = shap_long2, x = 'dayint',y_shap = 'dayint', color_feature = 'Column_WV')
+# plot.shap.dependence.color(data_long = shap_long2, x = 'dayint',y_shap = 'dayint', color_feature = 'Column_WV')
 
 
 # stack plot ---------------------------------------------------------

@@ -1,5 +1,5 @@
 ---
-title: 'SHAP visualization package for XGBoost in R'
+title: 'SHAP visualization for XGBoost in R'
 author: Yang Liu
 date: '2019-07-18'
 slug: visualization-of-shap-for-xgboost
@@ -22,13 +22,13 @@ knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
 
 # SHAP values: local explanation to global understanding  
 
-Tree-based machine learning models (random forest, gradient boosting, XGBoost) are the most popular non-linear models today. SHAP (SHapley Additive exPlnation) values is claimed to be the most advanced method to interpret results from tree-based models. It was based on Shaply values from game theory. 
+Tree-based machine learning models (random forest, gradient boosted trees, XGBoost) are the most popular non-linear models today. SHAP (SHapley Additive exPlnation) values is claimed to be the most advanced method to interpret results from tree-based models. It was based on Shaply values from game theory. 
 
-Main papers for reference:  
-1. 2017 [A Unified Approach to Interpreting Model Predictions](https://arxiv.org/abs/1705.07874)  
-2. 2019 [Consistent Individualized Feature Attribution for Tree
+Main references by Slundberg:  
+Paper 1. 2017 [A Unified Approach to Interpreting Model Predictions](https://arxiv.org/abs/1705.07874)  
+Paper 2. 2019 [Consistent Individualized Feature Attribution for Tree
 Ensembles](https://arxiv.org/abs/1802.03888)  
-3. 2019 [Explainable AI for Trees: From Local Explanations to Global Understanding](https://arxiv.org/abs/1905.04610)  
+Paper 3. 2019 [Explainable AI for Trees: From Local Explanations to Global Understanding](https://arxiv.org/abs/1905.04610)  
 The [github page](https://github.com/slundberg/shap) that explains these visualization functions developed by _Scott Lundberg_ in Python. Here we do them in R. In r package _xgboost_ there is only one simple function _xgb.plot.shap_ that can make the dependence plot.
 
 According the paper 3, SHAP's main advantages are **local explanation** and **consistency** in global model structure.
@@ -46,11 +46,11 @@ The sum of each row's SHAP values (plus the bias, which is like an intercept) is
 
 
 ```{r}
-
+# show that rowSum is the output 
 shap_data <- copy(shap_values_mod$shap_score)
 shap_data[, BIAS := shap_values_mod$BIAS0]
 shap_data[, `:=`(rowSum = round(rowSums(shap_data),6), pred_mod = round(pred_mod,6))]
-rmarkdown::paged_table(shap_data[1:100,])
+rmarkdown::paged_table(shap_data[1:30,])
 ```
 
 This offers model explanation for each observation in the dataset. And offers lots of flexibility when summarizing the whole model. 
@@ -79,9 +79,11 @@ xgb.importance(model = m1)
 xgb.importance(model = m2)
 ```
 
-So the key message is, the order/structure of how the tree is built doesn't matter for SHAP, but matters for Gain and Saabas. The explanation in the paper is a little bit confusing.
+The key message is, the order/structure of how the tree is built doesn't matter for SHAP, but matters for Gain and Saabas. The explanation in the paper is a little bit confusing.
 
 While for SHAP, the mean absolute SHAP is always the same (20 vs. 20). 
+
+Moreover, comparing Model B to Model A, Model B was revised in a way that it relies more on a given feature (Cough), so cough should be a more important feature. But of course Gain still get it wrong, and only SHAP gives the correct global feature importance. 
 
 ```{r}
 knitr::kable(output_simple)
@@ -90,14 +92,18 @@ knitr::kable(output_simple)
 
 # SHAP plots
 
-## SHAP force plot
+## SHAP force plot (stack plot)
 
 The SHAP force plot basically stacks these SHAP values for each observation, and show how the final output was obtained as a sum of each predictor's attribution.
 
-How it looks like in python package:  
-![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/forceplotSHAP.png)
+How the plot looks like in python package by running  
+```{python, eval = F, echo = T}
+shap.force_plot(explainer.expected_value, shap_values, data_X)
+```
 
-The R version: 
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Python.stackplot.JPG)  
+
+Using my function in R: 
 
 ```{r, fig.width = 8, fig.height = 6}
 shap_stack <- shap.stack.data(shap_values_mod$shap_score, n_groups = 6)
@@ -130,32 +136,34 @@ plot.summary.plot <- function(shap_long2, sat_name){
   p <-  plot.shap.summary(shap_long2, x_bound_given = 0.9)
   return(p + ggtitle(sat_name))
 }
-g1 <- plot.summary.plot(shap_long_mod, "Aqua (Model)")
-g2 <- plot.summary.plot(shap_long, "Aqua (CV)")
+g1 <- plot.summary.plot(shap_long_mod, "Terra (Model)")
+g2 <- plot.summary.plot(shap_long, "Terra (CV)")
 library(gridExtra)
 grid.arrange(g1,g2, ncol=2)
 ```
 
+Same as in Python `shap.summary_plot(shap_values, data_X)`:  
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Python.summaryplot.JPG)
 
 ## Dependence plot  
 
 It plots the SHAP values against the feature values for each variable  
 
 ```{r}
-fig_list <- lapply(var_list_a, plot.shap.feature2, data_long = shap_long_mod)
+fig_list <- lapply(var_list_a, plot.shap.dependence, data_long = shap_long_mod)
 fig_list[[1]]
 ```
 
 We can also select another feature for coloring 
 
-In this example dot is a station-day observation. 
+In this example dot is a station-day observation.   
 (LEFT) SHAP values showing the contribution of the time trend to predictions. The color represents the MAIAC CWV for each observation (purple high, yellow low). The LOESS (locally estimated scatterplot smoothing) curve is overlaid in red.  
-(RIGHT) 
+(RIGHT) SHAP values showing the contribution of the MAIAC CWV to predictions of CWV measurement error shown across the time period of the study. Note distinct y-axis scales for Terra and Aqua datasets. The color represents the MAIAC CWV for each observation (purple high, yellow low).  
 
-```{r}
-g3 <- plot.shap.interact(data_long = shap_long_mod, x = 'dayint', y_shap = 'dayint', color_feature = 'Column_WV') + ggtitle("SHAP of Date vs. Feature values of Date")
+```{r, fig.width = 10, fig.height = 4}
+g3 <- plot.shap.dependence.color(data_long = shap_long_mod, x = 'dayint', y_shap = 'dayint', color_feature = 'Column_WV') + ggtitle("SHAP of Date vs. Feature values of Date")
 
-g4 <- plot.shap.interact(data_long = shap_long_mod, x = 'dayint', y_shap = 'Column_WV', color_feature = 'Column_WV') +  ggtitle("SHAP of CWV vs. Date")
+g4 <- plot.shap.dependence.color(data_long = shap_long_mod, x = 'dayint', y_shap = 'Column_WV', color_feature = 'Column_WV') +  ggtitle("SHAP of CWV vs. Date")
 
 grid.arrange(g3, g4, ncol=2)
 
@@ -165,13 +173,73 @@ To compare Terra vs. Aqua
 ![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Figure_6a_2019_06_14_SHAP_interaction.png)
 ![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Figure_6b_2019_06_14_SHAP_interaction.png)
 
-## Interaction values 
+## Interaction values
 
 SHAP interaction values separate the impact of variable into main effects and interaction effects. They add up roughly to the dependence plot. 
 
-Not sure how it is done.
+Quote paper 2: "SHAP **interaction values** can be interpreted as the difference between the SHAP values for feature i when feature j is **present** and
+the SHAP values for feature i when feature j is **absent**."
+
+
+```{r, fig.width = 10, fig.height = 4}
+# interaction feature j: Column_WV
+
+i_feature = "dayint"
+j_feature = "Column_WV"
+# 
+# plot.shap.dependence.color(data_long = shap_long_mod, x = i_feature, y_shap = i_feature, color_feature = j_feature)
+
+plot.shap.interact <- function(i_feature, j_feature, plot_main){
+  
+  xgb_mod2 <- rfe.fit(X = as.matrix(dataX[,-..j_feature]), Y = as.matrix(dataXY_df[[y_var]]), xgb_param = param_dart)
+  shap_values_mod2 <- shap.score.rank(xgb_model = xgb_mod2, X_train = dataX[,-..j_feature])
+  shap_long_mod2 <- shap.long.data.prep(shap_values_mod2, dataX[,-..j_feature])
+  # the original shap 
+  data_i <- shap_long_mod[variable == i_feature,]   # fit w j
+  data_i2 <- shap_long_mod2[variable == i_feature,]  # fit w/o j
+  
+  data_i$main_effect <- data_i2$value
+  data_i[, int_effect := value - main_effect]
+  data_i$color_value <- shap_long_mod[variable == j_feature, rfvalue]
+  # the SHAP range 
+  i_feature_range <- range(data_i$value)
+  
+  plot.shap.interact.core <- function(main){
+    if (main) y0 = "main_effect" else y0 = "int_effect"
+    if (main) ylab = paste0("SHAP main effect for ", label.feature(i_feature)) else ylab  = paste0("SHAP interaction value for\n", label.feature(i_feature), " and ", label.feature(j_feature))
+    plot1 <- ggplot(data = data_i, 
+                      aes_string(x = "rfvalue", y = y0, color = "color_value"))+
+        geom_point(size = 0.2, alpha = 0.6)+ 
+        # a loess smoothing line: 
+        geom_smooth(method = 'loess', color = 'red', size = 0.4, se = F) + 
+        labs(y = ylab,
+             x = label.feature(i_feature), 
+             color = paste0(label.feature(j_feature),"\n","(Feature value)")) +
+        scale_color_gradient(low="#FFCC33", high="#6600CC",
+             guide = guide_colorbar(barwidth = 10, barheight = 0.3)) +
+        # scale_y_continuous(limits = i_feature_range) +
+        theme_bw() +
+        theme(legend.position="bottom",
+              legend.title=element_text(size=10), 
+              legend.text=element_text(size=8)) + 
+      ggtitle(if(main)"Main Effect"else"Interaction Effect")
+    plot1
+  }
+  plot1 <- plot.shap.interact.core(main = T)
+  plot2 <- plot.shap.interact.core(main = F)
+  return(if(plot_main)  grid.arrange(plot1, plot2, ncol=2) else plot2)
+}
+
+
+plot.shap.interact(i_feature, j_feature, T)
+# 
+# fig_list <- lapply(var_list_a, plot.shap.interact, i_feature = "Column_WV",
+#                    plot_main  = F)
+# fig_grid_a <- grid.arrange(grobs = fig_list, ncol = 2)
+# ggsave(fig_grid_a, file = here("Figure", paste0(date0,"_Interaction_by_Feature_terra.png")), width = 6, height = 10)
+
+```
+
+The example in the paper
 ![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/interactionSHAPplot.JPG)
-
-
-
 
