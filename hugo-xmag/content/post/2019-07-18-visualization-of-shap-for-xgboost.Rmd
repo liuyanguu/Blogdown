@@ -144,7 +144,7 @@ library(gridExtra)
 grid.arrange(g1,g2, ncol=2)
 ```
 
-Offers visualization improvement compared to its Python version:  
+This function offers visualization improvement compared to its Python counterpart:
 ```{python, eval = F, echo = T}
 shap.summary_plot(shap_values, data_X)
 ```
@@ -155,7 +155,7 @@ shap.summary_plot(shap_values, data_X)
 
 It plots the SHAP values against the feature values for each variable. Again, each dot is a station-day observation.  
 
-```{r}
+```{r, fig.width = 5, fig.height = 4}
 fig_list <- lapply(var_list_a, plot.shap.dependence, data_long = shap_long_mod)
 fig_list[[1]]
 ```
@@ -187,15 +187,13 @@ the SHAP values for feature i when feature j is **absent**."
 
 * Under work: my version doesn't seem correct ...  
 
-```{r, fig.width = 10, fig.height = 4}
+```{r, fig.width = 10, fig.height = 5}
 # interaction feature j: Column_WV
 
-i_feature = "AOT_Uncertainty"
-j_feature = "Column_WV"
 # 
 # plot.shap.dependence.color(data_long = shap_long_mod, x = i_feature, y_shap = i_feature, color_feature = j_feature)
 
-plot.shap.interact <- function(i_feature, j_feature, plot_main){
+plot.shap.interact <- function(i_feature, j_feature, plot_main = F){
   
   xgb_mod2 <- rfe.fit(X = as.matrix(dataX[,-..j_feature]), Y = as.matrix(dataXY_df[[y_var]]), xgb_param = param_dart)
   shap_values_mod2 <- shap.score.rank(xgb_model = xgb_mod2, X_train = dataX[,-..j_feature])
@@ -237,8 +235,10 @@ plot.shap.interact <- function(i_feature, j_feature, plot_main){
 }
 
 
-plot.shap.interact(i_feature, j_feature, T)
-# 
+int1 = plot.shap.interact(i_feature = "dayint", j_feature = "Column_WV")
+int2 = plot.shap.interact(i_feature = "Column_WV", j_feature = "AOT_Uncertainty")
+grid.arrange(grobs = list(int1, int2), ncol = 2)
+
 # fig_list <- lapply(var_list_a, plot.shap.interact, i_feature = "Column_WV",
 #                    plot_main  = F)
 # fig_grid_a <- grid.arrange(grobs = fig_list, ncol = 2)
@@ -246,7 +246,7 @@ plot.shap.interact(i_feature, j_feature, T)
 
 ```
 
-* The correct interaction plot from Python:
+* The correct interaction plot in Python:
 
 ```{python, eval = F, echo = T}
 shap_interaction_values = shap.TreeExplainer(model).shap_interaction_values(data_X) 
@@ -254,9 +254,9 @@ shap.dependence_plot(("dayint", "Column_WV"),
     shap_interaction_values, data_X, dot_size=1)
 ```
 
-![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/int1.PNG)
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/int1.PNG){width = 60%}
 
-![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/int2.PNG)
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/int2.PNG){width = 60%}
 
 ```{python, eval = F, echo = T}
 shap.summary_plot(shap_interaction_values, data_X)

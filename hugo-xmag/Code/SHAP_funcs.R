@@ -8,11 +8,9 @@
 #' return matrix of shap score and mean ranked score list
 #' @param xgb_model a xgboost model object
 #' @param X_train the dataset of predictors used for the xgboost model 
-#' @output
+#' @export
 #' 
-shap.score.rank <- function(xgb_model = xgb_mod, 
-                            X_train){
-  require(xgboost)
+shap.score.rank <- function(xgb_model, X_train){
   shap_contrib <- predict(xgb_model, as.matrix(X_train),
                           predcontrib = TRUE, 
                           approxcontrib = FALSE)

@@ -1,7 +1,5 @@
 # prepare dataset, and xgboost model for plotting
 
-# Column Water Vapor correction - Modified script for correcting AOD measurements 
-# The original script is 07_feature_selection_MOD1a.R, also included in this repo.
 suppressPackageStartupMessages({
   library("data.table")
   library("xgboost")
@@ -49,10 +47,8 @@ shap_long <- shap.long.data.prep(shap_values, dataX) # the long data from the pa
 # variable list 
 var_list_a <- rferesults_terra$features_rank_full_model
 
-
 # Simple sample: Model A --------------------------------------------------
 
-# model A
 d <- as.data.table(cbind(Fever = c(0,0,1,1),
                          Cough = c(0,1,0,1),
                          y = c(0,0,0,80)
