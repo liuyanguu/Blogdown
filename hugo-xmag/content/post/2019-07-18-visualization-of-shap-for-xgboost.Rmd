@@ -20,6 +20,16 @@ output:
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
 ```
 
+# SHAP package in **R**
+
+The R plotting functions used in this blog were combined into R package **SHAPforxgboost". 
+To install, please download from the [github ](https://github.com/liuyanguu/SHAPforxgboost).
+Still under further revise. 
+```{r, eval = F, echo = T}
+devtools::install_github("liuyanguu/SHAPforxgboost")
+```
+
+
 # Why SHAP values
 
 SHAP's main advantages are **local explanation** and **consistency** in global model structure.
@@ -72,6 +82,7 @@ knitr::kable(d)
 ```
 
 ```{r, echo  = T}
+library(xgboost)
 X1 = as.matrix(d[,.(Fever, Cough)])
 X2 = as.matrix(d[,.(Cough, Fever)])
 m1 = xgboost(
@@ -108,9 +119,9 @@ shap.force_plot(explainer.expected_value, shap_values, data_X)
 Using my function in R: 
 
 ```{r, fig.width = 8, fig.height = 6}
-shap_stack <- shap.stack.data(shap_values_mod$shap_score, n_groups = 6)
-shap.stack.plot(shap_stack)
-shap.stack.plot.by.group(shap_stack)
+force_plot_data <- shap.stack.data(shap_values_mod$shap_score, n_groups = 6)
+plot.shap.force_plot(force_plot_data)
+plot.shap.force_plot_bygroup(force_plot_data)
 ```
 
 
@@ -136,7 +147,7 @@ plot.summary.plot <- function(shap_long2, sat_name){
   levels(shap_long2$variable) <- unlist(summary_labels_list[levels(shap_long2$variable)])
   # make the summary plot: 
   p <-  plot.shap.summary(shap_long2, x_bound_given = 0.9)
-  return(p + ggtitle(sat_name))
+  return(p)
 }
 g1 <- plot.summary.plot(shap_long_mod, "Terra (Model)")
 g2 <- plot.summary.plot(shap_long, "Terra (CV)")
@@ -187,7 +198,7 @@ the SHAP values for feature i when feature j is **absent**."
 
 * Under work: my version doesn't seem correct ...  
 
-```{r, fig.width = 10, fig.height = 5}
+```{r, fig.width = 10, fig.height = 5 }
 # interaction feature j: Column_WV
 
 # 
@@ -195,9 +206,9 @@ the SHAP values for feature i when feature j is **absent**."
 
 plot.shap.interact <- function(i_feature, j_feature, plot_main = F){
   
-  xgb_mod2 <- rfe.fit(X = as.matrix(dataX[,-..j_feature]), Y = as.matrix(dataXY_df[[y_var]]), xgb_param = param_dart)
-  shap_values_mod2 <- shap.score.rank(xgb_model = xgb_mod2, X_train = dataX[,-..j_feature])
-  shap_long_mod2 <- shap.long.data.prep(shap_values_mod2, dataX[,-..j_feature])
+  xgb_mod2 <- xgboost.fit(X = as.matrix(dataX[,-..j_feature]), Y = as.matrix(dataXY_df[[y_var]]), xgb_param = param_dart)
+  shap_values_mod2 <- shap.values(xgb_model = xgb_mod2, X_train = dataX[,-..j_feature])
+  shap_long_mod2 <- shap.prep(shap_values_mod2, dataX[,-..j_feature])
   # the original shap 
   data_i <- shap_long_mod[variable == i_feature,]   # fit w j
   data_i2 <- shap_long_mod2[variable == i_feature,]  # fit w/o j
@@ -254,9 +265,9 @@ shap.dependence_plot(("dayint", "Column_WV"),
     shap_interaction_values, data_X, dot_size=1)
 ```
 
-![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/int1.PNG){width = 60%}
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/int1.PNG){width=50%}
 
-![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/int2.PNG){width = 60%}
+![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/int2.PNG){width=50%}
 
 ```{python, eval = F, echo = T}
 shap.summary_plot(shap_interaction_values, data_X)
