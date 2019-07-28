@@ -1,5 +1,5 @@
 ---
-title: 'SHAP visualization for XGBoost in R: SHAPforxgboost'
+title: 'SHAP for XGBoost in R: SHAPforxgboost'
 author: Yang Liu
 date: '2019-07-18'
 slug: visualization-of-shap-for-xgboost
@@ -23,7 +23,8 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 
 # SHAP package in **R**
 
-The R plotting functions used in this blog illustrates the R package **SHAPforxgboost".  
+I built an R package **SHAPforxgboost** that wraps all the R plotting functions illustrated in this post. It serves for now as the vignette for the package. 
+  
 Please install from [github](https://github.com/liuyanguu/SHAPforxgboost).
 
 ```{r, eval = F, echo = T}
@@ -141,10 +142,12 @@ shap_long <- readRDS(here("Intermediate/190718_shap_long.rds"))
 ```{r, fig.width = 6, fig.height = 5}
 # **SHAP summary plot**
 shap.plot.summary(shap_long)
+# diluted points:
 shap.plot.summary(shap_long, x_bound  = 1.2, dilute = 10)
 ```
 
-### Alternatives ways to make the same plot:
+
+**Alternatives ways to make the same plot:**  
 
 ```{r, eval = F}
 # option 1: from the xgboost model
@@ -157,7 +160,7 @@ shap.plot.summary.wrap2(shap_values$shap_score, as.matrix(dataX))
 ```
 
 
-This summary function offers better visualization compared to its Python counterpart using `shap.summary_plot(shap_values, dataX)`, which looks like: 
+The summary function offers better visualization compared to its Python counterpart using `shap.summary_plot(shap_values, dataX)`: 
 
 ![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Python.summaryplot.PNG){width=60%}
   
@@ -168,9 +171,10 @@ It plots the SHAP values against the feature values for each variable. Again, ea
 
 
 ```{r, fig.width = 10, fig.height = 4}
+# for one figure:
 g1 <- shap.plot.dependence.color(data_long = shap_long, x = 'dayint', y = 'dayint', color_feature = 'Column_WV') + ggtitle("SHAP of Date vs. Feature values of Date")
 g2 <- shap.plot.dependence.color(data_long = shap_long, x = 'dayint', y = 'Column_WV', color_feature = 'Column_WV') +  ggtitle("SHAP of CWV vs. Date")
-gridExtra::grid.arrange(g1, g2, ncol=2)
+gridExtra::grid.arrange(g1, g2, ncol = 2)
 ```
 
 (LEFT) SHAP values showing the contribution of the time trend to predictions. The color represents the MAIAC CWV for each observation (purple high, yellow low). The LOESS (locally estimated scatterplot smoothing) curve is overlaid in red.   
@@ -178,16 +182,16 @@ gridExtra::grid.arrange(g1, g2, ncol=2)
 
 
 Here I choose to plot top 4 features using function `shap.plot.dependence`:
-
+  
 ```{r, fig.width = 10, fig.height = 6}
 # without color version but has marginal distribution, 
 # just plot SHAP value against feature value:
 fig_list <- lapply(names(shap_values$mean_shap_score)[1:4], 
                    shap.plot.dependence, data_long = shap_long)
-gridExtra::grid.arrange(grobs = fig_list, ncol=2)
+gridExtra::grid.arrange(grobs = fig_list, ncol = 2)
 ```
 
-
+  
 ## Interaction effects
 
 SHAP interaction values separate the impact of variable into main effects and interaction effects. They add up roughly to the dependence plot. 
@@ -207,7 +211,7 @@ shap_int <- predict(mod, as.matrix(dataX), predinteraction = TRUE)
 ```{r, echo = F}
 shap_int <- readRDS(here("Intermediate/190718_shap_int.rds"))
 ```
-```{r, fig.width=6, fig.height=4}
+```{r, fig.width=10, fig.height=4}
 # **SHAP interaction effect plot **
 g3 <- shap.plot.dependence.color(data_long = shap_long,
                            data_int = shap_int,
