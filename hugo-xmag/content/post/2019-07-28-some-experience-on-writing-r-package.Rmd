@@ -1,0 +1,50 @@
+---
+title: Notes on writing R package
+author: Yang Liu
+date: '2019-07-28'
+slug: some-experience-on-writing-r-package
+categories:
+  - R package
+tags: []
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+Although [**SHAPforxgboost**](https://github.com/liuyanguu/SHAPforxgboost) is not a complicated package, it took me some time to get the package pass all the cran check. 
+
+I started with **usethis** package [https://usethis.r-lib.org/](https://usethis.r-lib.org/) to initiate the package. 
+
+## Namespace: 
+
+* It is unnecessary to add **Depends** in the **DESCRIPTION** except `R (>= 3.3.0)`. And the **Imports** part in **DESCRIPTION** is irrelevant to what you import into NAMESPACE in the code (although they are both _import_).  The NAMESPACE is defined by using `@import` to import packages and functions in the R code. 
+
+  * If you have `@import ggplot2` anywhere in the R code. Your function can use ggplot as long as your package is loaded. Your function knows to search in the namespace of `ggplot2::`, but the ggplot2 package is not **attached**. If someone loads your package, he still needs `library(ggplot2)` if he wants to use ggplot2 in his code. This is about the difference between **attach** and **load** as discussed in Hadley's R package book. 
+
+  * By the way, if you put `ggplot2` in **Depends** in the **DESCRIPTION**, `library(yourPackage)` would really attach `ggplot2`. But basically, you don't have to do that for others, since your function can run as long you have included `ggplot2` in the namespace (which you have to do anyway).
+
+* If you name a function like `plot.shap.summary` it would be documented as S3 method even if you `@export plot.shap.summary` (Yes, you have to export the full function name, otherwise, it would be an S3 method in the namespace.). Don't name function this way to avoid confusion with S3method. For example, I changed the name to `shap.plot.summary`.
+
+* Each dataset that you created using `use_data` need a document as well. Document it in a way similar to the function.
+
+* All the function parameters should be documented using `@param`.  
+
+* When **devtools** check the program, there will be notes that "no visible binding for global variable". This is how to please the cran:
+
+```{r, eval = F}
+if(getRversion() >= "2.15.1")  {
+  utils::globalVariables(c(".", "rfvalue", "value", ... )) # all the variables complained
+  }
+```
+
+
+## Files locations:
+
+* All the codes go into the **R/** folder  
+
+* `@example R/example/sample1.R` will attach **sample1.R** in the folder "R/example/" to the documentation of the function. If you write them directly in the function, you use @example**s** instead of @example.  
+

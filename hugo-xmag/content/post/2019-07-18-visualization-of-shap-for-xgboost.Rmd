@@ -4,9 +4,9 @@ author: Yang Liu
 date: '2019-07-18'
 slug: visualization-of-shap-for-xgboost
 categories:
+  - R package
   - Machine Learning
   - Data Visualization
-  - R package
 tags:
   - XGBoost
   - SHAP
