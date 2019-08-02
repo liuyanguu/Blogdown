@@ -27,11 +27,11 @@ Lots of thanks to Dr. Ligges and Dr. Herbrandt for their kind advice.
   
 * Please ensure that you do not use more than 2 cores in your examples.
 Is there any reason why the number of core to use is not an argument of 
-e.g. xgboost.fit()? 
-# This function was for my own convenience, actually it is not necessary. I have removed the function.
+e.g. `xgboost.fit()`?   
+(# The function was for my own convenience, actually it is not necessary to include that function in the package. I have removed that function.)
   
-* Please replace cat() by message() or warning() in your functions (except 
-for print() and summary() functions). Messages and warnings can be 
+* Please replace `cat()` by `message()` or `warning()` in your functions (except 
+for `print()` and `summary()` functions). Messages and warnings can be 
 suppressed if needed.
 
 # Some of my own experience
