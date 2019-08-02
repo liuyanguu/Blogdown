@@ -1,6 +1,6 @@
 
 # Sample 2. Model A --------------------------------------------------
-d <- as.data.table(cbind(Fever = c(0,0,1,1),
+d <- data.table::as.data.table(cbind(Fever = c(0,0,1,1),
                          Cough = c(0,1,0,1),
                          y = c(0,0,0,80)
 ))

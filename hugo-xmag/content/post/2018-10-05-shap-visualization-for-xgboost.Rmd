@@ -29,10 +29,12 @@ This is the example I used in the package **SHAPforxgboost**
 
 ```{r}
 # Example use iris
+suppressPackageStartupMessages({
 library(SHAPforxgboost)
 library(xgboost)
 library(data.table)
 library(ggplot2)
+})
 
 X1 = as.matrix(iris[,-5])
 mod1 = xgboost::xgboost(
@@ -118,7 +120,7 @@ shap.plot.dependence.color(data_long = shap_long_iris,
 plot_data <- shap.prep.stack.data(shap_contrib = shap_values_iris,
                                   n_groups = 4)
 shap.plot.force_plot(plot_data)
-shap.plot.force_plot(plot_data,  zoom_in_group = 2)
+shap.plot.force_plot(plot_data, zoom_in_group = 2)
 
 # plot all the clusters:
 shap.plot.force_plot_bygroup(plot_data)

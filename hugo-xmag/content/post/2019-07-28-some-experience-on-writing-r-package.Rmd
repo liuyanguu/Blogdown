@@ -19,6 +19,23 @@ Although [**'SHAPforxgboost'**](https://github.com/liuyanguu/SHAPforxgboost) is 
 
 I started with using 'usethis' package [https://usethis.r-lib.org/](https://usethis.r-lib.org/) to set up the structure of the package. 
 
+# Comments from cran editors
+
+Lots of thanks to Dr. Ligges and Dr. Herbrandt for their kind advice. 
+
+* please write package names, software names and API names in single quotes (e.g. 'Python') in your Description.
+  
+* Please ensure that you do not use more than 2 cores in your examples.
+Is there any reason why the number of core to use is not an argument of 
+e.g. xgboost.fit()? 
+# This function was for my own convenience, actually it is not necessary. I have removed the function.
+  
+* Please replace cat() by message() or warning() in your functions (except 
+for print() and summary() functions). Messages and warnings can be 
+suppressed if needed.
+
+# Some of my own experience
+
 ## Description
 
 Single quote packages in both Title and Description fields.For example, this package uses the SHAP values output from 'xgboost'.
