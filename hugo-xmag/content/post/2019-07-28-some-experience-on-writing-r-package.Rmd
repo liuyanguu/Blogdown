@@ -30,11 +30,11 @@ devtools::install_github("liuyanguu/SHAPforxgboost")
 
 I used 'usethis' package [https://usethis.r-lib.org/](https://usethis.r-lib.org/) to set up the structure of the package. 
 
-# Comments from cran editors
+# Requirements from cran editors
 
 Lots of thanks to Dr. Ligges and Dr. Herbrandt for their kind advice. 
 
-* please write package names, software names and API names in single quotes (e.g. 'Python') in your Description.
+* In the description, write package names, software names and API names in single quotes (e.g. 'Python'). The Title field should be in title case. The description should not start with package name or "This package". 
   
 * Please ensure that you do not use more than 2 cores in your examples.
 Is there any reason why the number of core to use is not an argument of 
@@ -54,9 +54,9 @@ Single quote packages in both Title and Description fields.For example, this pac
 
 ## Namespace: 
 
-* It is unnecessary to add **Depends** in the **DESCRIPTION** except `R (>= 3.3.0)`. And the **Imports** part in **DESCRIPTION** is irrelevant to what you import into NAMESPACE in the code (although they are both named _import_).  The NAMESPACE is defined by using `@import` to import packages and functions in the R code. For now the only thing to depend on is "R". 
+* It is unnecessary to add **Depends** in the **DESCRIPTION** except `R (>= 3.3.0)`. And the **Imports** part in **DESCRIPTION** is irrelevant to what you import into NAMESPACE in the code (although they are both named _import_).  The NAMESPACE is defined by using `@import` to import packages and functions in the R code. 
 
-![](/post/2019-07-28-some-experience-on-writing-r-package_files/the cran page.PNG){width=60%}
+![](/post/2019-07-28-some-experience-on-writing-r-package_files/the cran page.PNG){width=70%}
 
   * If you have `@import ggplot2` anywhere in the R code. Your function can use ggplot as long as your package is loaded. Your function knows to search in the namespace of `ggplot2::`, but the ggplot2 package is not **attached**. If someone loads your package, he would needs `library(ggplot2)` if to use ggplot2 in his code. This is the difference between **attach** and **load** as discussed in Hadley's "R" package book. 
 
