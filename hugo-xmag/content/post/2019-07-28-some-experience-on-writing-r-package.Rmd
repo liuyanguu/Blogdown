@@ -12,12 +12,23 @@ output:
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, eval = F, message=FALSE, warning=FALSE)
 ```
 
-Although [**'SHAPforxgboost'**](https://github.com/liuyanguu/SHAPforxgboost) is not a complicated package, it took me some time to get the package pass all the cran check. 
+Although [**'SHAPforxgboost'**](https://github.com/liuyanguu/SHAPforxgboost) is not a complicated package, it took me some time to get the package pass all the cran check. Now (Aug.03,2019) it is available on [**cran**](https://cran.r-project.org/web/packages/SHAPforxgboost/index.html). Install by either  
 
-I started with using 'usethis' package [https://usethis.r-lib.org/](https://usethis.r-lib.org/) to set up the structure of the package. 
+```{r}
+install.packages("SHAPforxgboost")
+```
+
+or  
+
+```{r}
+devtools::install_github("liuyanguu/SHAPforxgboost")
+```
+
+
+I used 'usethis' package [https://usethis.r-lib.org/](https://usethis.r-lib.org/) to set up the structure of the package. 
 
 # Comments from cran editors
 
@@ -28,7 +39,8 @@ Lots of thanks to Dr. Ligges and Dr. Herbrandt for their kind advice.
 * Please ensure that you do not use more than 2 cores in your examples.
 Is there any reason why the number of core to use is not an argument of 
 e.g. `xgboost.fit()`?   
-(# The function was for my own convenience, actually it is not necessary to include that function in the package. I have removed that function.)
+
+(# The function was for my own convenience, actually it is not necessary to be included in the package. I have removed that function.)
   
 * Please replace `cat()` by `message()` or `warning()` in your functions (except 
 for `print()` and `summary()` functions). Messages and warnings can be 
@@ -42,9 +54,11 @@ Single quote packages in both Title and Description fields.For example, this pac
 
 ## Namespace: 
 
-* It is unnecessary to add **Depends** in the **DESCRIPTION** except `R (>= 3.3.0)`. And the **Imports** part in **DESCRIPTION** is irrelevant to what you import into NAMESPACE in the code (although they are both named _import_).  The NAMESPACE is defined by using `@import` to import packages and functions in the R code. 
+* It is unnecessary to add **Depends** in the **DESCRIPTION** except `R (>= 3.3.0)`. And the **Imports** part in **DESCRIPTION** is irrelevant to what you import into NAMESPACE in the code (although they are both named _import_).  The NAMESPACE is defined by using `@import` to import packages and functions in the R code. For now the only thing to depend on is "R". 
 
-  * If you have `@import ggplot2` anywhere in the R code. Your function can use ggplot as long as your package is loaded. Your function knows to search in the namespace of `ggplot2::`, but the ggplot2 package is not **attached**. If someone loads your package, he would needs `library(ggplot2)` if to use ggplot2 in his code. This is the difference between **attach** and **load** as discussed in Hadley's R package book. 
+![](/post/2019-07-28-some-experience-on-writing-r-package_files/the cran page.PNG){width=60%}
+
+  * If you have `@import ggplot2` anywhere in the R code. Your function can use ggplot as long as your package is loaded. Your function knows to search in the namespace of `ggplot2::`, but the ggplot2 package is not **attached**. If someone loads your package, he would needs `library(ggplot2)` if to use ggplot2 in his code. This is the difference between **attach** and **load** as discussed in Hadley's "R" package book. 
 
   * By the way, if you put `ggplot2` in **Depends** in the **DESCRIPTION**, `library(yourPackage)` would really attach `ggplot2`. But basically, you don't have to do that for others, since your function can run as long you have included `ggplot2` in the namespace (which you have to do anyway).
 
@@ -56,7 +70,7 @@ Single quote packages in both Title and Description fields.For example, this pac
 
 * When **devtools** check the program, there will be notes that "no visible binding for global variable". This is how to please the cran:
 
-```{r, eval = F}
+```{r }
 if(getRversion() >= "2.15.1")  {
   utils::globalVariables(c(".", "rfvalue", "value", ... )) # all the variables complained
   }
@@ -68,4 +82,6 @@ if(getRversion() >= "2.15.1")  {
 * All the codes go into the **R/** folder  
 
 * `@example R/example/sample1.R` will attach **sample1.R** in the folder "R/example/" to the documentation of the function. If you write them directly in the function, you use @example**s** instead of @example.  
+
+On cran:  
 
