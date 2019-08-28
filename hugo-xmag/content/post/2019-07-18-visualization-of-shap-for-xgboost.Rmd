@@ -176,14 +176,14 @@ It plots the SHAP values against the feature values for each variable. Again, ea
 
 
 ```{r, fig.width = 10, fig.height = 4}
-# for one figure:
-g1 <- shap.plot.dependence.color(data_long = shap_long, x = 'dayint', y = 'dayint', color_feature = 'Column_WV') + ggtitle("SHAP of Date vs. Feature values of Date")
-g2 <- shap.plot.dependence.color(data_long = shap_long, x = 'dayint', y = 'Column_WV', color_feature = 'Column_WV') +  ggtitle("SHAP of CWV vs. Date")
+g1 <- shap.plot.dependence(data_long = shap_long, x = 'dayint', y = 'dayint', color_feature = 'Column_WV') + ggtitle("(A) SHAP values of Time trend vs. Time trend")
+g2 <- shap.plot.dependence(data_long = shap_long, x = 'dayint', y = 'Column_WV', color_feature = 'Column_WV') +  ggtitle("(B) SHAP values of CWV vs. Time trend")
+
 gridExtra::grid.arrange(g1, g2, ncol = 2)
 ```
 
-(LEFT) SHAP values showing the contribution of the time trend to predictions. The color represents the MAIAC CWV for each observation (purple high, yellow low). The LOESS (locally estimated scatterplot smoothing) curve is overlaid in red.   
-(RIGHT) SHAP values showing the contribution of the MAIAC CWV to predictions of CWV measurement error shown across the time period of the study. Note distinct y-axis scales for Terra and Aqua datasets. The color represents the MAIAC CWV for each observation (purple high, yellow low).  
+(A) SHAP values showing the contribution of the time trend to predictions. The color represents the MAIAC CWV for each observation (purple high, yellow low). The LOESS (locally estimated scatterplot smoothing) curve is overlaid in red.   
+(B) SHAP values showing the contribution of the MAIAC CWV to predictions of CWV measurement error shown across the time period of the study. Note distinct y-axis scales for Terra and Aqua datasets. The color represents the MAIAC CWV for each observation (purple high, yellow low).  
 
 
 Here I choose to plot top 4 features using function `shap.plot.dependence`:
@@ -218,11 +218,11 @@ shap_int <- readRDS(here("Intermediate/190718_shap_int.rds"))
 ```
 ```{r, fig.width=10, fig.height=4}
 # **SHAP interaction effect plot **
-g3 <- shap.plot.dependence.color(data_long = shap_long,
+g3 <- shap.plot.dependence(data_long = shap_long,
                            data_int = shap_int,
                            x= "dayint", y = "Column_WV", 
                            color_feature = "Column_WV")
-g4 <- shap.plot.dependence.color(data_long = shap_long,
+g4 <- shap.plot.dependence(data_long = shap_long,
                            data_int = shap_int,
                            x= "Column_WV", y = "AOT_Uncertainty", 
                            color_feature = "AOT_Uncertainty")

@@ -76,7 +76,7 @@ shap.plot.summary.wrap2(shap_score = shap_values$shap_score, X1, top_n = 3)
 ## SHAP dependence plot
 
 ```{r}
-shap.plot.dependence.color(data_long = shap_long_iris, x="Petal.Length",
+shap.plot.dependence(data_long = shap_long_iris, x="Petal.Length",
                            y = "Petal.Width", color_feature = "Petal.Width")
 ```
   
@@ -103,7 +103,7 @@ shap_int <- predict(mod1, as.matrix(iris[,-5]),
                     predinteraction = TRUE)
 
 # **SHAP interaction effect plot **
-shap.plot.dependence.color(data_long = shap_long_iris,
+shap.plot.dependence(data_long = shap_long_iris,
                            data_int = shap_int_iris,
                            x="Petal.Length",
                            y = "Petal.Width",

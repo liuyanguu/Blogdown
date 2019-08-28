@@ -34,6 +34,7 @@ The easiest way is by using `usmap`, in which adding abbraviation or not is opti
 #51 states including Alaska and Hawaii
 suppressPackageStartupMessages({
 library(ggplot2)
+library(maps)
 library(usmap)
 library(data.table)
 library(ggsn) # for scale bar `scalebar`
