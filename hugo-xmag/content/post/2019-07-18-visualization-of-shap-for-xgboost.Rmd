@@ -156,7 +156,7 @@ shap.plot.summary(shap_long, x_bound  = 1.2, dilute = 10)
 
 ```{r, eval = F}
 # option 1: from the xgboost model
-shap.plot.summary.wrap1(mod, X = as.matrix(dataX))
+shap.plot.summary.wrap1(mod, X = dataX)
 
 
 # option 2: supply a self-made SHAP values dataset (e.g. sometimes as output from cross-validation)
@@ -210,14 +210,15 @@ The SHAP interaction values take time since it calculates all the combinations.
 # prepare the data using either: 
 # (this step is slow since it calculates all the combinations of features.)
 shap_int <- shap.prep.interaction(xgb_mod = mod, X_train = as.matrix(dataX))
-# or the same as:
-shap_int <- predict(mod, as.matrix(dataX), predinteraction = TRUE)
+# or:
+shap_int <- predict(mod, as.matrix(dataX), predinteraction = TRUE) # (the same)
 ```
 ```{r, echo = F}
 shap_int <- readRDS(here("Intermediate/190718_shap_int.rds"))
 ```
 ```{r, fig.width=10, fig.height=4}
 # **SHAP interaction effect plot **
+# if `data_int` is supplied, the same function will plot the interaction effect:
 g3 <- shap.plot.dependence(data_long = shap_long,
                            data_int = shap_int,
                            x= "dayint", y = "Column_WV", 

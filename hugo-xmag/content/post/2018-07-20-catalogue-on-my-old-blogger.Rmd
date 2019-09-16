@@ -10,10 +10,10 @@ tags:
 ---
 
 # Introducing my new blog written solely in __R Markdown__
-When I realized it was so convenient to write blog directly using R Markdown, I searched if there is a specific tool for it. And I found __Blogdown__, an R package developed by Yihui Xie, who is also the author of R Markdown. 
+When I realized it was so convenient to write blog directly using R Markdown, I searched if there is a specific tool for it. And I found __Blogdown__, an R package developed by Yihui Xie, who also developed R Markdown. 
 
 # Catalog
-As a summary, I would like to create a catalog for the main topics I wrote on google blogger before July 2018. I included some figures too, most are created in R.
+As a summary, I would like to create a catalog for the main topics I wrote on google blogger before July 2018. I included some figures too, most were created in R.
 
 __1. Details behind my work at Marron Institute__  
   

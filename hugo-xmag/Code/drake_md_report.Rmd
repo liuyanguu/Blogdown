@@ -1,0 +1,29 @@
+---
+title: "The md report for drake sample workflow"
+author: "Yang Liu"
+date: "9/16/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load drake library, then print the results
+
+```{r}
+library("drake")
+```
+
+## Fig 1: Summary Plot
+
+```{r}
+readd(fig1, cache = cache)
+```
+
+## Fig 2: Dependence Plot
+
+```{r}
+readd(fig2, cache = cache)
+```
+ 

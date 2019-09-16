@@ -1,0 +1,82 @@
+---
+title: 'Drake: powerful tool for automatic reproducible workflow'
+author: Yang Liu
+date: '2019-09-15'
+slug: drake-powerful-tool-for-automatic-reproducible-workflow
+categories: []
+tags:
+  - Drake
+  - Markdown
+---
+
+
+
+<p>Drake is a powerful tool for automatic reproducible workflow. Drake has great documentations online thus here I only show a simple example working with Rmarkdown. Rmarkdown file could be very slow to generate due to the calculations involved. And every small revise make you wait a long time if you re-render the file. When we use drake we can do all the calculations in advance thus the file rendering is super fast since we only need to re-calculate the revised object.</p>
+<p>Using <code>SHAPforxgboost</code> as an example:</p>
+<pre class="r"><code># if needed, update drake
+if(packageVersion(&quot;drake&quot;) &lt; &quot;7.4&quot;) install.packages(&quot;drake&quot;)
+if(packageVersion(&quot;SHAPforxgboost&quot;) &lt; &quot;0.0.2&quot;) devtools::install_github(&quot;liuyanguu/SHAPforxgboost&quot;)
+
+suppressPackageStartupMessages({
+library(&quot;drake&quot;)
+library(&quot;SHAPforxgboost&quot;)
+library(&quot;here&quot;)
+})
+
+# assign a place to store intermediate objects
+cache_path &lt;- here(&quot;Drake_Cache&quot;)
+if(!dir.exists(cache_path))dir.create(cache_path)
+cache &lt;- drake_cache(path = cache_path)</code></pre>
+<p>The <strong>drake_plan</strong> takes self-defined functions to create each target. All the functions are usually written in a seperate script.</p>
+<pre class="r"><code>get.xgb.mod &lt;- function(dataX){
+  y_var &lt;- &quot;diffcwv&quot; 
+  # hyperparameter tuning results
+  param_dart &lt;- list(objective = &quot;reg:linear&quot;,  # For regression
+                   nrounds = 366,
+                   eta = 0.018,
+                   max_depth = 10,
+                   gamma = 0.009,
+                   subsample = 0.98,
+                   colsample_bytree = 0.86)
+
+  mod &lt;- xgboost::xgboost(data = as.matrix(dataX), 
+                        label = as.matrix(dataXY_df[[y_var]]), 
+                       xgb_param = param_dart, nrounds = param_dart$nrounds,
+                       verbose = FALSE, nthread = parallel::detectCores() - 2,
+                       early_stopping_rounds = 8)
+  return(mod)
+}
+
+# ...
+# define more functions if needed
+# ...</code></pre>
+<p>Markdown all the results to the final report. The great advantage is that since all the figures were done and stored before the markdown process, if you modify a figure, only that figure needs to be rerun.</p>
+<pre class="r"><code>my_plan &lt;- drake_plan(
+  dataX = data.table::copy(dataXY_df[,-&quot;diffcwv&quot;]),
+  xgb_mod = get.xgb.mod(dataX),
+  shap_long = shap.prep(xgb_model = xgb_mod, X_train = dataX, top_n = 4),
+  # make a diluted (faster) summary plot showing only top 4 variables:
+  fig1 = shap.plot.summary(shap_long, dilute = 10),
+  fig2 = shap.plot.dependence(data_long = shap_long, x = &#39;dayint&#39;, y = &#39;dayint&#39;, color_feature = &#39;Column_WV&#39;),
+  # fig3 = shap.plot.dependence(data_long = shap_long, x = &#39;dayint&#39;, y = &#39;Column_WV&#39;, color_feature = &#39;Column_WV&#39;),
+  
+  report = rmarkdown::render(
+    knitr_in(&quot;Code/drake_md_report.Rmd&quot;),
+    output_format = rmarkdown::html_document(toc = TRUE))
+)
+
+nemia_config &lt;- drake_config(my_plan, cache = cache) # show the dependency
+# vis_drake_graph(nemia_config, from = names(nemia_config$layout))
+vis_drake_graph(nemia_config)
+
+# run the plan
+make(my_plan, cache = cache)</code></pre>
+<p>Notice that it is not a good idea to run drake within a rmarkdown file, which is how I write this post.
+Drake workflow should be an R script that uses Rmarkdown as the output tool.
+So I cannot really render this post as it is.</p>
+<p>Here is how the dependency graph looks like:
+<img src="/post/2019-09-15-drake-powerful-tool-for-automatic-reproducible-workflow_files/dependency%20plot.PNG" style="width:80.0%" /></p>
+<p>If we add an extra figure, only this figure needs to made:
+<img src="/post/2019-09-15-drake-powerful-tool-for-automatic-reproducible-workflow_files/dependency%20plot2.PNG" style="width:80.0%" /></p>
+<p>Here is how the md file looks like on github<br />
+Here is the md html file on github</p>

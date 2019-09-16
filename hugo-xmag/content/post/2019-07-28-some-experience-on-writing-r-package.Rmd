@@ -1,5 +1,5 @@
 ---
-title: Notes on writing R package
+title: Notes on writing an R package
 author: Yang Liu
 date: '2019-07-28'
 slug: some-experience-on-writing-r-package
@@ -15,7 +15,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE, eval = F, message=FALSE, warning=FALSE)
 ```
 
-Although [**'SHAPforxgboost'**](https://github.com/liuyanguu/SHAPforxgboost) is not a complicated package, it took me some time to get the package pass all the cran check. Now (Aug.03,2019) it is available on [**cran**](https://cran.r-project.org/web/packages/SHAPforxgboost/index.html). Install by either  
+Although [**'SHAPforxgboost'**](https://github.com/liuyanguu/SHAPforxgboost) is not a package too complicated, it took me some time to get the package pass all the cran check. Now (Aug.03,2019) it is available on [**cran**](https://cran.r-project.org/web/packages/SHAPforxgboost/index.html). Install by either  
 
 ```{r}
 install.packages("SHAPforxgboost")
@@ -27,6 +27,7 @@ or
 devtools::install_github("liuyanguu/SHAPforxgboost")
 ```
 
+The most recent version is 0.0.2. 
 
 I used 'usethis' package [https://usethis.r-lib.org/](https://usethis.r-lib.org/) to set up the structure of the package. 
 
@@ -38,9 +39,7 @@ Lots of thanks to Dr. Ligges and Dr. Herbrandt for their kind advice.
   
 * Please ensure that you do not use more than 2 cores in your examples.
 Is there any reason why the number of core to use is not an argument of 
-e.g. `xgboost.fit()`?   
-
-(# The function was for my own convenience, actually it is not necessary to be included in the package. I have removed that function.)
+e.g. `xgboost.fit()`?  >>> (# The function was for my own convenience, actually it is not necessary to be included in the package. I removed that function.)
   
 * Please replace `cat()` by `message()` or `warning()` in your functions (except 
 for `print()` and `summary()` functions). Messages and warnings can be 
@@ -50,17 +49,20 @@ suppressed if needed.
 
 ## Description
 
-Single quote packages in both Title and Description fields.For example, this package uses the SHAP values output from 'xgboost'.
+Single quote packages in both Title and Description fields. For example: "This package uses the SHAP values output from **'xgboost'**".
 
 ## Namespace: 
 
-* It is unnecessary to add **Depends** in the **DESCRIPTION** except `R (>= 3.3.0)`. And the **Imports** part in **DESCRIPTION** is irrelevant to what you import into NAMESPACE in the code (although they are both named _import_).  The NAMESPACE is defined by using `@import` to import packages and functions in the R code. 
+* It would be unnecessary to add any **Depends** in the **DESCRIPTION** besides `R (>= 3.3.0)`.
 
-![](/post/2019-07-28-some-experience-on-writing-r-package_files/the cran page.PNG){width=70%}
+* The **Imports** part in the **DESCRIPTION** won't impact what you import into NAMESPACE in the code (although they are both named _import_).  The NAMESPACE is defined by using `@import` to import packages and functions in the R code. What you import into NAMESPACE are what really matters. But you should also keep the record aligned in the **DESCRIPTION** as cran will check it.
 
-  * If you have `@import ggplot2` anywhere in the R code. Your function can use ggplot as long as your package is loaded. Your function knows to search in the namespace of `ggplot2::`, but the ggplot2 package is not **attached**. If someone loads your package, he would needs `library(ggplot2)` if to use ggplot2 in his code. This is the difference between **attach** and **load** as discussed in Hadley's "R" package book. 
+*How the DESCRIPTION looks like on cran:*   
+![](/post/2019-07-28-some-experience-on-writing-r-package_files/the cran page.PNG){width=80%}
 
-  * By the way, if you put `ggplot2` in **Depends** in the **DESCRIPTION**, `library(yourPackage)` would really attach `ggplot2`. But basically, you don't have to do that for others, since your function can run as long you have included `ggplot2` in the namespace (which you have to do anyway).
+  * If you have `@import ggplot2` anywhere in the R code. Your function can use ggplot2 as long as your package is loaded. Your function knows to search in the namespace of "`ggplot2::`", but the ggplot2 package is not **attached**. Although someone loads your package, he needs `library(ggplot2)` in order to use ggplot2 for himself. This is the difference between **attach** and **load** as discussed in Hadley's "R" package book. 
+
+  * By the way, if you put `ggplot2` in **Depends** in the **DESCRIPTION**, `library(yourPackage)` would really attach `ggplot2`. But generally speaking, you don't have to do that for others. 
 
 * If you name a function like `plot.shap.summary` it would be documented as S3 method even if you `@export plot.shap.summary` (Yes, you have to export the full function name, otherwise, it would be an S3 method in the namespace.). Don't name function this way to avoid confusion with S3method. For example, I changed the name to `shap.plot.summary`.
 
@@ -81,7 +83,5 @@ if(getRversion() >= "2.15.1")  {
 
 * All the codes go into the **R/** folder  
 
-* `@example R/example/sample1.R` will attach **sample1.R** in the folder "R/example/" to the documentation of the function. If you write them directly in the function, you use @example**s** instead of @example.  
-
-On cran:  
+* `@example R/example/sample1.R` will attach **sample1.R** in the folder "R/example/" to the documentation of the function. If you write out the samples directly in the function code, you use @example**s** instead of @example.  
 
