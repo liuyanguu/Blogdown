@@ -26,4 +26,9 @@ readd(fig1, cache = cache)
 ```{r}
 readd(fig2, cache = cache)
 ```
- 
+
+## Fig 3: Dependence Plot
+
+```{r}
+readd(fig3, cache = cache)
+```
