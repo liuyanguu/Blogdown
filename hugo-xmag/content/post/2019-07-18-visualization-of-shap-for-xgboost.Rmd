@@ -53,18 +53,20 @@ y_var <-  "diffcwv"
 dataX <- dataXY_df[,-..y_var]
 # hyperparameter tuning results
 param_dart <- list(objective = "reg:linear",  # For regression
-                   nrounds = 366,
+                   # booster = "dart",
+                   nrounds = 10,
                    eta = 0.018,
                    max_depth = 10,
                    gamma = 0.009,
                    subsample = 0.98,
-                   colsample_bytree = 0.86)
+                   colsample_bytree = 0.86
+                   )
 
 mod <- xgboost::xgboost(data = as.matrix(dataX), 
                         label = as.matrix(dataXY_df[[y_var]]), 
-                       xgb_param = param_dart, nrounds = param_dart$nrounds,
-                       verbose = FALSE, nthread = parallel::detectCores() - 2,
-                       early_stopping_rounds = 8)
+                        xgb_param = param_dart, nrounds = param_dart$nrounds,
+                        verbose = FALSE, nthread = parallel::detectCores() - 2,
+                        early_stopping_rounds = 8)
                        
 # To return the SHAP values and ranked features by mean|SHAP|
 shap_values <- shap.values(xgb_model = mod, X_train = dataX)
@@ -82,7 +84,7 @@ The sum of each row's SHAP values (plus the **BIAS**, which is like an intercept
 # show that rowSum is the output 
 shap_data <- shap_values$shap_score
 shap_data[, BIAS := shap_values$BIAS0]
-pred_mod <- predict(mod, as.matrix(dataX))
+pred_mod <- predict(mod, as.matrix(dataX), ntreelimit = param_dart$nrounds)
 shap_data[, `:=`(rowSum = round(rowSums(shap_data),6), pred_mod = round(pred_mod,6))]
 rmarkdown::paged_table(shap_data[1:20,])
 ```

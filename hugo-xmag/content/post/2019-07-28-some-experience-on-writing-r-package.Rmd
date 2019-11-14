@@ -78,6 +78,7 @@ if(getRversion() >= "2.15.1")  {
   }
 ```
 
+* You cannot have things like line break __`"\n"`__ in the documentation. It will give a warning of "unknown macro", and will actually cause error when you try to download and build the package from github.
 
 ## Files locations:
 

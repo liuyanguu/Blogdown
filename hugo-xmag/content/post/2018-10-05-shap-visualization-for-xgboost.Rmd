@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 
 Update 19/07/21:
 
-Since my R Package **SHAPforxgboost** has been released, I updated this post using the new functions and illustrate how to use these functions using two datasets. For more information, please refer to: [SHAP visualization for XGBoost in R](https://liuyanguu.github.io/post/2019/07/18/visualization-of-shap-for-xgboost/)
+Since my R Package **SHAPforxgboost** has been released on CRAN, I updated this post using the new functions and illustrate how to use these functions using two datasets. For more information, please refer to: [SHAP visualization for XGBoost in R](https://liuyanguu.github.io/post/2019/07/18/visualization-of-shap-for-xgboost/)
 
 # Example 1
 
