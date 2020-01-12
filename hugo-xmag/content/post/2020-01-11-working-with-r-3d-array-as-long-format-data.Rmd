@@ -31,7 +31,7 @@ I believe it is a bad idea to work with array using `for` loop, which is both sl
 
 ## Example: a 3-D array with dimension **4x3x2**    
 
-Pay attention to how the values (`1:24`) fill into the three dimentions, the 1st 4x3 matrix is filled first by column, then the 2nd 4x3 matrix.  
+Notice how the values (`1:24`) fill into the three dimentions, The values `1:12` go into the 1st 4x3 matrix by column, then the rest go into the 2nd 4x3 matrix.  
 ```{r}
 arr = array(1:24, dim=c(4,3,2), dimnames = list(group = LETTERS[1:4],  year = 2001:2003, sex = c("F", "M")))
 arr
@@ -53,7 +53,7 @@ arr2 <- array(data = arr_long$value,
 identical(unname(arr), arr2) # since I did not set dimnames for arr2, I need `unname`
 ```
 
-## cast back into array  
+## Recover the array  
 
 But the problem is we usually need to work on the data and the row orders will change.  
 For example, to add another year of data. And in many other cases, it is just easier to work with the long-format data.    
@@ -64,9 +64,9 @@ arr_long_extra
 arr_long_new <- rbind(arr_long, arr_long_extra)
 ```
 
-**Set the right order is the key to produce right array**  
+**Set the rows in the right order is the key to produce the right array**  
 
-Since the original dimention **4x3x2** correspond to _group_ x _year_ x _sex_, the array should be ordered by _sex_, _year_, and _group_ if we want to recover the original array. (Thus the arr_long is in the right order if we don't resort it during calculation.)
+Since the original dimension **4x3x2** corresponds to _group_ x _year_ x _sex_, the array should be ordered by _sex_, _year_, and _group_ if we want to recover the original array. (Thus the arr_long is in the right order if we don't resort it.)
 
 ```{r}
 # order by sex, year, group
@@ -85,7 +85,7 @@ data.table::setorder(arr_long_new, sex, year, group)
 ```
 
 
-Similarly, we can **set one dimension of the array by a specific order /another vector**  
+Similarly, we can **set one dimension of the array by a specific order or using another vector.**  
 Suppose I want to reorder the `year` variable as `year_order`:  
 ```{r}
 year_order <- c("2003", "2001", "2002")
@@ -96,7 +96,7 @@ arr3 <- array(arr_long2$value, dim=c(4,3,2), dimnames = list(group = LETTERS[1:4
 arr3
 ```
 
-It is the same as reorder the 2nd dimension of array:  
+It is the same as reordering the 2nd dimension of array:  
 ```{r}
 identical(arr3,
           arr[, order(match(dimnames(arr)[[2]], year_order)),]

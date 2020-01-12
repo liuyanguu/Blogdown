@@ -38,7 +38,7 @@ In this exercise, we only model _Share_Temporary_: Share of Temporary Structure 
 # 07/09/2018
 list.of.packages <- c("ggplot2", "data.table","plyr","QuantPsyc",
                       "glmnet","leaps","randomForest","gbm","caret","xgboost","Ckmeans.1d.dp",
-                      "DiagrammeR", "knitr")
+                      "DiagrammeR", "knitr", "here")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -181,12 +181,12 @@ data.frame(best_param, best_rmse_index, best_rmse, best_seednumber)
 
 ```
 
-* MSE
+* MSE  
 ```{r echo = FALSE}
 # The best index (min_rmse_index) is the best "nround" in the model
 nround <- best_rmse_index
 set.seed(best_seednumber)
-xg_mod <- xgboost(data = X_train, label = Y_train, params = best_param, nround = nround, verbose = T)
+xg_mod <- xgboost(data = X_train, label = Y_train, params = best_param, nround = nround, verbose = FALSE)
 # MSE
 yhat_xg <- predict(xg_mod, newdata = X_test)
 (MSE_xgb <- mean((yhat_xg - Y_test)^2))
@@ -205,11 +205,6 @@ xgb.ggplot.importance(importance_matrix, top_n = 15, measure = "Gain")
 ```{r boostplot}
 library("DiagrammeR")
 xgb.plot.tree(model = xg_mod, trees = 1, feature_names = colnames(X_train))
-# 
-# # xgb.plot.tree needs to be revised a little bit by adding `fontcolor ="black"` in the `nodes <- DiagrammeR::create_node_df` line
-# source("D:/OneDrive - nyu.edu/NYU Marron/R/xgb.plot.tree2.R")
-# xgb.plot.tree2(model = xg_mod, n_first_tree = 1, feature_names = colnames(X_train))
-
 ```
 
 
@@ -217,10 +212,6 @@ xgb.plot.tree(model = xg_mod, trees = 1, feature_names = colnames(X_train))
 ```{r}
 xgb.plot.multi.trees(model = xg_mod, n_first_tree = 1, feature_names = colnames(X_train))
 ```
-  
-_Future work_:  
-Trying to use "xgboostExplainer", still work on it. 
-
 
 # 2. Gradient boosting  
 * Use library `gbm`  
@@ -228,7 +219,9 @@ Trying to use "xgboostExplainer", still work on it.
 ```{r}
 library(gbm)   # for Gradient boosting
 library(caret) # scan the parameter grid using `train` function
-time_now <- Sys.time()
+```
+```{r, eval = FALSE}
+# time_now <- Sys.time()
 para_grid <- expand.grid(n.trees = (20*c(50:100)), 
                          shrinkage = c(0.1, 0.05, 0.01), 
                          interaction.depth = c(1,3,5),
@@ -240,11 +233,14 @@ gbm_caret <- train(Share_Temporary ~ ., mydata[train_idx,],
                    trControl = trainControl, verbose = FALSE, 
                    tuneGrid = para_grid, metric = "RMSE", bag.fraction = 0.75)  
 
-Sys.time() - time_now 
-
+# Sys.time() - time_now 
+## Time difference of 2.283 mins
 ```
+
 * The tuning parameters that give the lowest MSE in training set CV.  
+
 ```{r, echo = F}
+gbm_caret <- readRDS(here::here("Intermediate", "180709_2_gbm_caret.rds"))
 gbm_caret$bestTune
 ```
 
@@ -385,261 +381,5 @@ coef_table_bs[order(abs(coef_table_bs$stb), decreasing = T),]
 ```
 
 
-# Original Code
-```{r eval = FALSE}
-## Working Sample: Predicting Share of Temporary Structure in Slums Settlements ##
-# 07/09/2018
-list.of.packages <- c("ggplot2", "data.table","plyr","QuantPsyc",
-                      "glmnet","leaps","randomForest","gbm","caret","xgboost","Ckmeans.1d.dp",
-                      "DiagrammeR", "knitr")
-new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
-
-library(data.table)    
-library(plyr)          
-library(ggplot2)
-library(QuantPsyc)     # used to show standardized regression coefficients
-library(glmnet)        # for Lasso
-library(leaps)         # for best subset
-library(randomForest)  # random forest
-library(gbm)           # for Gradient boosting
-library(caret)         # grid scan by `train`
-library(xgboost)       # for Extreme Gradient boosting
-library(Ckmeans.1d.dp) # for `xgb.ggplot.importance` in xgboost
-library(DiagrammeR)    # for `xgb.plot.tree` in xgboost
-library(knitr)
-options(digits = 4)
-options(tinytex.verbose = TRUE)
-
-# Data Preparation using data.table --------------------------------------------
-mydata <- fread("D:/OneDrive - nyu.edu/NYU Marron/Data/20180618_sdi 2.csv", stringsAsFactors = TRUE)
-
-# clean variables names, remove "/".
-names(mydata) <- gsub("/", "", names(mydata)) 
-
-# create variable: Share_Temporary
-# The dependent variable to be modeled: Share of temporary structure in slums
-mydata[, Share_Temporary := CC7_Structures_Temporary / (CC7_Structures_Temporary + CC6_Structures_Permanent)]
-
-# remove variables with over 20% NA, var_keeps those is.na < 20%
-var_keep <- sapply(mydata, function(x) sum(is.na(x))) < dim(mydata)[1]*0.2
-mydata[, names(mydata)[!var_keep]:= NULL]
-mydata <- na.omit(mydata) # remove rest N.A.
-
-# fix some format issue
-Factor_List <- c("GG4_Toilets_Pay_Amount", "CC11_Population_Estimate", "CC10_Household_Size", "CC12_Total_Population")
-mydata[, (Factor_List) := lapply(.SD, as.numeric), .SDcols = Factor_List]
-
-# remove some useless variables
-# remove what are highly correlated to dependent variable
-mydata[, c("Obs. Count", "City", "Country",
-                       names(mydata)[grepl("Structure", names(mydata))],
-                       names(mydata)[grepl("Ownership", names(mydata))]):=NULL]
-
-
-# divide training and test dataset
-set.seed(123)
-train_idx <- sample(dim(mydata)[1], dim(mydata)[1]* 0.6)
-
-# The model.matrix() function is used in many regression packages for building 
-# an "X" matrix from data.
-# need matrix for glmnet
-X2 <- model.matrix(Share_Temporary~., data = mydata)
-Y2 <- as.matrix(mydata[c("Share_Temporary")])
-X_train <- X2[train_idx,]
-X_test <- X2[-train_idx,]
-Y_train <- Y2[train_idx]
-Y_test <- Y2[-train_idx]
-# merge back to df again, as df is required for regsubsets (best subset)
-data_train <- data.frame(X2, Y2)[train_idx,] 
-mydata2 <- data.frame(X2, Y2)
-
-
-# 5. Extreme Gradiant Boosting --------------------------------------------------------------
-# Tuning Method: randomnize parameters and update the record with best ones.
-library(xgboost)
-# Matrix for xgb: dtrain
-dtrain <- xgb.DMatrix(X_train, label = Y_train)
-dtest <- xgb.DMatrix(X_test, label = Y_test)
-# # For a single cv
-# xg_cv <- xgb.cv(data = dtrain, nrounds = 3, nthread = 2, nfold = 5,
-#              max_depth = 3, eta = 0.1, objective = "reg:linear", 
-#              eval_metric = "rmse")
-# print(xg_cv)
-# Randomize and bound
-best_param <- list()
-best_seednumber <- 1234
-best_rmse <- Inf
-best_rmse_index <- 0
-
-time_now <- Sys.time()
-set.seed(1234)
-# I use only 10 interations to save kniting time. In reality I used 200.
-for (iter in 1:10) {
-  param <- list(objective = "reg:linear",  # For regression
-                eval_metric = "rmse",      # rmse is used for regression
-                max_depth = sample(6:10, 1),
-                eta = runif(1, .01, .1),   # Learning rate, default: 0.3
-                subsample = runif(1, .6, .9),
-                colsample_bytree = runif(1, .5, .8), 
-                min_child_weight = sample(1:10, 1), # These two are important
-                max_delta_step = sample(5:10, 1)    # Can help to focus error into a 
-                                                    # small range.
-  )
-  cv.nround <-  1000
-  cv.nfold <-  5 # 5-fold cross-validation
-  seed.number  <-  sample.int(10000, 1) # set seed for the cv
-  set.seed(seed.number)
-  mdcv <- xgb.cv(data = dtrain, params = param,  
-                 nfold = cv.nfold, nrounds = cv.nround,
-                 verbose = F, early_stopping_rounds = 8, maximize = FALSE)
-  
-  min_rmse_index  <-  mdcv$best_iteration
-  min_rmse <-  mdcv$evaluation_log[min_rmse_index]$test_rmse_mean
-  
-  if (min_rmse < best_rmse) {
-    best_rmse <- min_rmse
-    best_rmse_index <- min_rmse_index
-    best_seednumber <- seed.number
-    best_param <- param
-  }
-}
-
-# The best index (min_rmse_index) is the best "nround" in the model
-nround = best_rmse_index
-set.seed(best_seednumber)
-xg_mod <- xgboost(data = dtest, params = best_param, nround = nround, verbose = F)
-# Check error in testing data
-yhat_xg <- predict(xg_mod, dtest)
-(MSE_xgb <- mean((yhat_xg - Y_test)^2))
-Sys.time() - time_now
-
-# Feature importance
-importance_matrix <- xgb.importance(colnames(X_train), model = xg_mod)
-
-# Use `xgb.plot.importance`, which create a _barplot_ or use `xgb.ggplot.importance`
-library(Ckmeans.1d.dp) # for xgb.ggplot.importance
-xgb.ggplot.importance(importance_matrix, top_n = 15, 
-                      measure = "Gain")
-
-# plot the trees from model using `xgb.plot.tree`
-# xgb.plot.tree needs to be revised a little bit by adding `fontcolor="black"` 
-# in the `nodes <- DiagrammeR::create_node_df` line
-# only show 1 tree as an example.
-# 
-source("D:/OneDrive - nyu.edu/NYU Marron/R/xgb.plot.tree2.R")
-library("DiagrammeR")
-xgb.plot.tree(model = xg_mod, trees = 1, feature_names = colnames(X_train))
-xgb.plot.tree2(model = xg_mod, n_first_tree = 1, feature_names = colnames(X_train))
-
-# Project all trees on one tree and plot it: A huge plot
-xgb.plot.multi.trees(model = xg_mod, n_first_tree = 1, 
-                     feature_names = colnames(X_train),features_keep = 3)
-
-
-# 2. Gradiant boosting ----------------------------------------------------
-# Tuning Method: use `train` function from `caret` to scan for parameters.
-library(gbm)   # for Gradiant boosting
-library(caret) # scan the parameter grid using `train` function
-para_grid <- expand.grid(n.trees = (20*c(50:100)), 
-                         shrinkage = 0.01, 
-                         interaction.depth = 5,
-                         n.minobsinnode = 10)
-trainControl <- trainControl(method = "cv", number = 10)
-set.seed(123)
-gbm_caret <- train(Share_Temporary ~ ., mydata[train_idx,], 
-                   distribution = "gaussian", method = "gbm",
-                   trControl = trainControl, verbose = FALSE, 
-                   tuneGrid = para_grid, metric = "RMSE", bag.fraction = 0.75)
-
-# The tuning parameters that give lowest MSE in training set CV.
-gbm_caret$bestTune
-yhat_boost <- predict(gbm_caret, mydata[-train_idx,])
-(MSE_boost <- mean((yhat_boost - Y_test)^2))
-
-
-# 3. Random Forest --------------------------------------------------------
-# Easy to use, there is no hyperparameter to tune
-bag.fit <- randomForest(Share_Temporary ~ ., data = mydata, subset = train_idx)
-# rf_test <- mydata[-train_idx, "Share_Temporary"]
-# test on test data: mydata[-train_idx,]
-yhat_bag <- predict(bag.fit, newdata = mydata[-train_idx,])
-# MSE
-(MSE_rForest <- mean((yhat_bag - Y_test)^2))
-varImpPlot(bag.fit, n.var=15)
-
-
-# 4. Lasso ----------------------------------------------------------------
-# The lasso model, used to feed the selected lambda to predict fitted value
-lasso_mod <- glmnet(X_train, Y_train, alpha = 1)
-
-# We use cross-validation to choose the lambda, and corresponding variables 
-# used to fit the linear regression.  
-cv_lasso <-  cv.glmnet(X_train, Y_train, alpha=1) # Lasso regression
-plot.cv.glmnet(cv_lasso)
-# lambda selected by 1se rule
-(best_lam <- cv_lasso$lambda.1se)
-# MSE  
-# Check prediction error in the testing dataset
-lasso_pred <- predict(lasso_mod, s = best_lam, newx = X_test)
-# The Mean squared error (MSE)
-(MSE_Lasso <- mean((lasso_pred - Y_test)^2))
-
-## Show the regression model for the selected lambda (lasso).
-# We extract the coefficients from the selected model and run a linear regression.
-# coef_table is class 'dgCMatrix' of the selected coefficients for each lambda 
-coef_table <- coef(cv_lasso, s = cv_lasso$lambda.1se)
-# Because there is the intercept on the first column, we use [coef_table@i + 1] to
-# extract the names of coefficients (Dimnames) from class 'dgCMatrix'
-var_list <- unlist(coef_table@Dimnames[[1]][coef_table@i + 1])
-sdi_sub <- mydata[c(coef_table@Dimnames[[1]][coef_table@i + 1], "Share_Temporary")[-1]]
-reg_lasso_mod <- lm(data = sdi_sub, Share_Temporary~.)
-reg_lasso_summary <- summary(reg_lasso_mod)
-
-# Relative importance of coefficients by showing standardized regression
-# coefficients in decreasing order of their absolute values.  
-coef_table2 <- data.frame(reg_lasso_summary$coefficients, stb = c(0, lm.beta(reg_lasso_mod)))
-coef_table2[order(abs(coef_table2$stb), decreasing = T),]
-
-
-# 5. Best Subset ----------------------------------------------------------
-time_now <- Sys.time()
-nv_max <- 5 # the maximum allowed number of features to test
-fit_s <- regsubsets(Share_Temporary~., data_train,
-                    really.big = T, nbest=1, nvmax = nv_max
-)
-Sys.time() - time_now
-
-val.errors =rep(0, nv_max)
-# Need the X_test with intercept
-for(i in 1:nv_max){
-  coefi = coef(fit_s, id=i)
-  pred = X_test[,names(coefi)]%*%coefi # need to use matrix here
-  val.errors[i]= mean((Y_test - pred)^2)
-}
-# choose the best number of predictors to use
-(val_err_min <- which.min(val.errors))
-# MSE
-(MSE_best.subset <- val.errors[val_err_min])
-
-# The reg model selected:
-coef_list = coef(fit_s, id = val_err_min)
-# create sdi_sub2 which has all the selected predictors, and dependent variable,
-# remove intercept by adding [-1]
-sdi_sub2 <- mydata[c(names(coef_list), "Share_Temporary")[-1]]
-
-# get output of b and stb sorted by |stb|
-reg_bs_mod <- lm(data = sdi_sub2, Share_Temporary ~ .)
-reg_bs_summary <- summary(reg_bs_mod)
-
-coef_table <- data.frame(reg_bs_summary$coefficients, stb = c(0, lm.beta(reg_bs_mod)))
-coef_table[order(abs(coef_table$stb), decreasing = T),]
-
-
-# Summarize MSEs ----------------------------------------------------------
-(MSE <- data.frame(MSE_best.subset, MSE_Lasso, 
-                   MSE_rForest, MSE_boost, MSE_xgb))
-
-```
-
+# Original Code are stored on [github](https://github.com/liuyanguu/Blogdown/blob/master/hugo-xmag/content/post/2018-07-09-extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting.Rmd)
 
