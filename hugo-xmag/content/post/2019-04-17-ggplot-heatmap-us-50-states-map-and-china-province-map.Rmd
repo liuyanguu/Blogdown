@@ -1,12 +1,13 @@
 ---
 title: ggplot US state and China province heatmap
 author: Yang Liu
-date: '2020-06-14'
+date: '2020-06-12'
 slug: ggplot-us-state-and-china-province-heatmap
 categories:
   - Data Visualization
 tags:
   - Heatmap
+  - Geodata
 output:
   blogdown::html_page:
     toc: true
@@ -15,7 +16,6 @@ output:
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
                       error = FALSE, fig.width = 10, fig.height = 6)
-# error=TRUE allows error
 ```
 
 (Updated on 2020-06-12, First posted on 2019-04-17)
@@ -129,7 +129,7 @@ ggplot(data = dt1, aes(x = long, y = lat, group = group))+
   #                             size = 3,
   #                             inherit.aes = FALSE) + 
   # if need to repel labels... could further finetune
-  geom_label_repel(data = centroids[long >= x_boundary,],
+  ggrepel::geom_label_repel(data = centroids[long >= x_boundary,],
                    aes(x = long, y = lat, label = abb, fill = Population),
     force = 1, size = 3,
     inherit.aes = F
@@ -160,6 +160,7 @@ ggplot(data = dt1, aes(x = long, y = lat, group = group))+
 The map of China is more complicated. The related articles are all from several years ago. [This blog by Zhang, Zhen](http://imzhen.com/note/2015/09/16/20150916/) is among the best, it has referred some very good resources, expecially this one on Capital Of Statistics (CH)](https://cosx.org/2009/07/drawing-china-map-using-r). This is a blog from 10 years ago. So far I haven't noticed any map package **published on cran** for China like `usmap`, but it is not too complicated after having the shape files.
 
 The shape files can be downloaded from [the "Capital of Statistics" webiste](https://uploads.cosx.org/2009/07/chinaprovinceborderdata_tar_gz.zip), the zip file contains three files: `bou2_4p.dbf`, `bou2_4p.shp`, and `bou2_4p.shx`, we will only need the `bou2_4p.shp` file later.  
+For a quick download: you can also download from my [github repo of `blogdown`]()
 
 **Update 2020/06** 
 There is a [`chinamap`](https://github.com/GuangchuangYu/chinamap) package created by Guangchuang Yu (and his team), who is also the author of the package [`nCov2019`](https://github.com/GuangchuangYu/nCov2019). 
@@ -175,7 +176,7 @@ In Chinese (一点额外说明):
 
 ```{r}
 # China -------------------------------------------------------------------
-china_map <- rgdal::readOGR("D:/liuyanguu/China.shp/bou2_4p.shp") # read it locally
+china_map <- rgdal::readOGR("D:/liuyanguu/Blogdown/blogData/China.shp/bou2_4p.shp") # read it locally
 # extract province information from shap file
 china_map_data = data.table::setDT(china_map@data)
 data.table::setnames(china_map_data, "NAME", "province")

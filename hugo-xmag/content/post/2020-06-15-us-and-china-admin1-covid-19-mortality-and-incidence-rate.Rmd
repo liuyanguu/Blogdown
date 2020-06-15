@@ -1,0 +1,21 @@
+---
+title: US and China Admin1 COVID-19 mortality and incidence rate
+author: Yang Liu
+date: '2020-06-15'
+slug: us-and-china-admin1-covid-19-mortality-and-incidence-rate
+categories:
+  - Data Visualization
+tags:
+  - Geodata
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      error = FALSE, fig.width = 10, fig.height = 6)
+# error=TRUE allows error
+```
+
+
