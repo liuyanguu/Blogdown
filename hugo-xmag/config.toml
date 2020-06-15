@@ -37,7 +37,7 @@ paginate = 6
     description = "Yang Liu (liuyanguu)'s research blog built through R blogdown and R Markdown."
     summary_length = 400
     github_edit = "https://github.com/liuyanguu/Blogdown/edit/master/hugo-xmag/content/"
-    footer = "@2019 Yang Liu _liuyanguu_. Powered by Github. Blogdown and Hugo Theme by Yihui Xie."
+    footer = "@2020 Yang Liu _liuyanguu_. Powered by Github. Blogdown and Hugo Theme made by Yihui Xie."
 
 [params.text]
     back = "&larr; Back to Home"

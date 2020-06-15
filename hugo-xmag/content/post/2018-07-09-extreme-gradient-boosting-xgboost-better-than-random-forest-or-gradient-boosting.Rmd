@@ -289,7 +289,7 @@ lasso_mod <- glmnet(X_train, Y_train, alpha = 1)
 ```{r echo = TRUE}
 # Use cross-validation to select the lambda
 cv_lasso = cv.glmnet(X_train, Y_train, alpha=1) # Lasso regression
-plot.cv.glmnet(cv_lasso)
+plot(cv_lasso)
 # lambda selected by 1se rule
 (best_lam <- cv_lasso$lambda.1se)
 ```

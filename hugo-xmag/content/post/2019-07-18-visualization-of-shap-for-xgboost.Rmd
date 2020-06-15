@@ -50,7 +50,7 @@ library("data.table"); library("here")
 })
 
 y_var <-  "diffcwv"
-dataX <- dataXY_df[,-..y_var]
+dataX <- as.matrix(dataXY_df[,-..y_var])
 # hyperparameter tuning results
 param_dart <- list(objective = "reg:linear",  # For regression
                    # booster = "dart",
@@ -62,7 +62,7 @@ param_dart <- list(objective = "reg:linear",  # For regression
                    colsample_bytree = 0.86
                    )
 
-mod <- xgboost::xgboost(data = as.matrix(dataX), 
+mod <- xgboost::xgboost(data = dataX, 
                         label = as.matrix(dataXY_df[[y_var]]), 
                         xgb_param = param_dart, nrounds = param_dart$nrounds,
                         verbose = FALSE, nthread = parallel::detectCores() - 2,
@@ -84,7 +84,7 @@ The sum of each row's SHAP values (plus the **BIAS**, which is like an intercept
 # show that rowSum is the output 
 shap_data <- shap_values$shap_score
 shap_data[, BIAS := shap_values$BIAS0]
-pred_mod <- predict(mod, as.matrix(dataX), ntreelimit = param_dart$nrounds)
+pred_mod <- predict(mod, dataX, ntreelimit = param_dart$nrounds)
 shap_data[, `:=`(rowSum = round(rowSums(shap_data),6), pred_mod = round(pred_mod,6))]
 rmarkdown::paged_table(shap_data[1:20,])
 ```
@@ -162,7 +162,7 @@ shap.plot.summary.wrap1(mod, X = dataX)
 
 
 # option 2: supply a self-made SHAP values dataset (e.g. sometimes as output from cross-validation)
-shap.plot.summary.wrap2(shap_values$shap_score, as.matrix(dataX))
+shap.plot.summary.wrap2(shap_values$shap_score, dataX)
 
 ```
 
@@ -211,9 +211,9 @@ The SHAP interaction values take time since it calculates all the combinations.
 ```{r, eval = F}
 # prepare the data using either: 
 # (this step is slow since it calculates all the combinations of features.)
-shap_int <- shap.prep.interaction(xgb_mod = mod, X_train = as.matrix(dataX))
+shap_int <- shap.prep.interaction(xgb_mod = mod, X_train = dataX)
 # or:
-shap_int <- predict(mod, as.matrix(dataX), predinteraction = TRUE) # (the same)
+shap_int <- predict(mod, dataX, predinteraction = TRUE) # (the same)
 ```
 ```{r, echo = F}
 shap_int <- readRDS(here("Intermediate/190718_shap_int.rds"))

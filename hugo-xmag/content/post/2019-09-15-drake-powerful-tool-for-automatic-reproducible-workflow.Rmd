@@ -3,7 +3,8 @@ title: 'Drake: powerful tool for automatic reproducible workflow'
 author: Yang Liu
 date: '2019-09-15'
 slug: drake-powerful-tool-for-automatic-reproducible-workflow
-categories: []
+categories: 
+  - Reproducible Workflow
 tags:
   - Drake
   - Markdown
@@ -15,7 +16,9 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE, message=FALSE, warning=FALSE)
 ```
 
 
-Drake is a powerful tool for automatic reproducible workflow. Drake has great documentations online thus here I only show a simple example working with Rmarkdown. Rmarkdown file could be very slow to generate due to the calculations involved. And every small revise make you wait a long time if you re-render the file. When we use drake we can do all the calculations in advance thus the file rendering is super fast since we only need to re-calculate the revised object. 
+**`Drake`** is a powerful tool for automatic reproducible workflow. I found it a perfect match when used together with `RMarkdown`. There are great documentations online for `Drake` thus here I only show a simple example working with `RMarkdown`.   
+
+`RMarkdown` file could be very slow to generate if lots of calculations are involved. Any small revise makes you rerun everything. When we use `drake` we can do all the calculations in advance thus the rendering is super fast since we only need to re-do the revised object. 
 
 Using `SHAPforxgboost` as an example:
 
@@ -77,9 +80,9 @@ my_plan <- drake_plan(
   fig2 = shap.plot.dependence(data_long = shap_long, x = 'dayint', y = 'dayint', color_feature = 'Column_WV'),
   fig3 = shap.plot.dependence(data_long = shap_long, x = 'dayint', y = 'Column_WV', color_feature = 'Column_WV'),
   
-  report = rmarkdown::render(
+  report = `RMarkdown`::render(
     knitr_in("Code/drake_md_report.Rmd"),
-    output_format = rmarkdown::html_document(toc = TRUE))
+    output_format = `RMarkdown`::html_document(toc = TRUE))
 )
 
 nemia_config <- drake_config(my_plan, cache = cache) # show the dependency
@@ -90,8 +93,8 @@ vis_drake_graph(nemia_config)
 make(my_plan, cache = cache)
 ```
 
-Notice that it is not a good idea to run drake within a rmarkdown file, which is how I write this post. 
-Drake workflow should be an R script that uses Rmarkdown as the output tool.
+Notice that it is not a good idea to run drake within a `RMarkdown` file, which is how I write this post. 
+Drake workflow should be an R script that uses `RMarkdown` as the output tool.
 So I cannot really render this post as it is. 
 
 Here is how the dependency graph looks like:
