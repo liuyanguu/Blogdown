@@ -160,7 +160,7 @@ ggplot(data = dt1, aes(x = long, y = lat, group = group))+
 The map of China is more complicated. The related articles are all from several years ago. [This blog by Zhang, Zhen](http://imzhen.com/note/2015/09/16/20150916/) is among the best, it has referred some very good resources, expecially this one on Capital Of Statistics (CH)](https://cosx.org/2009/07/drawing-china-map-using-r). This is a blog from 10 years ago. So far I haven't noticed any map package **published on cran** for China like `usmap`, but it is not too complicated after having the shape files.
 
 The shape files can be downloaded from [the "Capital of Statistics" webiste](https://uploads.cosx.org/2009/07/chinaprovinceborderdata_tar_gz.zip), the zip file contains three files: `bou2_4p.dbf`, `bou2_4p.shp`, and `bou2_4p.shx`, we will only need the `bou2_4p.shp` file later.  
-For a quick download: you can also download from my [github repo of `blogdown`]()
+For a quick download: you can also download from my Github repo of `blogdown`: [Blogdown/blogData/China.shp](https://github.com/liuyanguu/Blogdown/)
 
 **Update 2020/06** 
 There is a [`chinamap`](https://github.com/GuangchuangYu/chinamap) package created by Guangchuang Yu (and his team), who is also the author of the package [`nCov2019`](https://github.com/GuangchuangYu/nCov2019). 
@@ -176,7 +176,7 @@ In Chinese (一点额外说明):
 
 ```{r}
 # China -------------------------------------------------------------------
-china_map <- rgdal::readOGR("D:/liuyanguu/Blogdown/blogData/China.shp/bou2_4p.shp") # read it locally
+china_map <- rgdal::readOGR(here::here("../Data/China.shp/bou2_4p.shp")) # read it locally
 # extract province information from shap file
 china_map_data = data.table::setDT(china_map@data)
 data.table::setnames(china_map_data, "NAME", "province")
@@ -200,8 +200,8 @@ dt_china <- china_map_data[dt_china]
 # add the province EN, CH label file
 province_CH <- china_map_data[, levels(province)] # the CH are in UTF-8 code
 province_EN <- c("Shanghai", "Yunnan", "Inner Mongolia", "Beijing", "Taiwan",
-"Jilin", "Sichuan", "Tianjin City", "Ningxia", "Anhui",
-"Shandong", "Shanxi", "Guangdong", "Guangxi ", "Xinjiang",
+"Jilin", "Sichuan", "Tianjin", "Ningxia", "Anhui",
+"Shandong", "Shanxi", "Guangdong", "Guangxi", "Xinjiang",
 "Jiangsu", "Jiangxi", "Hebei", "Henan", "Zhejiang",
 "Hainan", "Hubei", "Hunan", "Gansu", "Fujian",
 "Tibet", "Guizhou", "Liaoning", "Chongqing", "Shaanxi",
@@ -214,7 +214,7 @@ setkey(input_data, province_CH)
 setkey(dt_china, province)
 
 dt_china <- input_data[dt_china, nomatch = 0]
-
+# saveRDS(dt_china, file = "D:/liuyanguu/Blogdown/Data/dt_china.rds")
 # create label file of province `label_dt`
 centroids_cn <- get.centroids(data = dt_china, by_var = "province_CH")
 centroids_en <- get.centroids(data = dt_china, by_var = "province_EN")

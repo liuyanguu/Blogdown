@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE, message=FALSE, warning=FALSE)
 ```
 
 
-**`Drake`** is a powerful tool for automatic reproducible workflow. I found it a perfect match when used together with `RMarkdown`. There are great documentations online for `Drake` thus here I only show a simple example working with `RMarkdown`.   
+**`drake`** is a powerful tool for automatic reproducible workflow. I found it a perfect match when used together with `RMarkdown`. There are great documentations online for `drake` thus here I only show a simple example working with `RMarkdown`.   
 
 `RMarkdown` file could be very slow to generate if lots of calculations are involved. Any small revise makes you rerun everything. When we use `drake` we can do all the calculations in advance thus the rendering is super fast since we only need to re-do the revised object. 
 
@@ -25,12 +25,12 @@ Using `SHAPforxgboost` as an example:
 ```{r}
 # if needed, update drake
 if(packageVersion("drake") < "7.4") install.packages("drake")
-if(packageVersion("SHAPforxgboost") < "0.0.2") devtools::install_github("liuyanguu/SHAPforxgboost")
+if(packageVersion("SHAPforxgboost") < "0.0.3") install.packages("SHAPforxgboost")
 
 suppressPackageStartupMessages({
-library("drake")
-library("SHAPforxgboost")
-library("here")
+  library("drake")
+  library("SHAPforxgboost")
+  library("here")
 })
 
 # assign a place to store intermediate objects
@@ -93,14 +93,15 @@ vis_drake_graph(nemia_config)
 make(my_plan, cache = cache)
 ```
 
-Notice that it is not a good idea to run drake within a `RMarkdown` file, which is how I write this post. 
-Drake workflow should be an R script that uses `RMarkdown` as the output tool.
-So I cannot really render this post as it is. 
+Notice that it is not a good idea to run `drake` within a `RMarkdown` file as `drake` workflow should be an R script that uses `RMarkdown` as the output tool. So I cannot really render this post as it is. But these code can run as 
 
 Here is how the dependency graph looks like:
 ![](/post/2019-09-15-drake-powerful-tool-for-automatic-reproducible-workflow_files/dependency plot.PNG)
 
-If we add an extra figure, only this figure needs to made:
+If we add an extra figure, only this figure (the black _fig3_) needs to made:
 ![](/post/2019-09-15-drake-powerful-tool-for-automatic-reproducible-workflow_files/dependency plot2.PNG)
 
-Here is [how the md file looks like on github](https://github.com/liuyanguu/Blogdown/blob/master/hugo-xmag/Code/drake_md_report.Rmd)  
+Here is [how the md file looks like on Github](https://github.com/liuyanguu/Blogdown/blob/master/hugo-xmag/Code/drake_md_report.Rmd)  
+
+And the `drake` work plan generates a markdown results automatcially ("drake_md_report.html") which looks like this: 
+![](/post/2019-09-15-drake-powerful-tool-for-automatic-reproducible-workflow_files/md_report.PNG)
