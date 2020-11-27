@@ -1,8 +1,6 @@
 # some quick commend to use 
 
 library(blogdown)
-library(here)
-
 
 list.of.packages <- c("ggplot2", "data.table","plyr","QuantPsyc",
                       "glmnet","leaps","randomForest","gbm","caret","xgboost","Ckmeans.1d.dp",
@@ -24,6 +22,6 @@ if(length(new.packages)) install.packages(new.packages)
 blogdown::stop_server()
 blogdown::serve_site()
 
-# build_site()
+blogdown::build_site()
 
 

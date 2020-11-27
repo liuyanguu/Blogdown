@@ -31,7 +31,7 @@ Use the 'usethis' package [https://usethis.r-lib.org/](https://usethis.r-lib.org
 
 # Some of my own experience
 
-## Description
+## On description
 
 Single quote packages in both Title and Description fields. For example: "This package uses the SHAP values output from **'xgboost'**".
 
@@ -42,33 +42,36 @@ Single quote packages in both Title and Description fields. For example: "This p
 *How the DESCRIPTION looks like on cran:*   
 ![](/post/2019-07-28-some-experience-on-writing-r-package_files/the cran page.PNG){width=80%}
 
-## Namespace, load vs attach: 
+## Namespace
 
-  * If you have `@import ggplot2` anywhere in the R code, the "`ggplot2`" package will be **loaded** (but not **attached**) and your functions can use `ggplot2`. Your package knows to search in the **namespace** of `ggplot2`, but you cannot run functions from `ggplot2` without typing `library(ggplot2)`. This is the difference between **attach** and **load** as discussed in Hadley's "R" package book: Loading the package won't put its functions in the search path, but attaching will. I.e., when others load and attach your package, they can use your functions depending on `ggplot2` but they cannot use the functions from the `ggplot2` package unless they *load and attach* `ggplot2` by `library(ggplot2)`.
+### load vs attach
 
-  * If you put `ggplot2` in **Depends** in the **DESCRIPTION**, `library(yourPackage)` would load and attach `ggplot2` --- same as doing `library(ggplot2)`
+* If you have `@import ggplot2` anywhere in the R code, the "`ggplot2`" package will be **loaded** (but not **attached**) and your functions can use `ggplot2`. Your package knows to search in the **namespace** of `ggplot2`, but you cannot run functions from `ggplot2` without typing `library(ggplot2)`. This is the difference between **attach** and **load** as discussed in Hadley's "R" package book: loading the package won't put its functions in the search path, but attaching will.
 
-* If you name a function like `plot.shap.summary` it would be documented as S3 method even if you `@export plot.shap.summary` (Yes, you have to export the full function name, otherwise, it would be an S3 method in the namespace.). Don't name function this way to avoid confusion with S3method. For example, I changed the name to `shap.plot.summary`.
+  + I.e., when others **load and attach** your package, they can use your functions depending on `ggplot2` but they cannot use the functions from the `ggplot2` package unless they **load and attach** `ggplot2` by `library(ggplot2)`.
 
-* Each dataset that you attached using `use_data` need a document as well. Document it in a way similar to the function.
+  + If you put `ggplot2` in **Depends** in the **DESCRIPTION**, `library(yourPackage)` would load and attach `ggplot2` --- same as doing `library(ggplot2)` --- generally speaking you don't need to do so.
+
+* If you name a function like `plot.shap.summary` it would be documented automatically as S3 method even if you wrote `@export plot.shap.summary` (By the way, must export the full function name, otherwise, it would become an S3 method in the namespace). Don't name function this way to avoid confusion with S3method. For example, I changed the name to `shap.plot.summary`.
+
+## Documentation  
+
+* `@example R/example/sample1.R` will attach **sample1.R** in the folder "R/example/" to the documentation of the function. If you write out the samples directly in the function code, you use @example**s** instead of @example.  
 
 * All the function parameters should be documented using `@param`.  
 
-* When **devtools** check the program, there will be notes that "no visible binding for global variable". This is how to please the cran:
+## Potential problems when checking the package  
 
+* You cannot have things like a line break __`"\n"`__ in the documentation. It will give a warning of "unknown macro", and will actually cause error when you try to download and build the package from github.
+
+* When checking the package, there will be notes saying that "no visible binding for global variable". To remove such notes, adding anywhere in the script:
 ```{r }
 if(getRversion() >= "2.15.1")  {
-  utils::globalVariables(c(".", "rfvalue", "value", ... )) # all the variables complained
+  utils::globalVariables(c(".", "rfvalue", "value", "values complained")) # all the variables complained
   }
 ```
 
-* You cannot have things like line break __`"\n"`__ in the documentation. It will give a warning of "unknown macro", and will actually cause error when you try to download and build the package from github.
-
-## Files locations:
-
-* All the codes go into the **R/** folder  
-
-* `@example R/example/sample1.R` will attach **sample1.R** in the folder "R/example/" to the documentation of the function. If you write out the samples directly in the function code, you use @example**s** instead of @example.  
+* All the code scripts go into the **R/** folder. I think it seems OK to leave undocumented functions in a separate script as long as they are internally called.
 
 
 # Some nice suggestions from the CRAN editors when submitting the package
