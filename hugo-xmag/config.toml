@@ -47,3 +47,8 @@ paginate = 6
 [params.banner]
     src = "ocean 2.jpg"
     alt = "Text on Image"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

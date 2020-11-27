@@ -1,6 +1,6 @@
 [build]
 command = "hugo"
-publish = "public"
+publish = "D:/liuyanguu/liuyanguu.github.io/"
 [build.environment]
 HUGO_VERSION = "0.77.0"
 
