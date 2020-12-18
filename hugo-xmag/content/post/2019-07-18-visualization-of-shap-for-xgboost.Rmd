@@ -114,7 +114,7 @@ xgb.importance(model = m1)
 xgb.importance(model = m2)
 ```
 
-So in short, the order/structure of how the tree is built doesn't matter for SHAP, but matters for Gain, and the mean absolute SHAP is the same (20 vs. 20). The SHAP scores (SHAP.Fever, SHAP.Cough) for model `m1` and `m2`:
+In short, the order/structure of how the tree is built doesn't matter for SHAP, but matters for Gain, and the mean absolute SHAP is the same (20 vs. 20). The SHAP scores (SHAP.Fever, SHAP.Cough) for model `m1` and `m2`:
 Model `m1`: 
 ```{r, echo = FALSE}
 shap_m1 <- shap.values(m1, X_train = X1)
@@ -157,7 +157,6 @@ shap.plot.summary(shap_long)
 ```{r, eval = F}
 # option 1: from the xgboost model
 shap.plot.summary.wrap1(model = mod, X = dataX)
-
 
 # option 2: supply a self-made SHAP values dataset (e.g. sometimes as output from cross-validation)
 shap.plot.summary.wrap2(shap_score = shap_values$shap_score, X = dataX)
@@ -226,7 +225,7 @@ Here I show the interaction effects between Time trend and CWV (LEFT), and betwe
 
 ## SHAP force plot
 
-The SHAP force plot basically stacks these SHAP values for each observation, and show how the final output was obtained as a sum of each predictor's attribution.
+The SHAP force plot basically stacks these SHAP values for each observation, and show how the final output was obtained as a sum of each predictor's attributions.
 
 ```{r, fig.width = 8, fig.height = 6}
 # choose to show top 4 features by setting `top_n = 4`, 
