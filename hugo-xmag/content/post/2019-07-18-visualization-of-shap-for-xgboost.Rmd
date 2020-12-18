@@ -58,13 +58,11 @@ param_list <- list(objective = "reg:squarederror",  # For regression
                    eta = 0.02,
                    max_depth = 10,
                    gamma = 0.01,
-                   subsample = 0.95,
-                   nrounds = 10
+                   subsample = 0.95
                    )
-
 mod <- xgboost::xgboost(data = dataX, 
                         label = as.matrix(dataXY_df[[y_var]]), 
-                        params = param_list, nrounds = param_list$nrounds,
+                        params = param_list, nrounds = 10,
                         verbose = FALSE, nthread = parallel::detectCores() - 2,
                         early_stopping_rounds = 8)
                        
@@ -84,7 +82,7 @@ The sum of each row's SHAP values (plus the **BIAS** column, which is like an in
 # to show that `rowSum` is the output:
 shap_data <- copy(shap_values$shap_score)
 shap_data[, BIAS := shap_values$BIAS0]
-pred_mod <- predict(mod, dataX, ntreelimit = param_list$nrounds)
+pred_mod <- predict(mod, dataX, ntreelimit = 10)
 shap_data[, `:=`(rowSum = round(rowSums(shap_data),6), pred_mod = round(pred_mod,6))]
 rmarkdown::paged_table(shap_data[1:20,])
 ```
@@ -92,7 +90,7 @@ rmarkdown::paged_table(shap_data[1:20,])
 This offers model explanation for each observation in the dataset. And offers lots of flexibility when summarizing the whole model. 
 
 
-## Consistency in Global Feature Importance 
+## Consistency in global feature importance 
 **And why feature importance by Gain is inconsistent**
 
 Consistency means it is legitimate to compare feature importance across different models. When we modify the model to make a feature more important, the feature importance should increase. The paper used the following example:
@@ -109,9 +107,9 @@ knitr::kable(d)
 X1 = as.matrix(d[,.(Fever, Cough)])
 X2 = as.matrix(d[,.(Cough, Fever)])
 m1 = xgboost(
-  data = X1, label = d$y,base_score = 0, gamma = 0, eta = 1, lambda = 0,nrounds = 1,objective = "reg:linear",  verbose = F)
+  data = X1, label = d$y,base_score = 0, gamma = 0, eta = 1, lambda = 0,nrounds = 1, verbose = F)
 m2 = xgboost(
-  data = X2, label = d$y,base_score = 0, gamma = 0, eta = 1, lambda = 0,nrounds = 1,objective = "reg:linear",verbose = F)
+  data = X2, label = d$y,base_score = 0, gamma = 0, eta = 1, lambda = 0,nrounds = 1, verbose = F)
 xgb.importance(model = m1)
 xgb.importance(model = m2)
 ```
@@ -234,9 +232,8 @@ The SHAP force plot basically stacks these SHAP values for each observation, and
 # choose to show top 4 features by setting `top_n = 4`, 
 # set 6 clustering groups of observations.  
 plot_data <- shap.prep.stack.data(shap_contrib = shap_values$shap_score, top_n = 4, n_groups = 6)
-# choose to zoom in at location 500, set y-axis limit using `y_parent_limit`  
-# it is also possible to set y-axis limit for zoom-in part alone using `y_zoomin_limit`  
-shap.plot.force_plot(plot_data, zoom_in_location = 500, y_parent_limit = c(-1.5,1.5))
+# you may choose to zoom in at a location, and set y-axis limit using `y_parent_limit`  
+shap.plot.force_plot(plot_data, zoom_in_location = 5000, y_parent_limit = c(-0.1,0.1))
 # plot the 6 clusters
 shap.plot.force_plot_bygroup(plot_data)
 ```
