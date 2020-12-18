@@ -21,11 +21,11 @@ output:
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 ```
 
-# SHAP package in **R**
+# The `SHAPforxgboost` package
 
-I built an R package **SHAPforxgboost** that wraps all the R plotting functions illustrated in this post. It serves for now as the vignette for the package. 
+I wrote the R package [**SHAPforxgboost**](https://cran.r-project.org/web/packages/SHAPforxgboost/index.html) to cover all the plotting functions illustrated in this post. This post serves as the vignette for the package.
   
-Please install from cran or [Github page](https://github.com/liuyanguu/SHAPforxgboost).
+Please install from CRAN or [Github](https://github.com/liuyanguu/SHAPforxgboost).
 
 ```{r, eval = F, echo = T}
 install.packages("SHAPforxgboost")
@@ -38,11 +38,11 @@ devtools::install_github("liuyanguu/SHAPforxgboost")
 
 SHAP's main advantages are **local explanation** and **consistency** in global model structure.
   
-Tree-based machine learning models (random forest, gradient boosted trees, XGBoost) are the most popular non-linear models today. SHAP (SHapley Additive exPlnation) values is claimed to be the most advanced method to interpret results from tree-based models. It was based on Shaply values from game theory. 
+Tree-based machine learning models (random forest, gradient boosted trees, XGBoost) are the most popular non-linear models today. SHAP (SHapley Additive exPlanations) values is claimed to be the most advanced method to interpret results from tree-based models. It is based on Shaply values from game theory, and presents the feature importance using by marginal contribution to the model outcome. 
   
-The [github page](https://github.com/slundberg/shap) that explains the Python package developed by _Scott Lundberg_. Here we show all the visualizations in R. In r package _xgboost_ there is only one function _xgb.shap.plot_ that can make some simple dependence plots.
+This [Github page](https://github.com/slundberg/shap) explains the Python package developed by Scott Lundberg. Here we show all the visualizations in R. The `xgboost::xgb.shap.plot` function can also make simple dependence plot.
 
-## Local Explanation  
+## Local explanation  
 
 ```{r}
 # run the model with built-in data
@@ -54,19 +54,17 @@ library("data.table"); library("here")
 y_var <-  "diffcwv"
 dataX <- as.matrix(dataXY_df[,-..y_var])
 # hyperparameter tuning results
-param_dart <- list(objective = "reg:linear",  # For regression
-                   # booster = "dart",
-                   nrounds = 10,
-                   eta = 0.018,
+param_list <- list(objective = "reg:squarederror",  # For regression
+                   eta = 0.02,
                    max_depth = 10,
-                   gamma = 0.009,
-                   subsample = 0.98,
-                   colsample_bytree = 0.86
+                   gamma = 0.01,
+                   subsample = 0.95,
+                   nrounds = 10
                    )
 
 mod <- xgboost::xgboost(data = dataX, 
                         label = as.matrix(dataXY_df[[y_var]]), 
-                        xgb_param = param_dart, nrounds = param_dart$nrounds,
+                        params = param_list, nrounds = param_list$nrounds,
                         verbose = FALSE, nthread = parallel::detectCores() - 2,
                         early_stopping_rounds = 8)
                        
@@ -77,16 +75,16 @@ shap_values$mean_shap_score
 
 ```
 
-Shapley values are caculated across the entire dataset. The SHAP values dataset has the same dimention (`r paste(dim(dataX), collapse = ',')`) as the dataset of the independent variables (`r paste(dim(shap_values$shap_score), collapse = ',')`) fit into the xgboost model.  
+SHAP values are calculated for each cell in the training dataset. The SHAP values dataset (`shap_values$shap_score`) has the same dimension (`r paste(dim(dataX), collapse = ',')`) as the dataset of the independent variables (`r paste(dim(shap_values$shap_score), collapse = ',')`) fit into the xgboost model.  
 
-The sum of each row's SHAP values (plus the **BIAS**, which is like an intercept) is the predicted model output. As in the following table of SHAP values, `rowSum` equals the output `predict(xgb_mod)`.  I.e., the explanation's attribution values sum up to the model output (last column in the table below).
+The sum of each row's SHAP values (plus the **BIAS** column, which is like an intercept) is the predicted model output. As in the following table of SHAP values, `rowSum` equals the output `predict(xgb_mod)`.  I.e., the explanation's attribution values sum up to the model output (last column in the table below). This is the case in this example, but not so if you are running e.g. 5-fold cross-validation.
 
 
 ```{r}
-# show that rowSum is the output 
-shap_data <- shap_values$shap_score
+# to show that `rowSum` is the output:
+shap_data <- copy(shap_values$shap_score)
 shap_data[, BIAS := shap_values$BIAS0]
-pred_mod <- predict(mod, dataX, ntreelimit = param_dart$nrounds)
+pred_mod <- predict(mod, dataX, ntreelimit = param_list$nrounds)
 shap_data[, `:=`(rowSum = round(rowSums(shap_data),6), pred_mod = round(pred_mod,6))]
 rmarkdown::paged_table(shap_data[1:20,])
 ```
@@ -102,78 +100,71 @@ Consistency means it is legitimate to compare feature importance across differen
 ![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/SHAPsuppfig2.JPG)
 _paper 2, [S. Lundberg 2019 arXiv:1905.04610](https://arxiv.org/abs/1905.04610)_
 
-Use the dataset of Model A as a simple example, which feature goes **first** into the dataset generates **opposite** feature importance by Gain: whichever goes later (lower in the tree) gets more credit. **Notice the results from `xgb.importance` were flipped.**
+Use the dataset of Model A above as a simple example, which feature goes **first** into the dataset generates **opposite** feature importance by Gain: whichever goes later (lower in the tree) gets more credit. Notice below the feature importance from `xgb.importance` were flipped.
 
-The simple example with a dataset like: 
-```{r, echo = F}
-source(here::here("Code","prepare_data_model.R"))
-knitr::kable(d)
-```
-
-```{r, echo  = T}
+```{r, echo  = TRUE}
 library(xgboost)
+d <- data.table::as.data.table(cbind(Fever = c(0,0,1,1), Cough = c(0,1,0,1), y = c(0,0,0,80)))
+knitr::kable(d)
 X1 = as.matrix(d[,.(Fever, Cough)])
 X2 = as.matrix(d[,.(Cough, Fever)])
 m1 = xgboost(
   data = X1, label = d$y,base_score = 0, gamma = 0, eta = 1, lambda = 0,nrounds = 1,objective = "reg:linear",  verbose = F)
 m2 = xgboost(
   data = X2, label = d$y,base_score = 0, gamma = 0, eta = 1, lambda = 0,nrounds = 1,objective = "reg:linear",verbose = F)
-
 xgb.importance(model = m1)
 xgb.importance(model = m2)
 ```
 
-So one key message is, the order/structure of how the tree is built doesn't matter for SHAP, but matters for Gain, since the mean absolute SHAP is always the same (20 vs. 20). The explanation in the paper is a little bit confusing.
-
-```{r}
-knitr::kable(output_simple)
+So in short, the order/structure of how the tree is built doesn't matter for SHAP, but matters for Gain, and the mean absolute SHAP is the same (20 vs. 20). The SHAP scores (SHAP.Fever, SHAP.Cough) for model `m1` and `m2`:
+Model `m1`: 
+```{r, echo = FALSE}
+shap_m1 <- shap.values(m1, X_train = X1)
+names(shap_m1$shap_score) <- paste0("SHAP.", names(shap_m1$shap_score))
+output_simple1 <- cbind(x = X1, y.actual = d$y, y.pred = predict(m1, X1), shap_m1$shap_score, BIAS = shap_m1$BIAS0)
+rmarkdown::paged_table(output_simple1)
+```
+Model `m2`: 
+```{r, echo = FALSE}
+shap_m2 <- shap.values(m2, X_train = X2)
+names(shap_m2$shap_score) <- paste0("SHAP.", names(shap_m2$shap_score))
+output_simple2 <- cbind(x = X2, y.actual = d$y, y.pred = predict(m2, X2), shap_m2$shap_score, BIAS = shap_m2$BIAS0)
+rmarkdown::paged_table(output_simple2)
 ```
 
-Moreover, comparing Model B to Model A, Model B was revised in a way that it relies more on a given feature (Cough), so cough should be a more important feature. But of course Gain still get it wrong, and only SHAP gives the correct global feature importance. 
+Moreover, comparing Model B to Model A in the figure above, Model B's output was actually revised in a way that it relies more on a given feature (Cough, output scores increased by 10), so cough should be a more important feature. While Gain still get it wrong, SHAP reflects the correct feature importance. 
 
 
 # SHAP plots
-
 
 ## Summary plot  
 
 The summary plot shows global feature importance. The sina plots show the distribution of feature contributions to the model output (in this example, the predictions of CWV measurement error) using SHAP values of each feature for every observation. Each dot is an observation (station-day).
 
-```{r, eval = F}
+```{r, eval = TRUE}
 # To prepare the long-format data:
 shap_long <- shap.prep(xgb_model = mod, X_train = dataX)
 # is the same as: using given shap_contrib
 shap_long <- shap.prep(shap_contrib = shap_values$shap_score, X_train = dataX)
 ```
-```{r, echo = F}
-shap_long <- readRDS(here("Intermediate/190718_shap_long.rds"))
-```
+
 ```{r, fig.width = 6, fig.height = 5}
 # **SHAP summary plot**
 shap.plot.summary(shap_long)
-# diluted points:
-shap.plot.summary(shap_long, x_bound  = 1.2, dilute = 10)
 ```
 
 
-**Alternatives ways to make the same plot:**  
+**Alternative ways to make the same plot:**  
 
 ```{r, eval = F}
 # option 1: from the xgboost model
-shap.plot.summary.wrap1(mod, X = dataX)
+shap.plot.summary.wrap1(model = mod, X = dataX)
 
 
 # option 2: supply a self-made SHAP values dataset (e.g. sometimes as output from cross-validation)
-shap.plot.summary.wrap2(shap_values$shap_score, dataX)
-
+shap.plot.summary.wrap2(shap_score = shap_values$shap_score, X = dataX)
 ```
 
-
-The summary function offers better visualization compared to its Python counterpart using `shap.summary_plot(shap_values, dataX)`: 
-
-![](/post/2019-07-18-visualization-of-shap-for-xgboost_files/Python.summaryplot.PNG){width=60%}
-  
-  
 ## Dependence plot  
 
 It plots the SHAP values against the feature values for each variable. Again, each dot is a station-day observation.  
@@ -190,11 +181,9 @@ gridExtra::grid.arrange(g1, g2, ncol = 2)
 (B) SHAP values showing the contribution of the MAIAC CWV to predictions of CWV measurement error shown across the time period of the study. Note distinct y-axis scales for Terra and Aqua datasets. The color represents the MAIAC CWV for each observation (purple high, yellow low).  
 
 
-Here I choose to plot top 4 features using function `shap.plot.dependence`:
-  
+Here I choose to plot top 4 features using function `shap.plot.dependence`.  
+Plot SHAP value against feature value, without `color_feature` but has marginal distribution:
 ```{r, fig.width = 10, fig.height = 6}
-# without color version but has marginal distribution, 
-# just plot SHAP value against feature value:
 fig_list <- lapply(names(shap_values$mean_shap_score)[1:4], 
                    shap.plot.dependence, data_long = shap_long)
 gridExtra::grid.arrange(grobs = fig_list, ncol = 2)
