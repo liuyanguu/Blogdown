@@ -1,16 +1,13 @@
 ---
 title: Yang Liu
 ---
+Thank you for visiting my blog.
 
-I am a statistician working in the fields of healthcare, epidemiology, environmental science and urban science. I have lived in New York since 2014. 
+I am a statistician working on child mortality at UNICEF. Before joining UNICEF I worked on environmental epidemiology at Mount Sinai Hospital and before that on urban science at NYU Marron Institute. I have lived in New York since 2014. 
   
-I started my old blog in the beginning of 2018 to keep a simple record of my work and share some of my experience in R programming. Later I upgraded to this one.  
+I started my old blog in 2018 to keep a record of my work and share experience in R programming. Later I upgraded to this one, which is created by R `Blogdown`. 
 
-This blog was created using R package **blogdown** written by Yihui Xie. All the posts were written exclusively using **RMarkdown**.  
-  
-The banner photo was in Zakynthos, Greece in 2014.
-
-Welcome to check:  
-- [My old blog on google blogger](https://yangliuresearch.blogspot.com/)   
-- [My LinkedIn](https://www.linkedin.com/in/liuyangbaruch/)    
-- [Github page](https://github.com/liuyanguu)
+For more information: 
+- [Github](https://github.com/liuyanguu)
+- [LinkedIn](https://www.linkedin.com/in/liuyangbaruch/)    
+- [The old blog on google blogger](https://yangliuresearch.blogspot.com/)   
