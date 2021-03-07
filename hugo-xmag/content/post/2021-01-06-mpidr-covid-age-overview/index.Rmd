@@ -14,7 +14,7 @@ output:
 # RMarkdown into Github Pages
 
 Example of one of my Github pages:
-![](https://user-images.githubusercontent.com/11966330/110238300-eac54a80-7f0e-11eb-89df-31567a99fbcd.JPG)
+![](https://user-images.githubusercontent.com/11966330/110238718-2a8d3180-7f11-11eb-9655-dd6c4a4c5a3b.JPG)
 
 You might have read this [GitHub and RStudio](https://resources.github.com/whitepapers/github-and-rstudio/) tutorial by searching this topic. It is quite long and confusing as it tries to teach Git at the same time. You don't need any of those branch operations. And the example yaml code is not indented correctly (corrected below). 
 
@@ -88,4 +88,4 @@ Make sure the homepage is named as `index.html`. Go to repo settings -> GitHub P
 
 ![Github Page](https://user-images.githubusercontent.com/11966330/104090319-f7496180-5243-11eb-91f9-39cf0ddf30ab.JPG)
 
-You can only assign the short domain names like [liuyanguu.github.io](https://liuyanguu.github.io/) to one repo by changing the name of your repo into this URL (in my case, this blog, I have a repo named `liuyanguu.github.io`). All the rest pages/site hosted on Github will have the repo name attached behind: like [liuyanguu.github.io/COVerAge_Plot](https://liuyanguu.github.io/COVerAge_Plot/) (although this is not a page on my blog).
+You can only assign the short domain names like [liuyanguu.github.io](https://liuyanguu.github.io/) to one repo by changing the name of your repo into this URL (in my case, this blog, I have a repo named `liuyanguu.github.io`). All the rest pages and sites hosted on Github will have the repo name attached behind: [liuyanguu.github.io/COVerAge_Plot](https://liuyanguu.github.io/COVerAge_Plot/) (although this is not a page on this blog).
