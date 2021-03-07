@@ -1,0 +1,78 @@
+---
+title: RMarkdown to Github Pages
+author: Yang Liu
+date: '2021-01-06'
+slug: RMarkdown-to-Github-Pages
+categories:
+  - Github
+output:
+  blogdown::html_page:
+    toc: FALSE
+---
+
+<link href="{{< relref "post/2021-01-06-mpidr-covid-age-overview/index.html" >}}index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="{{< relref "post/2021-01-06-mpidr-covid-age-overview/index.html" >}}index_files/anchor-sections/anchor-sections.js"></script>
+
+
+<div id="rmarkdown-into-github-pages" class="section level1">
+<h1>RMarkdown into Github Pages</h1>
+<p>Example of one of my Github pages:
+<img src="https://user-images.githubusercontent.com/11966330/110238300-eac54a80-7f0e-11eb-89df-31567a99fbcd.JPG" /></p>
+<p>You might have read this <a href="https://resources.github.com/whitepapers/github-and-rstudio/">GitHub and RStudio</a> tutorial by searching this topic. It is quite long and confusing as it tries to teach Git at the same time. You don’t need any of those branch operations. And the example yaml code is not indented correctly (corrected below).</p>
+<p><strong>Here is the short version:</strong></p>
+<ol style="list-style-type: decimal">
+<li>Create in the root directory a yaml file: "_site.yml"</li>
+</ol>
+<p>Make sure the yaml format is indented correct. Most errors come from a wrong format of the yml file, for example, I’d get an error “Format is not of class rmarkdown” when the rendering completes if I remove one space before <code>theme: cosmo</code>.</p>
+<p>The following example as in the tutorial (format corrected) creates a navbar with website title “Cars”, home page named “HomePage” (using <em>index.html</em>) and another page called “Page 1” (using <em>speed-and-distance.html</em>).</p>
+<p>The name of the html files <code>href</code> match your RMarkdown html output. I’d just name the <strong>.Rmd</strong> files with the same names</p>
+<pre class="r"><code>name: &quot;cars&quot;
+output_dir: &quot;docs&quot;
+navbar:
+  title: &quot;Cars&quot;
+  left:
+    - text: &quot;HomePage&quot;
+      href: index.html
+    - text: &quot;Page 1&quot;
+      href: speed-and-distance.html
+output:
+  html_document:
+    theme: cosmo</code></pre>
+<p>How the navbar on the site looks like
+<img src="https://user-images.githubusercontent.com/11966330/104111727-a1ac9d80-52b3-11eb-98ae-164eb2d0008e.JPG" /></p>
+<p>Here is another example, the yaml file for the sample page posted in the beginning, you can check <a href="https://github.com/liuyanguu/COVerAge_Plot">the repo</a> to see how are the files organized.</p>
+<pre class="r"><code>name: &quot;COVerAge_Plot&quot;
+output_dir: &quot;docs&quot;
+navbar:
+  title: &quot;HOME&quot;
+  left: 
+    - text: &quot;Plots for COVerAGE-DB&quot;
+      href: index.html
+    - text: &quot;Country profile&quot;
+      href: country_report.html
+output:
+  html_document:
+    theme: cosmo</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Remove the <code>knit</code> and <code>output</code> part from the heading of <strong>.Rmd</strong> files
+So they don’t need their own <code>output</code> anymore</li>
+</ol>
+<pre class="r"><code>---
+title: &quot;Speed and Distance&quot;
+---</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Render site</li>
+</ol>
+<p>This will render every <strong>.Rmd</strong> file in the root directory.<br />
+Think the Github page as a one-page site with index.html as the homepage.</p>
+<pre class="r"><code>rmarkdown::render_site()</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Push to Github</li>
+</ol>
+<p>Make sure the homepage is named as <code>index.html</code>. Go to repo settings -&gt; GitHub Pages and point the source to where this<code>index.html</code>file is. Also you can change theme using the “Theme Chooser”.</p>
+<div class="figure">
+<img src="https://user-images.githubusercontent.com/11966330/104090319-f7496180-5243-11eb-91f9-39cf0ddf30ab.JPG" alt="" />
+<p class="caption">Github Page</p>
+</div>
+<p>You can only assign the short domain names like <a href="https://liuyanguu.github.io/">liuyanguu.github.io</a> to one repo by changing the name of your repo into this URL (in my case, this blog, I have a repo named <code>liuyanguu.github.io</code>). All the rest pages/site hosted on Github will have the repo name attached behind: like <a href="https://liuyanguu.github.io/COVerAge_Plot/">liuyanguu.github.io/COVerAge_Plot</a> (although this is not a page on my blog).</p>
+</div>
