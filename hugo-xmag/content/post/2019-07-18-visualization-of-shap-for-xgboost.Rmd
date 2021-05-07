@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 
 # The `SHAPforxgboost` package
 
-I wrote the R package [**SHAPforxgboost**](https://cran.r-project.org/web/packages/SHAPforxgboost/index.html) to cover all the plotting functions illustrated in this post. This post serves as the vignette for the package.
+I wrote the R package [**SHAPforxgboost**](https://cran.r-project.org/web/packages/SHAPforxgboost/index.html) to cover all the plotting functions illustrated in this post. This post serves as a major vignette for the package.
   
 Please install from CRAN or [Github](https://github.com/liuyanguu/SHAPforxgboost).
 

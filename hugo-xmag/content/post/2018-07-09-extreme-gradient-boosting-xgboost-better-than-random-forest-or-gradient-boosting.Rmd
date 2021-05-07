@@ -13,26 +13,25 @@ output:
     toc: true
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 ```
+
 # Overview
-I recently had the great pleasure to meet with Professor Allan Just and he introduced me to eXtreme Gradient Boosting (XGBoost). I have extended the earlier work [on my old blog](https://yangliuresearch.blogspot.com/2018/06/modeling-of-slums-model-selection-using.html) by comparing the results across XGBoost, Gradient Boosting (GBM), Random Forest, Lasso, and Best Subset. 
-The ensemble method is powerful as it combines the predictions from multiple machine learning algorithms together to make more accurate predictions than an individual model. Random Forest is among the most famous ones and it is easy to use. Random Forest is based on bagging (bootstrap aggregation) which averages the results over many decision trees from sub-samples. It further limits its search to only 1/3 of the features (in regression) to fit each tree, weakening the correlations among decision trees. It is easy to get a lower testing error compared to linear models. 
 
-Boosting takes slower steps, making predictors sequentially instead of independently. It repetitively leverages the patterns in residuals, strengthens the model with weak predictions, and make it better. 
-By combining the advantages from both random forest and gradient boosting, XGBoost gave the a prediction error __ten times__ lower than boosting or random forest in my case. 
+I recently had the great pleasure to meet with Professor Allan Just and he introduced me to eXtreme Gradient Boosting (XGBoost). I have extended the earlier work [on my old blog](https://yangliuresearch.blogspot.com/2018/06/modeling-of-slums-model-selection-using.html) by comparing the results across XGBoost, Gradient Boosting (GBM), Random Forest, Lasso, and Best Subset. The ensemble method is powerful as it combines the predictions from multiple machine learning algorithms together to make more accurate predictions than an individual model. Random Forest is among the most famous ones and it is easy to use. Random Forest is based on bagging (bootstrap aggregation) which averages the results over many decision trees from sub-samples. It further limits its search to only 1/3 of the features (in regression) to fit each tree, weakening the correlations among decision trees. It is easy to get a lower testing error compared to linear models.
 
-(__Correction!__) 18.10.3. When I further test this dataset I realized it was a __mistake__. There is indeed no magic in machine learning. When I got a testing error ten-time smaller than other methods, I should question first if this is a mistake. In the correct result XGBoost still gave the lowest testing rmse but was close to other two methods. 
+Boosting takes slower steps, making predictors sequentially instead of independently. It repetitively leverages the patterns in residuals, strengthens the model with weak predictions, and make it better. By combining the advantages from both random forest and gradient boosting, XGBoost gave the a prediction error **ten times** lower than boosting or random forest in my case.
 
-Link to the earlier version: _[Model Selection using Lasso and Best Subset](https://yangliuresearch.blogspot.com/2018/06/modeling-of-slums-model-selection-using.html)_
+(**Correction**) 18.10.3. When I further test this dataset I realized there was a **mistake**. There is indeed no magic in machine learning. When I got a testing error ten-time smaller than other methods, I should question if this is a mistake. In the corrected result XGBoost still gave the lowest testing RMSE but was close to other two methods.
+
+Link to the earlier version: [*Model Selection using Lasso and Best Subset*](https://yangliuresearch.blogspot.com/2018/06/modeling-of-slums-model-selection-using.html)
 
 # About the Data
-In sub-Saharan Africa, the region where deprivations in terms of living conditions are the most severe, slum dwellers represent an estimated 56% of the regions' urban population (UN Habitat, 2016). Measuring informal settlements in a reliable way is a critical challenge for the United Nations to monitor the Sustainable Development Goals (SDGs) towards its 2030 Agenda for Sustainable Development. This data was collected by Slum Dwellers International (SDI), which was nominated for the Nobel Peace Prize in 2014. By extracting valuable information from the data, We will help the UN to create better SDG indicators by making full use of available data.  
 
-In this exercise, we only model _Share_Temporary_: Share of Temporary Structure in Slums as the dependent variable. The independent variables are monitoring indicators like water, sanitation, housing conditions and overcrowding in African slum settlements. Dataset dimension is 973 x 153.
+In sub-Saharan Africa, the region where deprivations in terms of living conditions are the most severe, slum dwellers represent an estimated 56% of the regions' urban population (UN Habitat, 2016). Measuring informal settlements in a reliable way is a critical challenge for the United Nations to monitor the Sustainable Development Goals (SDGs) towards its 2030 Agenda for Sustainable Development. This data was collected by Slum Dwellers International (SDI), which was nominated for the Nobel Peace Prize in 2014. By extracting valuable information from the data, We will help the UN to create better SDG indicators by making full use of available data.
 
+In this exercise, we only model *Share_Temporary*: Share of Temporary Structure in Slums as the dependent variable. The independent variables are monitoring indicators like water, sanitation, housing conditions and overcrowding in African slum settlements. Dataset dimension is 973 x 153.
 
 ```{r loaddata, echo = FALSE}
 # 07/09/2018
@@ -113,10 +112,12 @@ dtrain <- xgb.DMatrix(X_train, label = Y_train)
 dtest <- xgb.DMatrix(X_test, label = Y_test)
 ```
 
-# 1. Extreme Gradient Boosting 
-* Random search: randomized parameters and update the record with best ones. 
-* It turns out to be a very interesting method to scan for hyperparameters. It will take a while for 100 iters.
-* The package `xgboost` is really fast.
+# 1. Extreme Gradient Boosting
+
+-   Random search: randomized parameters and update the record with best ones.
+-   It turns out to be a very interesting method to scan for hyperparameters. It will take a while for 100 iterations.
+-   The package `xgboost` is really fast.
+
 ```{r xgboost, eval = F}
 library(xgboost)
 # Randomize and bound
@@ -126,9 +127,9 @@ best_rmse <- Inf
 best_rmse_index <- 0
 
 set.seed(1234)
-# In reality, might need 100 or 200 iters
+# In reality, might need 100 or 200 iterations
 for (iter in 1:10) {
-  param <- list(objective = "reg:linear",  # For regression
+  param <- list(objective = "reg:squarederror",  # For regression
                 eval_metric = "rmse",      # rmse is used for regression
                 max_depth = sample(6:10, 1),
                 eta = runif(1, .01, .1),   # Learning rate, default: 0.3
@@ -158,12 +159,13 @@ for (iter in 1:10) {
 }
 ```
 
-* The best tuning parameters  
+-   The best tuning parameters\
+
 ```{r echo = FALSE}
 best_rmse_index <- 56
 best_rmse <- 0.2102
 best_seednumber <- 3660
-best_param <- list(objective = "reg:linear",  # For regression
+best_param <- list(objective = "reg:squarederror",  # For regression
                 eval_metric = "rmse",      # rmse is used for regression
                 max_depth = 9,
                 eta = 0.09822,   # Learning rate, default: 0.3
@@ -174,14 +176,13 @@ best_param <- list(objective = "reg:linear",  # For regression
 
 ```
 
-
-
 ```{r echo = FALSE}
 data.frame(best_param, best_rmse_index, best_rmse, best_seednumber)
 
 ```
 
-* MSE  
+-   MSE\
+
 ```{r echo = FALSE}
 # The best index (min_rmse_index) is the best "nround" in the model
 nround <- best_rmse_index
@@ -193,33 +194,39 @@ yhat_xg <- predict(xg_mod, newdata = X_test)
 
 ```
 
-* Feature Importance  
+-   Feature Importance\
+
 ```{r}
-importance_matrix <- xgb.importance(colnames(X_train), model = xg_mod)
+importance_matrix <- xgb.importance(feature_names = colnames(X_train), 
+                                    model = xg_mod)
 # Use `xgb.plot.importance`, which create a _barplot_ or use `xgb.ggplot.importance`
 library(Ckmeans.1d.dp) # for xgb.ggplot.importance
 xgb.ggplot.importance(importance_matrix, top_n = 15, measure = "Gain")
 ```
 
-* Plot only 2 trees as an example (use `trees`= 1)  
+-   Plot only 2 trees as an example (use `trees`= 1)\
+
 ```{r boostplot}
 library("DiagrammeR")
 xgb.plot.tree(model = xg_mod, trees = 1, feature_names = colnames(X_train))
 ```
 
+-   Plot all trees on one tree and plot it: A huge plot
 
-* Plot all trees on one tree and plot it: A huge plot
 ```{r}
 xgb.plot.multi.trees(model = xg_mod, n_first_tree = 1, feature_names = colnames(X_train))
 ```
 
-# 2. Gradient boosting  
-* Use library `gbm`  
-* Tuning Method: use `train` function from `caret` to scan a grid of parameters.
+# 2. Gradient boosting
+
+-   Use library `gbm`\
+-   Tuning Method: use `train` function from `caret` to scan a grid of parameters.
+
 ```{r}
 library(gbm)   # for Gradient boosting
 library(caret) # scan the parameter grid using `train` function
 ```
+
 ```{r, eval = FALSE}
 # time_now <- Sys.time()
 para_grid <- expand.grid(n.trees = (20*c(50:100)), 
@@ -237,22 +244,24 @@ gbm_caret <- train(Share_Temporary ~ ., mydata[train_idx,],
 ## Time difference of 2.283 mins
 ```
 
-* The tuning parameters that give the lowest MSE in training set CV.  
+-   The tuning parameters that give the lowest MSE in training set CV.
 
 ```{r, echo = F}
 gbm_caret <- readRDS(here::here("Intermediate", "180709_2_gbm_caret.rds"))
 gbm_caret$bestTune
 ```
 
-* MSE
+-   MSE
+
 ```{r, echo = F}
 yhat_boost <- predict(gbm_caret, mydata[-train_idx,])
 (MSE_boost <- mean((yhat_boost - Y_test)^2))
 ```
 
-
 # 3. Random Forest
-* Use library `randomForest`.  
+
+-   Use library `randomForest`.\
+
 ```{r, echo = TRUE}
 library(randomForest)
 rf.fit <- randomForest(Share_Temporary ~ ., data = mydata2, subset = train_idx)
@@ -261,31 +270,34 @@ yhat_bag <- predict(rf.fit, newdata = mydata2[-train_idx,])
 
 ```
 
-* MSE on the testing dataset:
+-   MSE on the testing dataset:
+
 ```{r, echo = F}
 (MSE_rForest <- mean((yhat_bag - Y_test)^2))
 ```
 
-* Feature Importance (showing top 15)
-    + The variables high on rank show the relative importance of features in the tree model
-    + For example, `Monthly Water Cost`, `Resettled Housing`, and `Population Estimate` are the most influential features.
-    
+-   Feature Importance (showing top 15)
+
+    -   The variables high on rank show the relative importance of features in the tree model
+    -   For example, `Monthly Water Cost`, `Resettled Housing`, and `Population Estimate` are the most influential features.
+
 ```{r, echo = TRUE}
 varImpPlot(rf.fit, n.var=15)
 ```
 
-
 # 4. Lasso
-* Use library `glmnet`.  
-Lasso is a shrinkage approach for feature selection. The tuning parameter _lambda_ is the magnitudes of penalty. A increasing penalty shrinks coefficients towards zero. The advantage of a linear model is that the result is highly interpretable. 
+
+-   Use library `glmnet`.\
+    Lasso is a shrinkage approach for feature selection. The tuning parameter *lambda* is the magnitudes of penalty. A increasing penalty shrinks coefficients towards zero. The advantage of a linear model is that the result is highly interpretable.
 
 ```{r echo = FALSE}
 # The lasso model, used to feed the selected lambda to predict fitted value
 lasso_mod <- glmnet(X_train, Y_train, alpha = 1)
 ```
 
-* We use cross-validation to choose the lambda and corresponding features  
-* The dotted line on the left is lambda.min, the lambda that generates the lowest MSE in the testing dataset. The dotted line on the right is lambda.1se, its corresponding MSE is not the lowest but acceptable, and it has even fewer features in the model. We use `lambda.1se` in our case.  
+-   We use cross-validation to choose the lambda and corresponding features\
+-   The dotted line on the left is lambda.min, the lambda that generates the lowest MSE in the testing dataset. The dotted line on the right is lambda.1se, its corresponding MSE is not the lowest but acceptable, and it has even fewer features in the model. We use `lambda.1se` in our case.\
+
 ```{r echo = TRUE}
 # Use cross-validation to select the lambda
 cv_lasso = cv.glmnet(X_train, Y_train, alpha=1) # Lasso regression
@@ -293,7 +305,9 @@ plot(cv_lasso)
 # lambda selected by 1se rule
 (best_lam <- cv_lasso$lambda.1se)
 ```
-* MSE  
+
+-   MSE\
+
 ```{r echo = TRUE}
 # Check prediction error in the testing dataset
 lasso_pred <- predict(lasso_mod, s = best_lam, newx = X_test)
@@ -302,9 +316,9 @@ lasso_pred <- predict(lasso_mod, s = best_lam, newx = X_test)
 
 ```
 
-* The regression model for the selected lambda (lasso).
-We extract the coefficients from the selected model and run a linear regression.
-* The model has used 17 variables.
+-   The regression model for the selected lambda (lasso). We extract the coefficients from the selected model and run a linear regression.
+-   The model has used 17 variables.
+
 ```{r echo = FALSE}
 # coef_table is class 'dgCMatrix' of the selected coefficients for each lambda 
 coef_table <- coef(cv_lasso, s = cv_lasso$lambda.1se)
@@ -315,9 +329,10 @@ reg_lasso_mod <- lm(data = sdi_sub, Share_Temporary~.)
 reg_lasso_summary <- summary(reg_lasso_mod)
 ```
 
-* The most useful predictors selected by lasso include `Water_MonthlyCost`, `Water_Sources: shared_taps`, `Resettled Housing` and `Eviction Threats`. For these variables, higher values or binary variables being _Yes_ are associated with fewer temporary structures in slums.  
+-   The most useful predictors selected by lasso include `Water_MonthlyCost`, `Water_Sources: shared_taps`, `Resettled Housing` and `Eviction Threats`. For these variables, higher values or binary variables being *Yes* are associated with fewer temporary structures in slums.
 
-* Relative importance of coefficients by showing standardized regression coefficients in decreasing order of their absolute values.  
+-   Relative importance of coefficients by showing standardized regression coefficients in decreasing order of their absolute values.\
+
 ```{r}
 coef_table2 <- data.frame(reg_lasso_summary$coefficients, stb = c(0, lm.beta(reg_lasso_mod)))
 coef_table2[order(abs(coef_table2$stb), decreasing = T),]
@@ -325,16 +340,17 @@ coef_table2[order(abs(coef_table2$stb), decreasing = T),]
 ```
 
 # 5. Best Subset
-* Use library `leaps`.  
-Best subset is a subset selection approach for feature selection. Not like stepwise or forward selection, best subset check all the possible feature combinations in theory. Since I select from 49 predictors but set the maximum size of subsets to be 25, there are C(49,25) + C(49,24) + ...+ C(49,0) = 345 trillion models to check. As I [discussed in my post](https://yangliuresearch.blogspot.com/2018/07/best-subset-selection-in-both-r-and-sas.html), it won't be possible to scan all of them. Both R and SAS use the _branch and bound_ algorithm to speed up the calculation. 
 
-* If without cross-validation we can use the traditional way to choose model:
-Adjusted R-squared, Cp(AIC), or BIC.
+-   Use library `leaps`.\
+    Best subset is a subset selection approach for feature selection. Not like stepwise or forward selection, best subset check all the possible feature combinations in theory. Since I select from 49 predictors but set the maximum size of subsets to be 25, there are C(49,25) + C(49,24) + ...+ C(49,0) = 345 trillion models to check. As I [discussed in my post](https://yangliuresearch.blogspot.com/2018/07/best-subset-selection-in-both-r-and-sas.html), it won't be possible to scan all of them. Both R and SAS use the *branch and bound* algorithm to speed up the calculation.
 
-* The turning parameter is to decide how many predictors to use. The selected number of feature also happens to be 17.  
-Cross-validation selects more features than BIC but fewer than Adj Rsq or Cp(AIC).
+-   If without cross-validation we can use the traditional way to choose model: Adjusted R-squared, Cp(AIC), or BIC.
 
-* The regression model selected and Standardized parameter estimates showing relative feature importance in decreasing order.
+-   The turning parameter is to decide how many predictors to use. The selected number of feature also happens to be 17.\
+    Cross-validation selects more features than BIC but fewer than Adj Rsq or Cp(AIC).
+
+-   The regression model selected and Standardized parameter estimates showing relative feature importance in decreasing order.
+
 ```{r echo=FALSE}
 # the chosen model from cross-validation
 reg.chosen4 <- lm(data = mydata2[train_idx, ], Share_Temporary~
@@ -363,23 +379,22 @@ coef_table_bs[order(abs(coef_table_bs$stb), decreasing = T),]
 
 ```
 
-* MSE
+-   MSE
+
 ```{r echo = FALSE}
 (MSE_best.subset <- mean((predict(reg.chosen4, mydata2[-train_idx,]) - Y_test)^2))
 
 ```
 
+# Compare MSE
 
-# Compare MSEs 
-* ~~The advantage of XGboost is highly distinguishing.~~  
-* XGBoost shows advantage in rmse but not too distinguishing  
-* XGBoost's real advantages include its speed and ability to handle missing values  
+-   XGBoost has the lowest mean squared error\
+-   The real advantages of XGBoost include its speed and the ability to handle missing values
+
 ```{r, echo = F}
-(MSE <- data.frame(MSE_xgb, MSE_boost,  MSE_Lasso, 
+(MSE <- data.frame(MSE_xgb, MSE_boost, MSE_Lasso, 
                    MSE_rForest, MSE_best.subset ))
 
 ```
 
-
-# Original Code are stored on [github](https://github.com/liuyanguu/Blogdown/blob/master/hugo-xmag/content/post/2018-07-09-extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting.Rmd)
-
+**Original code is saved on [github](https://github.com/liuyanguu/Blogdown/blob/master/hugo-xmag/content/post/2018-07-09-extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting.Rmd)**

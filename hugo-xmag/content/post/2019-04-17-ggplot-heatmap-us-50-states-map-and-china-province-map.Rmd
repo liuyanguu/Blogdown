@@ -29,7 +29,7 @@ I will show:
 
 # 1. US Map by state  
 
-The `dt1` below can be used by both methods, but to use `usmap` only need two variables: state names and value to plot.  
+The `dt1` below can be used by both methods, but using `usmap` only need two variables: state names and value to plot.  
 
 ```{r}
 suppressPackageStartupMessages({

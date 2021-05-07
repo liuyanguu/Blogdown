@@ -13,6 +13,7 @@ output:
     toc: true
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <link href="/rmarkdown-libs/pagedtable/css/pagedtable.css" rel="stylesheet" />
 <script src="/rmarkdown-libs/pagedtable/js/pagedtable.js"></script>
 <script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
@@ -27,11 +28,13 @@ output:
 
 <div id="TOC">
 <ul>
-<li><a href="#us-map-by-state">1. US Map by state</a><ul>
+<li><a href="#us-map-by-state">1. US Map by state</a>
+<ul>
 <li><a href="#method-1.-use-usmap">Method 1. Use <code>usmap</code></a></li>
 <li><a href="#method-2.-use-map_data-and-build-from-shape-files">Method 2. Use <code>map_data</code> and build from shape files</a></li>
 </ul></li>
-<li><a href="#china-map-by-province">2. China map by province</a><ul>
+<li><a href="#china-map-by-province">2. China map by province</a>
+<ul>
 <li><a href="#method-1.-china-map-by-province-using-downloaded-shap-files">Method 1. China map by province using downloaded shap files</a></li>
 <li><a href="#method-2.-using-geojsonmap-leaflet">Method 2. Using geojsonMap (leaflet)</a></li>
 </ul></li>
@@ -47,7 +50,7 @@ I will show:</p>
 </ol>
 <div id="us-map-by-state" class="section level1">
 <h1>1. US Map by state</h1>
-<p>The <code>dt1</code> below can be used by both methods, but to use <code>usmap</code> only need two variables: state names and value to plot.</p>
+<p>The <code>dt1</code> below can be used by both methods, but using <code>usmap</code> only need two variables: state names and value to plot.</p>
 <pre class="r"><code>suppressPackageStartupMessages({
 library(ggplot2)
 library(maps)
