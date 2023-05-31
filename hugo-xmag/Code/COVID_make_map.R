@@ -12,8 +12,7 @@ suppressPackageStartupMessages({
 #' world daily report
 #' 
 get.JHU.daily <- function(){
-  date0 <- format(Sys.Date()-2, format = "%m-%d-%Y")
-  url_daily_report <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/", as.character(date0) ,".csv")
+  url_daily_report <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/06-15-2020.csv")
   dt_JUH <- fread(url_daily_report)
   dt_JUH
 }
@@ -21,8 +20,7 @@ get.JHU.daily <- function(){
 #' USA daily report by state
 #' https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_daily_reports_us
 get.JHU.us.state <- function(){
-  date0 <- format(Sys.Date()-2, format = "%m-%d-%Y")
-  url_us_daily_report <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/", as.character(date0) ,".csv")
+  url_us_daily_report <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/06-15-2020.csv")
   dt_JUH_US <- fread(url_us_daily_report)
   dt_JUH_US
 }

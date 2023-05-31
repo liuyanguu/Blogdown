@@ -56,7 +56,7 @@ Compared to
 dt_JUH <- get.JHU.daily()
 dt_CN <- dt_JUH[Country_Region %in% c("China", "Taiwan*"),]
 dt_CN[Country_Region=="Taiwan*", Province_State:= "Taiwan"]
-dt_china_map <- readRDS("D:/liuyanguu/Blogdown/Data/dt_china.rds")
+dt_china_map <- readRDS(here::here("../Data/dt_china.rds"))
 setnames(dt_china_map, "province_EN", "state")
 unique(dt_CN$Province_State[!dt_CN$Province_State%in%dt_china_map$state])
 

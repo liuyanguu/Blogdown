@@ -1,12 +1,14 @@
-# some quick commend to use 
+# some quick commend to use
 
-library(blogdown)
+# this is a setup file
+
+library("blogdown")
 
 list.of.packages <- c("ggplot2", "data.table","plyr","QuantPsyc",
                       "glmnet","leaps","randomForest","gbm","caret","xgboost","Ckmeans.1d.dp",
                       "DiagrammeR", "knitr", "here",
                       "curl", "gplots", "dendextend", "colorspace",
-                      "raster", "rgdal", "Hmisc", "plyr", "RColorBrewer", "googledrive",
+                      "raster", "rgdal", "Hmisc", "plyr", "RColorBrewer", "googledrive", "usmap",
                       "SHAPforxgboost",
                       "leafletCN",
                       "devtools", "drake", "reshape2", "scatterplot3d", "readr")
@@ -14,10 +16,9 @@ new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"
 if(length(new.packages)) install.packages(new.packages)
 
 
-
-# here()
+here::here()
 # blogdown::new_site(theme = 'alanorth/hugo-theme-bootstrap4-blog')
-# setwd(here("hugo-xmag"))
+setwd(here::here("hugo-xmag"))
 
 blogdown::stop_server()
 blogdown::serve_site()
