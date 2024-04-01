@@ -29,20 +29,20 @@ paginate = 6
     weight = 2
 [[menu.main]]
     name = "About Me"
-    url = "/about me/"
+    url = "/about-me/"
     weight = 5
-    
+
 [params]
     description = "Yang Liu (liuyanguu)'s research blog built by R Blogdown."
     summary_length = 400
     github_edit = "https://github.com/liuyanguu/Blogdown/edit/master/hugo-xmag/content/"
-    footer = "@2021 Yang Liu _github.com/liuyanguu_. Powered by Github."
+    footer = "@2024 Yang Liu [github.com/liuyanguu](https://github.com/liuyanguu) Powered by Github."
 
 [params.text]
     back = "&larr; Back to Home"
     edit = "Edit this page &rarr;"
     truncated = "&hellip;"
-    
+
 [params.banner]
     src = "ocean 2.jpg"
     alt = "Text on Image"
