@@ -64,7 +64,7 @@ get_state_name <- function(){
   setkey(abb_names, state)
   
   states <- abb_names[states]
-  states
+  states[!is.na(abb)] # remove DC
 }
 
 make_heatmap <- function(
@@ -77,23 +77,33 @@ make_heatmap <- function(
 ){
   if(is.null(fill_var_label)) fill_var_label <- sub("_", " ", fill_var)
   if(is.null(label_var)) label_var <- "state"
-  dt1 <- setDT(data)[,c(state_var, fill_var), with = FALSE]
+  dt1 <- setDT(data)[, c(state_var, fill_var), with = FALSE]
   setnames(dt1, c("state", "value"))
-  setkey(dt1, state)
+  
+  # remove NA state
+  dt1 <- dt1[!is.na(state)]
   dt_state <- geo_data
   
   if(dt1$state[1]%in% unique(dt_state$state)) {
     dt1 <- dt1[state%in%unique(dt_state$state),]
     setkey(dt_state, state)
+    setkey(dt1, state)
+    
   } else if (dt1$state[1]%in% unique(dt_state$abb)) {
     dt1 <- dt1[state%in%unique(dt_state$abb),]
+    setnames(dt1, "state", "abb")
     setkey(dt_state, abb)
+    setkey(dt1, abb)
+    
   } else if(dt1$state[1]%in% unique(dt_state$state_upper)){
     dt1 <- dt1[state%in%unique(dt_state$state_upper),]
+    setnames(dt1, "state", "state_upper")
     setkey(dt_state, state_upper)
+    setkey(dt1, state_upper)
   } else {stop("Cannot match state names, three allowed formats: ", paste(dt_state[1, 1:3], collapse = ", "))}
+  
   # join data to map: left join states to dt1
-  dt2 <- dt1[dt_state, nomatch = 0]
+  dt2 <- dt1[dt_state]
   dt2
   
   if(nrow(dt2)>0){

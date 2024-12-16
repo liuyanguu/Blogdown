@@ -9,8 +9,10 @@ tags: []
 ---
 
 <div style="text-align: center;">
-**Statistics of 2024 National K-12 Grades Championship**
+**Statistics of 2024 National K-12 Grades Championship**    
+https://www.uschess.org/results/2024/k12/
 </div>
+
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE,
@@ -58,6 +60,16 @@ mytheme1 <- theme_minimal() +
     plot.title = element_text(hjust = 0.5, size = 14, face = "bold") # Enlarged title size
     )
 
+
+#0. map of participants by state -------------------------------------------------------
+source(here::here("Code/COVID_make_map.R"))
+dt_US <- combined_data[, .(N = .N), by = St]
+US_map_participant <- make_heatmap(data = dt_US, 
+            geo_data = get_state_name(),
+            state_var = "St", fill_var = "N", label_var = "abb", 
+            fill_var_label = "Number of participants")
+
+#1. bar of participants by grade ------------------------------------------------------
 g_bar <-
   # Create a bar chart from combined_data
   ggplot(combined_data, aes(x = Grade)) +
@@ -128,7 +140,10 @@ p_scatter <- ggplot(combined_data, aes(x = Rate, y = Percentile)) +
   mytheme1 + theme(legend.position = "none") + 
   ggpubr::stat_cor(method = "pearson")
 
-p_scatter_group <- p_scatter + facet_wrap(~ Grade_full, ncol = 3 , scales = "free_y")
+# scatterplot by grade
+p_scatter_group <- p_scatter + 
+  ggh4x::facet_wrap2(~ Grade_full, ncol = 2, axes = "all", scales = "free_y")
+# ggsave("temp/scatter_facet.png", p_scatter_group, width = 12, height = 24, bg = "white")
 
 # Step 3: Add marginal histograms
 p_scatter_all <- ggExtra::ggMarginal(p_scatter, type = "histogram", bins = 50, size = 10, color = "white", fill = "grey")
@@ -139,7 +154,7 @@ unique_pts <- sort(unique(combined_data$Pts))
 dt_mean_pts <- combined_data[, .(MeanRate = mean(Rate, na.rm = TRUE)), by = Pts]
 
 dt_mean_pts[, label:= round(MeanRate, 0)]
-g_points_rating <- ggplot(combined_data, aes(x = Pts , y = Rate, color = Grade)) +
+g_points_rating0 <- ggplot(combined_data, aes(x = Pts , y = Rate, color = Grade)) +
   geom_sina(aes(group = Pts), alpha = 0.7, size = 2, maxwidth = 1) + # Add sina plot with transparency and point size
   geom_boxplot(aes(group = Pts), outlier.shape = NA, width = 0.3, alpha = 0.5) + # Boxplot by Grade
   # geom_point(data = dt_mean, aes(x = Grade, y = MeanRate), 
@@ -153,7 +168,7 @@ g_points_rating <- ggplot(combined_data, aes(x = Pts , y = Rate, color = Grade))
   mytheme1
 
 
-g_points_rating <- ggExtra::ggMarginal(g_points_rating, type = "histogram", bins = 50, size = 10, color = "white", fill = "grey")
+g_points_rating <- ggExtra::ggMarginal(g_points_rating0, type = "histogram", bins = 30, size = 10, color = "white", fill = "grey")
 
 g_points_rating_group <- ggplot(combined_data, aes(x = Pts , y = Rate, color = Grade)) +
   geom_sina(aes(group = Pts), alpha = 0.7, size = 2, maxwidth = 1) + # Add sina plot with transparency and point size
@@ -161,8 +176,21 @@ g_points_rating_group <- ggplot(combined_data, aes(x = Pts , y = Rate, color = G
   labs( y = "Rating", x = "Points achieved", color = "Grade" ) + 
     scale_x_continuous(breaks = unique_pts) +  # Set x-axis ticks to unique Pts values
   mytheme1 + theme(axis.text = element_text(size = 8)) +
-  ggh4x::facet_wrap2(~ Grade_full, ncol = 3, axes = "all", scales = "free_y")
+  ggh4x::facet_wrap2(~ Grade_full, ncol = 2, axes = "all", scales = "free_y")
+
+# ggsave("temp/g_points_rating_group.png", g_points_rating_group, width = 12, height = 24, bg = "white")
+
 ```
+
+# Over 2,500 contestants from 43 states participated in the 2024 National K-12 Grades Championship
+
+```{r, fig.width = 6, fig.height = 4}
+US_map_participant
+```
+
+
+The 2024 National K-12 Grades Championship attracted a total of `r formatC(combined_data[,.N], format = "d", big.mark = ",")` participants from `r combined_data[, uniqueN(St)]` states. There are over 1,000 participants from New York, followed by Virginia (250 participants) and New Jersey (218 participants). 
+
 
 ## Fourth grade (age 9) is the most competitive, with nearly 350 participants.
 
@@ -195,9 +223,8 @@ p_scatter_all
 
 ## Percentile vs. Rating by Grade!
 
-```{r, fig.width = 12, fig.height = 12}
+```{r, fig.width = 12, fig.height = 24}
 p_scatter_group
-# ggsave("temp/scatter_facet.png", p_scatter_group, width = 12, height = 12, bg = "white")
 
 ```
 
@@ -214,8 +241,8 @@ g_points_rating
 
 ## Points Achieved vs. Rating by Grade!
 
-```{r, fig.width = 12, fig.height = 12}
+```{r, fig.width = 12, fig.height = 24}
 g_points_rating_group
-# ggsave("temp/g_points_rating_group.png", g_points_rating_group, width = 12, height = 12, bg = "white")
+
 
 ```

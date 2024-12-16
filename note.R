@@ -4,7 +4,7 @@
 
 library("blogdown")
 
-list.of.packages <- c("ggplot2", "data.table","plyr","QuantPsyc",
+list.of.packages <- c("ggplot2", "data.table","plyr","QuantPsyc", "ggh4x", "ggforce",
                       "glmnet","leaps","randomForest","gbm","caret","xgboost","Ckmeans.1d.dp",
                       "DiagrammeR", "knitr", "here",
                       "curl", "gplots", "dendextend", "colorspace",
