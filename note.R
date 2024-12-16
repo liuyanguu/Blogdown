@@ -17,12 +17,9 @@ if(length(new.packages)) install.packages(new.packages)
 
 
 here::here()
-# blogdown::new_site(theme = 'alanorth/hugo-theme-bootstrap4-blog')
-setwd(here::here("hugo-xmag"))
-
-
 blogdown::stop_server()
 blogdown::serve_site()
 blogdown::build_site()
+
 
 
