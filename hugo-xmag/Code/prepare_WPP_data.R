@@ -20,7 +20,8 @@ plot.wpp.data <- function(data_plot, title0 = "", by_sex = FALSE){
   highest_point <- data_plot_sex[Time == max_value_year]
   lowest_point <- data_plot_sex[Time %in% c(1950, 2100)]
   y_max <- max(data_plot_sex$Pop_million)
-  value_2024 <- data_plot_sex[Time == CURRENT_YEAR]
+  dt_value_current <- data_plot_sex[Time == CURRENT_YEAR]
+  # dt_value_2030    <- data_plot_sex[Time == 2030]
 
   col_red      <- "#E2231A"
   col_orange   <- "#F26A21"
@@ -40,7 +41,8 @@ plot.wpp.data <- function(data_plot, title0 = "", by_sex = FALSE){
                        breaks = scales::pretty_breaks()) +  # Set y-axis limit
     scale_x_continuous(limit = c(1945, 2100), breaks = scales::pretty_breaks()) +  # Set x-axis limit
     # point highlighting the current year
-    geom_point(data = value_2024, aes(x = Time, y = Pop_million), size = 3) +
+    geom_point(data = dt_value_current, aes(x = Time, y = Pop_million), size = 3) +
+    # geom_point(data = dt_value_2030, aes(x = Time, y = Pop_million), size = 3) +
 
     theme_classic() +  # Classic theme for clean look
     labs(title = title0, x = "Year", y = "Population (in millions)", color = "") +
@@ -59,11 +61,11 @@ plot.wpp.data <- function(data_plot, title0 = "", by_sex = FALSE){
         # labeling
         geom_text(data = lowest_point[Sex=="Male"], aes(x = Time, y = Pop_million,  label = label),
                                  size = text_size2, vjust = -1, show.legend = FALSE) + # Add value label
-        geom_text(data = value_2024[Sex=="Male"], aes(x = Time, y = Pop_million, label = paste0(label, "\n(", CURRENT_YEAR, ")")),
+        geom_text(data = dt_value_current[Sex=="Male"], aes(x = Time, y = Pop_million, label = paste0(label, "\n(", CURRENT_YEAR, ")")),
                                  size = text_size2, vjust = -1, show.legend = FALSE) +
         geom_text(data = lowest_point[Sex=="Female"], aes(x = Time, y = Pop_million,  label = label),
                                  size = text_size2, vjust = 1.2, show.legend = FALSE) + # Add value label
-        geom_text(data = value_2024[Sex=="Female"], aes(x = Time, y = Pop_million, label = paste0(label, "\n(", CURRENT_YEAR, ")")),
+        geom_text(data = dt_value_current[Sex=="Female"], aes(x = Time, y = Pop_million, label = paste0(label, "\n(", CURRENT_YEAR, ")")),
                                  size = text_size2, vjust = 1.2, show.legend = FALSE) +
 
         theme(legend.position = "bottom")
@@ -80,8 +82,10 @@ plot.wpp.data <- function(data_plot, title0 = "", by_sex = FALSE){
         # label for current and 1950, 2100
         geom_text(data = lowest_point, aes(x = Time, y = Pop_million,  label = label),
                   size = text_size2, vjust = 1.5, show.legend = FALSE) + # Add value label
-        geom_text(data = value_2024, aes(x = Time, y = Pop_million, label = paste0(label, "\n(", CURRENT_YEAR, ")")),
+        geom_text(data = dt_value_current, aes(x = Time, y = Pop_million, label = paste0(label, "\n(", CURRENT_YEAR, ")")),
                   size = text_size2, vjust = 1.5, show.legend = FALSE) +
+        # geom_text(data = dt_value_2030, aes(x = Time, y = Pop_million, label = paste0(label, "\n(", 2030, ")")),
+        #           size = text_size2, vjust = -0.5, show.legend = FALSE) +
 
         theme(legend.position = "none") # Remove legend if total sex
     }
