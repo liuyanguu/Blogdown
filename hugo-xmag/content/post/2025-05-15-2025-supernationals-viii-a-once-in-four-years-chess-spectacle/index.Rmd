@@ -398,7 +398,7 @@ if (SAVE_png) ggsave("temp/scatter_standing_vs_rating_facet.png", p_scatter_grou
 ## Over 5,300 contestants from 47 states participated in the 2025 SuperNationals VIII
 
 * 4,600 K-12 students competed across 26 sections
-* 1,100 contestants (23%) played in the six championship sections
+* 1,100 contestants (23% of the 4,600) played in the six championship sections
 * Additionally, 700 players took part in the Blitz tournament  
 
 ```{r, fig.width = 8, fig.height = 6}
