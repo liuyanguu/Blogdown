@@ -87,7 +87,6 @@ mydata[, c("Obs. Count", "City", "Country",
                        names(mydata)[grepl("Structure", names(mydata))],
                        names(mydata)[grepl("Ownership", names(mydata))]):=NULL]
 # remove what are highly correlated to dependent variable
-# write.csv(mydata, file = "D:/mydata_slum.csv")
 
 # divide training and test dataset
 set.seed(123)

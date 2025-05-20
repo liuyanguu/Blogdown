@@ -22,3 +22,5 @@
 #    fortunes::fortune()
 
 options(blogdown.initial_files.number = 0)
+
+options(blogdown.hugo.version = "0.112.7")

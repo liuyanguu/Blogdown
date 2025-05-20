@@ -5,7 +5,8 @@ date: '2024-12-15'
 slug: 2024-national-k-12-does-a-higher-rating-lead-to-a-higher-standing
 categories:
   - Blog
-tags: []
+tags:
+  - Chess
 ---
 
 <div style="text-align: center;">

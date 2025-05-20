@@ -1,0 +1,12 @@
+name: K12_National_Standing_vs_Rating
+title: K12_National_Standing_vs_Rating
+username: liuyanguu
+account: liuyanguu
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13614294
+bundleId: 9540772
+url: https://liuyanguu.shinyapps.io/K12_National_Standing_vs_Rating/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

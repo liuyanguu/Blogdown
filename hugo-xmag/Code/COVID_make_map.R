@@ -135,10 +135,10 @@ make_heatmap <- function(
       labs(fill = fill_var_label, x = "Longitude", y = "Latitude") + 
       coord_map() + 
       # map scale
-      ggsn::scalebar(data = dt2, dist = 500, dist_unit = "km",
-                     border.size = 0.4, st.size = 3,
-                     box.fill = c('black','white'),
-                     transform = TRUE, model = "WGS84") + 
+      # ggsn::scalebar(data = dt2, dist = 500, dist_unit = "km",
+      #                border.size = 0.4, st.size = 3,
+      #                box.fill = c('black','white'),
+      #                transform = TRUE, model = "WGS84") + 
       theme_void() + 
       # put legend at the bottom, adjust legend title and text font sizes
       theme(legend.position = "bottom",
