@@ -1,0 +1,15 @@
+---
+title: "About"
+toc: false
+format:
+  html:
+    code-tools: false
+---
+
+Thank you for visiting my blog.
+
+I am a statistician focused on child mortality at UNICEF. Before this role, I worked on environmental epidemiology projects at Mount Sinai Hospital and urban science research at the NYU Marron Institute. I have lived in New York since 2014.
+
+I started this blog in 2018 to document projects and share practical notes from my R programming work. The site is now built with Quarto so the writing, code, figures, and publishing workflow can stay closer together.
+
+You can also find me on [GitHub](https://github.com/liuyanguu), [LinkedIn](https://www.linkedin.com/in/liuyangbaruch/), and my older [Google Blogger site](https://yangliuresearch.blogspot.com/).

@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/plot-multiple-countries-on-the-world-map/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/plot-multiple-countries-on-the-world-map/">
+---
+
+<script>window.location.replace("/posts/plot-multiple-countries-on-the-world-map/");</script>
+
+This page has moved to [/posts/plot-multiple-countries-on-the-world-map/](/posts/plot-multiple-countries-on-the-world-map/).

@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/spatial-data-in-r-dividing-raster-layers-into-equal-area-rings/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/spatial-data-in-r-dividing-raster-layers-into-equal-area-rings/">
+---
+
+<script>window.location.replace("/posts/spatial-data-in-r-dividing-raster-layers-into-equal-area-rings/");</script>
+
+This page has moved to [/posts/spatial-data-in-r-dividing-raster-layers-into-equal-area-rings/](/posts/spatial-data-in-r-dividing-raster-layers-into-equal-area-rings/).

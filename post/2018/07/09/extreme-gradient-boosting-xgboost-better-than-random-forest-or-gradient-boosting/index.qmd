@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/">
+---
+
+<script>window.location.replace("/posts/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/");</script>
+
+This page has moved to [/posts/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/](/posts/extreme-gradient-boosting-xgboost-better-than-random-forest-or-gradient-boosting/).

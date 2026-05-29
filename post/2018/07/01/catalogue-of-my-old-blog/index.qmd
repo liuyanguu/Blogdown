@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/catalog-of-my-old-blog/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/catalog-of-my-old-blog/">
+---
+
+<script>window.location.replace("/posts/catalog-of-my-old-blog/");</script>
+
+This page has moved to [/posts/catalog-of-my-old-blog/](/posts/catalog-of-my-old-blog/).

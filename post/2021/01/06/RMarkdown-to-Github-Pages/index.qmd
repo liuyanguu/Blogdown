@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/r-markdown-to-github-pages/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/r-markdown-to-github-pages/">
+---
+
+<script>window.location.replace("/posts/r-markdown-to-github-pages/");</script>
+
+This page has moved to [/posts/r-markdown-to-github-pages/](/posts/r-markdown-to-github-pages/).

@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/drake-powerful-tool-for-automatic-reproducible-workflow/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/drake-powerful-tool-for-automatic-reproducible-workflow/">
+---
+
+<script>window.location.replace("/posts/drake-powerful-tool-for-automatic-reproducible-workflow/");</script>
+
+This page has moved to [/posts/drake-powerful-tool-for-automatic-reproducible-workflow/](/posts/drake-powerful-tool-for-automatic-reproducible-workflow/).

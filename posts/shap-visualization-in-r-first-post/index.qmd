@@ -1,0 +1,223 @@
+---
+title: "SHAP Visualization in R (first post)"
+author: "Yang Liu"
+date: "2018-10-14"
+description: "Example 1 SHAP summary plot Alternative ways: SHAP dependence plot SHAP interaction effect plot SHAP force plot Example 2 Summary plot Dependence plot for each feature Force plot Stack plot by clustering groups Update 1..."
+categories:
+  - "Machine Learning"
+  - "Data Visualization"
+tags:
+  - "XGBoost"
+  - "SHAP"
+page-layout: article
+execute:
+  freeze: true
+  eval: false
+resources:
+  - "source.Rmd"
+  - "index_files/**"
+  - "images/**"
+  - "temp/**"
+  - "2018-10-05-shap-visualization-for-xgboost_files/**"
+  - "*.png"
+  - "*.jpg"
+  - "*.jpeg"
+  - "*.JPG"
+  - "*.PNG"
+  - "*.gif"
+  - "*.svg"
+  - "*.rds"
+  - "*.csv"
+  - "*.xlsx"
+---
+
+::: {.callout-note appearance="simple"}
+This migrated post preserves the original rendered output. The original R Markdown source is available as [source.Rmd](source.Rmd).
+:::
+
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+<div id="TOC">
+<ul>
+<li><a href="#example-1">Example 1</a>
+<ul>
+<li><a href="#shap-summary-plot">SHAP summary plot</a></li>
+<li><a href="#alternative-ways">Alternative ways:</a></li>
+<li><a href="#shap-dependence-plot">SHAP dependence plot</a></li>
+<li><a href="#shap-interaction-effect-plot">SHAP interaction effect plot</a></li>
+<li><a href="#shap-force-plot">SHAP force plot</a></li>
+</ul></li>
+<li><a href="#example-2">Example 2</a>
+<ul>
+<li><a href="#summary-plot">Summary plot</a></li>
+<li><a href="#dependence-plot-for-each-feature">Dependence plot for each feature</a></li>
+<li><a href="#force-plot">Force plot</a></li>
+<li><a href="#stack-plot-by-clustering-groups">Stack plot by clustering groups</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>Update 19/07/21:</p>
+<p>Since my R Package <strong>SHAPforxgboost</strong> has been released on CRAN, I updated this post using the new functions and illustrate how to use these functions using two datasets. For more information, please refer to: <a href="https://liuyanguu.github.io/post/2019/07/18/visualization-of-shap-for-xgboost/">SHAP visualization for XGBoost in R</a></p>
+<div id="example-1" class="section level1">
+<h1>Example 1</h1>
+<p>This is the example I used in the package <strong>SHAPforxgboost</strong></p>
+<pre class="r"><code># Example use iris
+suppressPackageStartupMessages({
+library(SHAPforxgboost)
+library(xgboost)
+library(data.table)
+library(ggplot2)
+})
+
+X1 = as.matrix(iris[,-5])
+mod1 = xgboost::xgboost(
+  data = X1, label = iris$Species, gamma = 0, eta = 1, 
+  lambda = 0,nrounds = 1, verbose = F)
+
+# shap.values(model, X_dataset) returns the SHAP
+# data matrix and ranked features by mean|SHAP|
+shap_values &lt;- shap.values(xgb_model = mod1, X_train = X1)
+shap_values$mean_shap_score</code></pre>
+<pre><code>## Petal.Length  Petal.Width Sepal.Length  Sepal.Width 
+##   0.62935975   0.21664035   0.02910357   0.00000000</code></pre>
+<pre class="r"><code>shap_values_iris &lt;- shap_values$shap_score
+
+# shap.prep() returns the long-format SHAP data from either model or
+shap_long_iris &lt;- shap.prep(xgb_model = mod1, X_train = X1)
+# is the same as: using given shap_contrib
+shap_long_iris &lt;- shap.prep(shap_contrib = shap_values_iris, X_train = X1)</code></pre>
+<div id="shap-summary-plot" class="section level2">
+<h2>SHAP summary plot</h2>
+<pre class="r"><code>shap.plot.summary(shap_long_iris)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code># option of dilute is offered to make plot faster if there are over thousands of observations
+# please see documentation for details. 
+shap.plot.summary(shap_long_iris, x_bound  = 1.5, dilute = 10)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+</div>
+<div id="alternative-ways" class="section level2">
+<h2>Alternative ways:</h2>
+<pre class="r"><code># option 1: from the xgboost model
+shap.plot.summary.wrap1(mod1, X1, top_n = 3)
+
+# option 2: supply a self-made SHAP values dataset (e.g. sometimes as output from cross-validation)
+shap.plot.summary.wrap2(shap_score = shap_values$shap_score, X1, top_n = 3)</code></pre>
+</div>
+<div id="shap-dependence-plot" class="section level2">
+<h2>SHAP dependence plot</h2>
+<pre class="r"><code>shap.plot.dependence(data_long = shap_long_iris, x=&quot;Petal.Length&quot;,
+                           y = &quot;Petal.Width&quot;, color_feature = &quot;Petal.Width&quot;)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>The without color version, just plot SHAP value against feature value:</p>
+<pre class="r"><code>shap.plot.dependence(data_long = shap_long_iris, &quot;Petal.Length&quot;)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="shap-interaction-effect-plot" class="section level2">
+<h2>SHAP interaction effect plot</h2>
+<pre class="r"><code># To get the interaction SHAP dataset for plotting:
+# fit the xgboost model
+mod1 = xgboost::xgboost(
+  data = as.matrix(iris[,-5]), label = iris$Species,
+  gamma = 0, eta = 1, lambda = 0,nrounds = 1, verbose = FALSE)
+# Use either:
+data_int &lt;- shap.prep.interaction(xgb_mod = mod1,
+                                  X_train = as.matrix(iris[,-5]))
+# or:
+shap_int &lt;- predict(mod1, as.matrix(iris[,-5]),
+                    predinteraction = TRUE)
+
+# **SHAP interaction effect plot **
+shap.plot.dependence(data_long = shap_long_iris,
+                           data_int = shap_int_iris,
+                           x=&quot;Petal.Length&quot;,
+                           y = &quot;Petal.Width&quot;,
+                           color_feature = &quot;Petal.Width&quot;)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="shap-force-plot" class="section level2">
+<h2>SHAP force plot</h2>
+<pre class="r"><code># **SHAP force plot**
+plot_data &lt;- shap.prep.stack.data(shap_contrib = shap_values_iris,
+                                  n_groups = 4)
+shap.plot.force_plot(plot_data)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>shap.plot.force_plot(plot_data, zoom_in_group = 2)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre class="r"><code># plot all the clusters:
+shap.plot.force_plot_bygroup(plot_data)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+</div>
+</div>
+<div id="example-2" class="section level1">
+<h1>Example 2</h1>
+<p>This example is based on the slum data I used in the earilier post.</p>
+<div id="summary-plot" class="section level2">
+<h2>Summary plot</h2>
+<ul>
+<li>Using <code>geom_sina</code> from <code>ggforce</code> to make the sina plot<br />
+</li>
+<li>We can see clearly for the most influential variable on the top: Monthly water cost. A Higher cost is associated with the declined share of temporary housing. But a very low cost has a strong impact on the increased share of temporary housing<br />
+</li>
+<li>The effects of binary variables are highly distinctive. The second variable shows that Resettled housing is highly unlikely to be temporary, so does being close to wells as water sources.</li>
+</ul>
+<p><strong>Load the xgboost model</strong></p>
+<pre class="r"><code>best_rmse_index &lt;- 56
+best_rmse &lt;- 0.2102
+best_seednumber &lt;- 3660
+best_param &lt;- list(objective = &quot;reg:linear&quot;,  # For regression
+                eval_metric = &quot;rmse&quot;,      # rmse is used for regression
+                max_depth = 9,
+                eta = 0.09822,   # Learning rate, default: 0.3
+                subsample = 0.64,
+                colsample_bytree = 0.6853, 
+                min_child_weight = 6, # These two are important
+                max_delta_step = 8)
+# The best index (min_rmse_index) is the best &quot;nround&quot; in the model
+nround &lt;- best_rmse_index
+set.seed(best_seednumber)
+mod1 &lt;- xgboost::xgboost(data = X_train, label = Y_train, params = best_param, nround = nround, verbose = F)</code></pre>
+<pre><code>## [23:14:47] WARNING: amalgamation/../src/objective/regression_obj.cu:174: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<pre class="r"><code>shap.plot.summary.wrap1(mod1, X_train, top_n = 10)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="dependence-plot-for-each-feature" class="section level2">
+<h2>Dependence plot for each feature</h2>
+<ul>
+<li>Here we choose to show top 6 features ranked by mean|SHAP|<br />
+</li>
+</ul>
+<pre class="r"><code>data_long &lt;-  shap.prep(mod1, X_train = X_train)
+shap_values &lt;- shap.values(mod1, X_train)
+features_ranked &lt;- names(shap_values$mean_shap_score)[1:4]
+fig_list &lt;- lapply(features_ranked, shap.plot.dependence, data_long = data_long)
+gridExtra::grid.arrange(grobs = fig_list, ncol = 2)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-10-1.png" width="768" /></p>
+<ul>
+<li>If Use the built-in <code>xgb.shap.plot</code> function<br />
+</li>
+</ul>
+<pre class="r"><code>xgboost::xgb.plot.shap(data = X_train, model = mod1, top_n = 4, n_col = 2)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-11-1.png" width="768" /></p>
+</div>
+<div id="force-plot" class="section level2">
+<h2>Force plot</h2>
+<p>Since there are so many features in this dataset, we pick only top 6 and merge the rest.</p>
+<ul>
+<li>Use <code>geom_col</code> to show features each contributing to push the model output from the base value (the average model output) to the model output.<br />
+</li>
+<li>Have tried geom_area but dones’t work very well due to gaps in the plot caused by fluctuation of positive and negative values.<br />
+</li>
+<li>apply the order of clustering to group observations under similar influences closer.</li>
+</ul>
+<pre class="r"><code>force_plot_data &lt;- shap.prep.stack.data(shap_contrib = shap_values$shap_score, top_n  = 5, n_groups = 4)
+shap.plot.force_plot(force_plot_data)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+<div id="stack-plot-by-clustering-groups" class="section level2">
+<h2>Stack plot by clustering groups</h2>
+<pre class="r"><code>shap.plot.force_plot_bygroup(force_plot_data)</code></pre>
+<p><img src="2018-10-05-shap-visualization-for-xgboost_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+</div>
+</div>

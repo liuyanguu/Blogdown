@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/notes-on-writing-an-r-package/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/notes-on-writing-an-r-package/">
+---
+
+<script>window.location.replace("/posts/notes-on-writing-an-r-package/");</script>
+
+This page has moved to [/posts/notes-on-writing-an-r-package/](/posts/notes-on-writing-an-r-package/).

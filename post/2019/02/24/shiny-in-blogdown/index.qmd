@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/shiny-in-blogdown/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/shiny-in-blogdown/">
+---
+
+<script>window.location.replace("/posts/shiny-in-blogdown/");</script>
+
+This page has moved to [/posts/shiny-in-blogdown/](/posts/shiny-in-blogdown/).

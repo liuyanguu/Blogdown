@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/shap-visualization-in-r-first-post/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/shap-visualization-in-r-first-post/">
+---
+
+<script>window.location.replace("/posts/shap-visualization-in-r-first-post/");</script>
+
+This page has moved to [/posts/shap-visualization-in-r-first-post/](/posts/shap-visualization-in-r-first-post/).

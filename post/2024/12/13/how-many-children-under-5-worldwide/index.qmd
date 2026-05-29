@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/how-many-children-under-5-worldwide/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/how-many-children-under-5-worldwide/">
+---
+
+<script>window.location.replace("/posts/how-many-children-under-5-worldwide/");</script>
+
+This page has moved to [/posts/how-many-children-under-5-worldwide/](/posts/how-many-children-under-5-worldwide/).

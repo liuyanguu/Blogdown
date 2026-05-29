@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/working-with-3d-array-as-long-format-data-in-r/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/working-with-3d-array-as-long-format-data-in-r/">
+---
+
+<script>window.location.replace("/posts/working-with-3d-array-as-long-format-data-in-r/");</script>
+
+This page has moved to [/posts/working-with-3d-array-as-long-format-data-in-r/](/posts/working-with-3d-array-as-long-format-data-in-r/).

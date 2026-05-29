@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/ggplot-us-state-and-china-province-heatmap/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/ggplot-us-state-and-china-province-heatmap/">
+---
+
+<script>window.location.replace("/posts/ggplot-us-state-and-china-province-heatmap/");</script>
+
+This page has moved to [/posts/ggplot-us-state-and-china-province-heatmap/](/posts/ggplot-us-state-and-china-province-heatmap/).

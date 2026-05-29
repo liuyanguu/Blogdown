@@ -1,0 +1,15 @@
+---
+title: "Posts"
+page-layout: full
+toc: false
+format:
+  html:
+    code-tools: false
+listing:
+  contents: "*/index.qmd"
+  sort: "date desc"
+  type: default
+  categories: true
+---
+
+All migrated research notes and technical posts.

@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/us-and-china-admin1-covid19-mortality-and-incidence-rate/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/us-and-china-admin1-covid19-mortality-and-incidence-rate/">
+---
+
+<script>window.location.replace("/posts/us-and-china-admin1-covid19-mortality-and-incidence-rate/");</script>
+
+This page has moved to [/posts/us-and-china-admin1-covid19-mortality-and-incidence-rate/](/posts/us-and-china-admin1-covid19-mortality-and-incidence-rate/).

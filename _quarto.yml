@@ -1,0 +1,50 @@
+project:
+  type: website
+  output-dir: _site
+  post-render: scripts/clean-output.R
+  render:
+    - "*.qmd"
+    - "posts/*.qmd"
+    - "posts/**/*.qmd"
+    - "post/**/*.qmd"
+  resources:
+    - "rmarkdown-libs/**"
+
+website:
+  title: "Yang Liu"
+  site-url: "https://liuyanguu.github.io"
+  description: "Research notes in R, statistics, population data, maps, and reproducible visual essays."
+  favicon: assets/me.png
+  navbar:
+    pinned: true
+    logo: assets/me.png
+    left:
+      - href: index.qmd
+        text: Home
+      - href: posts/index.qmd
+        text: Posts
+      - href: about.qmd
+        text: About
+    right:
+      - icon: github
+        href: https://github.com/liuyanguu
+      - text: LinkedIn
+        href: https://www.linkedin.com/in/liuyangbaruch/
+  page-footer:
+    left: "(c) 2026 Yang Liu"
+    right: "Built with Quarto and R"
+  search: true
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    code-fold: show
+    code-tools: true
+    smooth-scroll: true
+    anchor-sections: true
+    link-external-newwindow: true
+
+execute:
+  freeze: auto

@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/study-shrinkage-and-dart-in-xgboost-modeling-using-a-simple-dataset/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/study-shrinkage-and-dart-in-xgboost-modeling-using-a-simple-dataset/">
+---
+
+<script>window.location.replace("/posts/study-shrinkage-and-dart-in-xgboost-modeling-using-a-simple-dataset/");</script>
+
+This page has moved to [/posts/study-shrinkage-and-dart-in-xgboost-modeling-using-a-simple-dataset/](/posts/study-shrinkage-and-dart-in-xgboost-modeling-using-a-simple-dataset/).

@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/shap-for-xgboost-in-r-shapforxgboost/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/shap-for-xgboost-in-r-shapforxgboost/">
+---
+
+<script>window.location.replace("/posts/shap-for-xgboost-in-r-shapforxgboost/");</script>
+
+This page has moved to [/posts/shap-for-xgboost-in-r-shapforxgboost/](/posts/shap-for-xgboost-in-r-shapforxgboost/).

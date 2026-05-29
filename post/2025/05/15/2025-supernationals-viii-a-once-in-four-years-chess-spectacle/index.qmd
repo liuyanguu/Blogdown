@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/2025-supernationals-viii-a-once-in-four-years-chess-spectacle/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/2025-supernationals-viii-a-once-in-four-years-chess-spectacle/">
+---
+
+<script>window.location.replace("/posts/2025-supernationals-viii-a-once-in-four-years-chess-spectacle/");</script>
+
+This page has moved to [/posts/2025-supernationals-viii-a-once-in-four-years-chess-spectacle/](/posts/2025-supernationals-viii-a-once-in-four-years-chess-spectacle/).

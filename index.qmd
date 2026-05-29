@@ -1,0 +1,35 @@
+---
+title: "Yang Liu"
+page-layout: full
+toc: false
+format:
+  html:
+    code-tools: false
+listing:
+  contents: "posts/*/index.qmd"
+  sort: "date desc"
+  max-items: 6
+  type: grid
+  categories: true
+---
+
+::: {.hero}
+::: {.hero-copy}
+## Research notes in R, statistics, and population data
+
+I write about data visualization, demography, statistical workflows, maps, R programming, and the occasional chess analysis. This site is a working notebook: polished enough to read, close enough to the code to stay useful.
+:::
+
+::: {.hero-card}
+**Current focus**
+
+- Child mortality and population data
+- Reproducible R workflows
+- Spatial visualization and maps
+- Chess tournament analytics
+:::
+:::
+
+## Latest Posts
+
+Browse recent analyses below, or open the full [post archive](posts/).

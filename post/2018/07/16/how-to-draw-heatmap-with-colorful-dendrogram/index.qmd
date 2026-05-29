@@ -1,0 +1,14 @@
+---
+title: "Redirect to /posts/how-to-draw-heatmap-with-colorful-dendrogram/"
+search: false
+page-layout: article
+format:
+  html:
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=/posts/how-to-draw-heatmap-with-colorful-dendrogram/">
+---
+
+<script>window.location.replace("/posts/how-to-draw-heatmap-with-colorful-dendrogram/");</script>
+
+This page has moved to [/posts/how-to-draw-heatmap-with-colorful-dendrogram/](/posts/how-to-draw-heatmap-with-colorful-dendrogram/).
