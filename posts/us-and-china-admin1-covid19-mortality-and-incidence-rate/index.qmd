@@ -1,8 +1,8 @@
 ---
-title: "US and China Admin1 COVID19 mortality and incidence rate"
+title: "US and China Admin1 COVID-19 mortality and incidence rate"
 author: "Yang Liu"
 date: "2020-06-14"
-description: "US China Compared to lung cancer mortality Similar to the last heatmap post I just revised , here I wrapped up the function and showing COVID-19 data just downloaded from JHU CSSE GitHub page . The function can take a g..."
+description: "R examples for mapping COVID-19 mortality and incidence rates across US states and Chinese provinces, with a comparison to lung cancer maps."
 categories:
   - "Data Visualization"
 tags:
@@ -40,8 +40,8 @@ resources:
 </ul>
 </div>
 
-<p>Similar to the last <a href="https://liuyanguu.github.io/post/2020/06/14/ggplot-us-state-and-china-province-heatmap/">heatmap post I just revised</a>, here I wrapped up the function and showing COVID-19 data just downloaded from <a href="https://github.com/CSSEGISandData/COVID-19">JHU CSSE GitHub page</a>. The function can take a given dataset and plot designated variable.</p>
-<p>Code hosted on my <a href="https://github.com/liuyanguu/Blogdown/tree/master/hugo-xmag/Code">GitHub repo</a>.</p>
+<p>This post builds on my earlier <a href="/posts/ggplot-us-state-and-china-province-heatmap/">US state and China province heatmap</a> examples. Here I wrap the mapping code into a reusable function and apply it to COVID-19 data from the <a href="https://github.com/CSSEGISandData/COVID-19">JHU CSSE GitHub repository</a>. The function can take a given dataset and plot a designated variable.</p>
+<p>The original code is hosted in my <a href="https://github.com/liuyanguu/Blogdown/tree/master/hugo-xmag/Code">GitHub repo</a>.</p>
 <div id="us" class="section level2">
 <h2>US</h2>
 <pre class="r"><code># major function, can download from GitHub repo Blogdown/hugo-xmag/Code

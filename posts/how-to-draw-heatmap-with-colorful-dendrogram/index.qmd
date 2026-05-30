@@ -2,7 +2,7 @@
 title: "How to Draw Heatmap with Colorful Dendrogram"
 author: "Yang Liu"
 date: "2018-07-16"
-description: "Data Version 1: Color both the branches and labels Version 2: color only the labels. Version 3: If there is no color, and we do not reorder the branches This data visualization example include: * Hierarchical clustering..."
+description: "An R visualization example that builds a clustered heatmap with colorful dendrogram branches and labels using gplots, dendextend, and colorspace."
 categories:
   - "Data Visualization"
 tags:
@@ -44,12 +44,14 @@ resources:
 </ul>
 </div>
 
-<p>This data visualization example include:<br />
-* Hierarchical clustering, dendrogram and heat map based on normalized odds ratios<br />
-* The dendrogram was built separately to give color to dendrogram’s branches/labels based on cluster using <code>dendextend</code><br />
-* Heatmap is made by <code>heatmap.2</code> from <code>gplots</code> using the built dendrogram<br />
-* The rows are sorted by means from highest to lowest, it can be done in either the dendrogram or the <code>heatmap.2</code><br />
-* Use color palettes from <code>colorspace</code></p>
+<p>This R visualization example covers:</p>
+<ul>
+<li>hierarchical clustering, dendrograms, and heatmaps based on normalized odds ratios;</li>
+<li>coloring dendrogram branches and labels by cluster with <code>dendextend</code>;</li>
+<li>building the heatmap with <code>heatmap.2</code> from <code>gplots</code>;</li>
+<li>sorting rows by means from highest to lowest; and</li>
+<li>using color palettes from <code>colorspace</code>.</li>
+</ul>
 <div id="data" class="section level2">
 <h2>Data</h2>
 <ul>
@@ -73,7 +75,7 @@ Fasted &lt;- read.csv(sprintf(&quot;https://docs.google.com/uc?id=%s&amp;export=
 # the dataset can be downloaded using this link as well.
 
 names(Fasted) &lt;- c(&quot;Questions&quot;, &quot;2003&quot;, &quot;2005&quot;, &quot;2007&quot;, &quot;2009&quot;, &quot;2011&quot;, &quot;2013&quot;)
-# Top 5 questions and their odds ratio on Eating disorder: fasting to loose weight
+# Top 5 questions and their odds ratio on eating disorder: fasting to lose weight
 head(Fasted, 5)</code></pre>
 <pre><code>##                        Questions      2003      2005      2007      2009
 ## 1    Has vomited to lose weight* 11.777595 14.518211 15.970263 15.811237
@@ -147,7 +149,7 @@ heatmap.2(F_m2, main = &#39;Fasting to Lose Weight&#39;,
 <ul>
 <li>There is no need to use the predesigned <code>dend1</code> in <code>heatmap.2</code><br />
 </li>
-<li>But then need to reorder the trees by adding <code>reorderfun</code><br />
+<li>Then reorder the dendrogram by adding <code>reorderfun</code><br />
 </li>
 <li>Still need to create the <code>col_labels</code></li>
 </ul>

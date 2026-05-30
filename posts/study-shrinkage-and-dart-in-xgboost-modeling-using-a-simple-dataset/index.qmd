@@ -2,7 +2,7 @@
 title: "Study shrinkage and DART in xgboost modeling using a simple dataset"
 author: "Yang Liu"
 date: "2018-11-15"
-description: "Data Shrinkage DART: Dropout - MART skip_drop rate_drop one_drop It is always a good idea to study the packaged algorithm with a simple example. Inspired by my colleague Kodi’s excellent work showing how xgboost handles..."
+description: "A small R experiment that illustrates how shrinkage and DART dropout change the behavior of XGBoost trees on a simple toy dataset."
 categories:
   - "Machine Learning"
 tags:
@@ -49,7 +49,7 @@ resources:
 </ul>
 </div>
 
-<p>It is always a good idea to study the packaged algorithm with a simple example. Inspired by <a href="http://arfer.net/w/xgboost-sparsity">my colleague Kodi’s excellent work showing how <code>xgboost</code> handles missing values</a>, I tried a simple 5x2 dataset to show how shrinkage and DART influence the growth of trees in the model.</p>
+<p>A small dataset is often the best way to understand a modeling algorithm. Inspired by <a href="http://arfer.net/w/xgboost-sparsity">my colleague Kodi’s excellent work showing how <code>xgboost</code> handles missing values</a>, I used a simple 5x2 dataset to show how shrinkage and DART influence tree growth in an XGBoost model.</p>
 <div id="data" class="section level1">
 <h1>Data</h1>
 <pre class="r"><code>set.seed(123)
@@ -67,11 +67,11 @@ cbind(X, Y)</code></pre>
 <div id="shrinkage" class="section level1">
 <h1>Shrinkage</h1>
 <ol style="list-style-type: decimal">
-<li>Step size shrinkage was the major tool designed to prevents overfitting (over-specialization).<br />
+<li>Step-size shrinkage is a major tool for preventing overfitting, or over-specialization.<br />
 </li>
 </ol>
 <ul>
-<li><a href="https://xgboost.readthedocs.io/en/latest/parameter.html">The R document</a> says that the learning rate <code>eta</code> has range [0, 1] but <code>xgboost</code> takes any value of <span class="math inline">\(eta\ge0\)</span>. Here I select eta = 2, then the model can perfectly predict in two steps, the train rmse from iter 2 was 0, only two trees were used.<br />
+<li><a href="https://xgboost.readthedocs.io/en/latest/parameter.html">The R documentation</a> says that the learning rate <code>eta</code> has range [0, 1], but <code>xgboost</code> takes any value of <span class="math inline">\(eta\ge0\)</span>. Here I select <code>eta = 2</code>, and the model can perfectly predict in two steps: the train RMSE from iteration 2 is 0, and only two trees are used.<br />
 Of course, it is a bad idea to use a very large <em>eta</em> in real applications as the tree will not be helpful and the predicted value will be very wrong.<br />
 </li>
 <li>The <code>max_depth</code> is the maximum depth of a tree, I set 10 but it won’t be reached<br />
@@ -125,7 +125,7 @@ simple.xgb.output(param_gbtree)</code></pre>
 <script type="application/json" data-for="htmlwidget-1">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 2\nLeaf\nCover: 5\nValue: 0\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"2\" [label = \"Tree 1\nx1\nCover: 5\nGain: 416.666656\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 3\nValue: 0\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"x1\nCover: 2\nGain: 416.666687\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"5\" [label = \"Leaf\nCover: 1\nValue: -50\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Leaf\nCover: 1\nValue: 0\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"7\" [label = \"Tree 0\nx1\nCover: 5\nGain: 2506.3335\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"x2\nCover: 3\nGain: 43\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"9\" [label = \"Leaf\nCover: 2\nValue: 100\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"x1\nCover: 2\nGain: 1\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"11\" [label = \"Leaf\nCover: 1\nValue: 20\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"12\" [label = \"Leaf\nCover: 1\nValue: 1\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"13\" [label = \"Leaf\nCover: 1\nValue: 5\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"2\"->\"3\" [label = \"< 0.835661292\", style = \"bold\"] \n\"4\"->\"5\" [label = \"< 0.91174233\", style = \"bold\"] \n\"7\"->\"8\" [label = \"< 0.835661292\", style = \"bold\"] \n\"8\"->\"10\" [label = \"< 0.710262299\", style = \"bold\"] \n\"10\"->\"12\" [label = \"< 0.537941337\", style = \"bold\"] \n\"2\"->\"4\" [style = \"bold\", style = \"solid\"] \n\"4\"->\"6\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"9\" [style = \"solid\", style = \"solid\"] \n\"8\"->\"11\" [style = \"solid\", style = \"solid\"] \n\"10\"->\"13\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 <ul>
 <li>If <code>eta</code> = 1<br />
-Then no perfect prediction could be made and the trees grow in a more conservative manner</li>
+Then no perfect prediction can be made, and the trees grow in a more conservative manner.</li>
 </ul>
 <pre class="r"><code># non-zero skip_drop has higher priority than rate_drop or one_drop
 param_gbtree &lt;- list(objective = &#39;reg:linear&#39;, nrounds = 3, 
@@ -157,7 +157,7 @@ simple.xgb.output(param_gbtree)</code></pre>
 </div>
 <div id="dart-dropout---mart" class="section level1">
 <h1>DART: Dropout - MART</h1>
-<p>DART (<a href="http://proceedings.mlr.press/v38/korlakaivinayak15.pdf">paper on JMLR</a>) adopted dropout method from neural networks to boosted regression rees (i.e.,MART: Multiple Additive Regression Trees). DART aims to further prevent over-specialization. It requires select <code>booster = 'dart'</code> in <code>xgboost</code> and tune several hyper-parameters (<a href="https://xgboost.readthedocs.io/en/latest/parameter.html#additional-parameters-for-dart-booster-booster-dart">Ref: R documents</a>).</p>
+<p>DART (<a href="http://proceedings.mlr.press/v38/korlakaivinayak15.pdf">paper in JMLR</a>) adapts dropout from neural networks to boosted regression trees, or MART: Multiple Additive Regression Trees. DART aims to further prevent over-specialization. In <code>xgboost</code>, use <code>booster = 'dart'</code> and tune the related hyperparameters (<a href="https://xgboost.readthedocs.io/en/latest/parameter.html#additional-parameters-for-dart-booster-booster-dart">R documentation</a>).</p>
 <div id="skip_drop" class="section level2">
 <h2><code>skip_drop</code></h2>
 <ul>

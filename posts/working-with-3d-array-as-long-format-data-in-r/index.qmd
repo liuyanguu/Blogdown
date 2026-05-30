@@ -2,7 +2,7 @@
 title: "Working with 3D array as long-format data in R"
 author: "Yang Liu"
 date: "2020-01-11"
-description: "Example: a 3-D array with dimension 4x3x2 Melt into long Recover the array check.and.install.pkgs <- function(pkgs){ new.packages <- pkgs[!pkgs %in% installed.packages()[,\"Package\"]] if(length(new.packages)) install.pac..."
+description: "A compact R example for melting a 3D array into long-format data, modifying it, and rebuilding the array in the correct dimension order."
 categories:
   - "Data Engineering"
 tags:
@@ -42,18 +42,18 @@ resources:
 </ul>
 </div>
 
+<p>This compact example shows how to reshape a 3D array into long-format data, work with it as a table, and then rebuild the array in the correct dimension order.</p>
 <pre class="r"><code>check.and.install.pkgs &lt;- function(pkgs){
   new.packages &lt;- pkgs[!pkgs %in% installed.packages()[,&quot;Package&quot;]]
   if(length(new.packages)) install.packages(new.packages, dependencies = TRUE)
   suppressPackageStartupMessages(invisible(lapply(pkgs, library, character.only = TRUE)))
 }
 check.and.install.pkgs(c(&quot;data.table&quot;, &quot;reshape2&quot;, &quot;scatterplot3d&quot;))</code></pre>
-<p><strong>Happy New Year!</strong></p>
-<p>Recently I spent some time working with array in R.<br />
-I believe it is a bad idea to work with array using <code>for</code> loop, which is both slow and error-prone. We can just melt it into a long data, do the work, and arrange back into array in the end if needed.</p>
+<p>Recently I spent some time working with arrays in R.<br />
+For many tasks, working directly with arrays through <code>for</code> loops is slow and error-prone. It is often easier to melt the array into long-format data, do the work, and arrange it back into an array at the end if needed.</p>
 <div id="example-a-3-d-array-with-dimension-4x3x2" class="section level2">
 <h2>Example: a 3-D array with dimension <strong>4x3x2</strong></h2>
-<p>Notice how the values (<code>1:24</code>) fill into the three dimentions, The values <code>1:12</code> go into the 1st 4x3 matrix by column, then the rest go into the 2nd 4x3 matrix.</p>
+<p>Notice how the values (<code>1:24</code>) fill into the three dimensions. The values <code>1:12</code> go into the first 4x3 matrix by column, then the rest go into the second 4x3 matrix.</p>
 <pre class="r"><code>arr = array(1:24, dim=c(4,3,2), dimnames = list(group = LETTERS[1:4],  year = 2001:2003, sex = c(&quot;F&quot;, &quot;M&quot;)))
 arr</code></pre>
 <pre><code>## , , sex = F
@@ -107,8 +107,8 @@ arr_long_extra</code></pre>
 ## 7     C 2004   M   107
 ## 8     D 2004   M   108</code></pre>
 <pre class="r"><code>arr_long_new &lt;- rbind(arr_long, arr_long_extra)</code></pre>
-<p><strong>Set the rows in the right order is the key to produce the right array</strong></p>
-<p>Since the original dimension <strong>4x3x2</strong> corresponds to <em>group</em> x <em>year</em> x <em>sex</em>, the array should be ordered by <em>sex</em>, <em>year</em>, and <em>group</em> if we want to recover the original array. (Thus the arr_long is in the right order if we don’t resort it.)</p>
+<p><strong>Setting the rows in the right order is the key to producing the right array.</strong></p>
+<p>Since the original dimension <strong>4x3x2</strong> corresponds to <em>group</em> x <em>year</em> x <em>sex</em>, the array should be ordered by <em>sex</em>, <em>year</em>, and <em>group</em> if we want to recover the original array. Thus <code>arr_long</code> is already in the right order if we do not reorder it.</p>
 <pre class="r"><code># order by sex, year, group
 arr_long_new &lt;- arr_long_new[with(arr_long_new, order(sex, year, group)),]
 

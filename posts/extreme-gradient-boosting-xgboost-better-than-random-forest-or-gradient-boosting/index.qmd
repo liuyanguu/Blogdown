@@ -2,7 +2,7 @@
 title: "eXtreme Gradient Boosting (XGBoost): Better than random forest or gradient boosting"
 author: "Yang Liu"
 date: "2018-07-09"
-description: "Overview About the Data 1. Extreme Gradient Boosting 2. Gradient boosting 3. Random Forest 4. Lasso 5. Best Subset Compare MSE Overview I recently had the great pleasure to meet with Professor Allan Just and he introduc..."
+description: "A hands-on R comparison of XGBoost, gradient boosting, random forest, lasso, and best subset regression on a slum-settlement modeling example."
 categories:
   - "Machine Learning"
 tags:
@@ -51,14 +51,14 @@ resources:
 
 <div id="overview" class="section level1">
 <h1>Overview</h1>
-<p>I recently had the great pleasure to meet with Professor Allan Just and he introduced me to eXtreme Gradient Boosting (XGBoost). I have extended the earlier work <a href="https://yangliuresearch.blogspot.com/2018/06/modeling-of-slums-model-selection-using.html">on my old blog</a> by comparing the results across XGBoost, Gradient Boosting (GBM), Random Forest, Lasso, and Best Subset. The ensemble method is powerful as it combines the predictions from multiple machine learning algorithms together to make more accurate predictions than an individual model. Random Forest is among the most famous ones and it is easy to use. Random Forest is based on bagging (bootstrap aggregation) which averages the results over many decision trees from sub-samples. It further limits its search to only 1/3 of the features (in regression) to fit each tree, weakening the correlations among decision trees. It is easy to get a lower testing error compared to linear models.</p>
-<p>Boosting takes slower steps, making predictors sequentially instead of independently. It repetitively leverages the patterns in residuals, strengthens the model with weak predictions, and make it better. By combining the advantages from both random forest and gradient boosting, XGBoost gave the a prediction error <strong>ten times</strong> lower than boosting or random forest in my case.</p>
-<p>(<strong>Correction</strong>) 18.10.3. When I further test this dataset I realized there was a <strong>mistake</strong>. There is indeed no magic in machine learning. When I got a testing error ten-time smaller than other methods, I should question if this is a mistake. In the corrected result XGBoost still gave the lowest testing RMSE but was close to other two methods.</p>
+<p>I first learned about eXtreme Gradient Boosting (XGBoost) from Professor Allan Just, then extended an earlier modeling exercise <a href="https://yangliuresearch.blogspot.com/2018/06/modeling-of-slums-model-selection-using.html">from my old blog</a> by comparing XGBoost, Gradient Boosting (GBM), Random Forest, Lasso, and Best Subset regression.</p>
+<p>Ensemble methods are powerful because they combine many weaker predictions into a stronger model. Random Forest averages many decorrelated decision trees built from bootstrap samples. Boosting works sequentially: each new tree focuses on the residual patterns left by the previous trees.</p>
+<p><strong>Correction, 2018-10-03:</strong> my first version reported a testing error almost ten times smaller than the other methods. That was a mistake. In the corrected result, XGBoost still had the lowest testing RMSE, but it was close to the other tree-based methods.</p>
 <p>Link to the earlier version: <a href="https://yangliuresearch.blogspot.com/2018/06/modeling-of-slums-model-selection-using.html"><em>Model Selection using Lasso and Best Subset</em></a></p>
 </div>
 <div id="about-the-data" class="section level1">
 <h1>About the Data</h1>
-<p>In sub-Saharan Africa, the region where deprivations in terms of living conditions are the most severe, slum dwellers represent an estimated 56% of the regions’ urban population (UN Habitat, 2016). Measuring informal settlements in a reliable way is a critical challenge for the United Nations to monitor the Sustainable Development Goals (SDGs) towards its 2030 Agenda for Sustainable Development. This data was collected by Slum Dwellers International (SDI), which was nominated for the Nobel Peace Prize in 2014. By extracting valuable information from the data, We will help the UN to create better SDG indicators by making full use of available data.</p>
+<p>In sub-Saharan Africa, where deprivations in living conditions are especially severe, slum dwellers represent an estimated 56% of the region's urban population (UN Habitat, 2016). Measuring informal settlements reliably is a critical challenge for monitoring the Sustainable Development Goals (SDGs). The data in this example were collected by Slum Dwellers International (SDI), which was nominated for the Nobel Peace Prize in 2014.</p>
 <p>In this exercise, we only model <em>Share_Temporary</em>: Share of Temporary Structure in Slums as the dependent variable. The independent variables are monitoring indicators like water, sanitation, housing conditions and overcrowding in African slum settlements. Dataset dimension is 973 x 153.</p>
 </div>
 <div id="extreme-gradient-boosting" class="section level1">

@@ -2,7 +2,7 @@
 title: "SHAP for XGBoost in R: SHAPforxgboost"
 author: "Yang Liu"
 date: "2019-07-18"
-description: "The SHAPforxgboost package Why SHAP values Local explanation Consistency in global feature importance SHAP plots Summary plot Dependence plot Interaction effects SHAP force plot References The SHAPforxgboost package I w..."
+description: "A vignette-style guide to the SHAPforxgboost R package, covering SHAP values, global importance, dependence plots, interaction effects, and force plots."
 categories:
   - "R package"
   - "Machine Learning"
@@ -59,7 +59,7 @@ resources:
 
 <div id="the-shapforxgboost-package" class="section level1">
 <h1>The <code>SHAPforxgboost</code> package</h1>
-<p>I wrote the R package <a href="https://cran.r-project.org/web/packages/SHAPforxgboost/index.html"><strong>SHAPforxgboost</strong></a> to cover all the plotting functions illustrated in this post. This post serves as the vignette for the package.</p>
+<p>I wrote the R package <a href="https://cran.r-project.org/web/packages/SHAPforxgboost/index.html"><strong>SHAPforxgboost</strong></a> to collect the plotting functions illustrated in this post. This page works as a vignette-style guide to the package.</p>
 <p>Please install from CRAN or <a href="https://github.com/liuyanguu/SHAPforxgboost">GitHub</a>.</p>
 <pre class="r"><code>install.packages(&quot;SHAPforxgboost&quot;)
 # or 
@@ -67,8 +67,8 @@ devtools::install_github(&quot;liuyanguu/SHAPforxgboost&quot;)</code></pre>
 </div>
 <div id="why-shap-values" class="section level1">
 <h1>Why SHAP values</h1>
-<p>SHAP’s main advantages are <strong>local explanation</strong> and <strong>consistency</strong> in global model structure.</p>
-<p>Tree-based machine learning models (random forest, gradient boosted trees, XGBoost) are the most popular non-linear models today. SHAP (SHapley Additive exPlanations) values is claimed to be the most advanced method to interpret results from tree-based models. It is based on Shaply values from game theory, and presents the feature importance using by marginal contribution to the model outcome.</p>
+<p>SHAP's main advantages are <strong>local explanation</strong> and <strong>consistency</strong> in global model structure.</p>
+<p>Tree-based machine learning models, including random forest, gradient boosted trees, and XGBoost, are among the most widely used nonlinear models. SHAP (SHapley Additive exPlanations) values provide a principled way to interpret tree-based model results. They are based on Shapley values from game theory and explain feature importance through each feature's marginal contribution to the model outcome.</p>
 <p>This <a href="https://github.com/slundberg/shap">GitHub page</a> explains the Python package developed by Scott Lundberg. Here we show all the visualizations in R. The <code>xgboost::xgb.shap.plot</code> function can also make simple dependence plot.</p>
 <div id="local-explanation" class="section level2">
 <h2>Local explanation</h2>
@@ -101,7 +101,7 @@ shap_values$mean_shap_score</code></pre>
 ##    0.0165331533    0.0115615699    0.0073583570    0.0057172670    0.0039983764 
 ##            elev     DevAll_P1km           RelAZ  forestProp_1km 
 ##    0.0037026883    0.0025215052    0.0009489252    0.0003197501</code></pre>
-<p>SHAP values are calculated for each cell in the training dataset. The SHAP values dataset (<code>shap_values$shap_score</code>) has the same dimension (10148,9) as the dataset of the independent variables (10148,9) fit into the xgboost model.</p>
+<p>SHAP values are calculated for each cell in the training dataset. The SHAP values dataset (<code>shap_values$shap_score</code>) has the same dimensions (10148, 9) as the independent-variable matrix used to fit the XGBoost model.</p>
 <p>The sum of each row’s SHAP values (plus the <strong>BIAS</strong> column, which is like an intercept) is the predicted model output. As in the following table of SHAP values, <code>rowSum</code> equals the output <code>predict(xgb_mod)</code>. I.e., the explanation’s attribution values sum up to the model output (last column in the table below). This is the case in this example, but not so if you are running e.g. 5-fold cross-validation.</p>
 <pre class="r"><code># to show that `rowSum` is the output:
 shap_data &lt;- copy(shap_values$shap_score)

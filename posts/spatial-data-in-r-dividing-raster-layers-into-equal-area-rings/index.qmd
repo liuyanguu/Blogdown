@@ -2,7 +2,7 @@
 title: "Spatial data in R: Dividing raster layers into equal-area rings"
 author: "Yang Liu"
 date: "2018-07-20"
-description: "Saturation in ten cities with equal-area rings R Code for one city Results for the ring saturations Average saturation in each ring Methodology Original Code This data visualization example include: * Import .img file a..."
+description: "An R spatial workflow for turning raster layers into equal-area rings, calculating urban saturation, and plotting city comparisons on a shared scale."
 categories:
   - "Data Visualization"
   - "Spatial Data"
@@ -46,13 +46,16 @@ resources:
 </ul>
 </div>
 
-<p><strong>This data visualization example include:</strong><br />
-* Import <code>.img</code> file as a raster<br />
-* Turn raster into a <em>data.frame</em> of points (coordinates) and values<br />
-* Dividing the points into 100 equal-area rings<br />
-* Calculate <em>Built-up Area/Urban Extent</em> for each ring<br />
-* Turn dataframe into raster<br />
-* Plot multiple figures on the same color scale</p>
+<p><strong>This R spatial visualization example covers:</strong></p>
+<ul>
+<li>importing a <code>.img</code> file as a raster;</li>
+<li>turning the raster into a <em>data.frame</em> of coordinates and values;</li>
+<li>dividing points into 100 equal-area rings;</li>
+<li>calculating <em>Built-up Area/Urban Extent</em> for each ring;</li>
+<li>turning the data frame back into a raster; and</li>
+<li>plotting multiple figures on the same color scale.</li>
+</ul>
+<p><strong>Maintenance note:</strong> this older example uses the classic <code>raster</code>, <code>sp</code>, and <code>rgdal</code> style of R spatial code. For new projects I would consider newer <code>terra</code> and <code>sf</code> workflows, while keeping the logic here as the conceptual reference.</p>
 <div id="saturation-in-ten-cities-with-equal-area-rings" class="section level2">
 <h2>Saturation in ten cities with equal-area rings</h2>
 <ul>
@@ -67,7 +70,7 @@ resources:
 <div id="r-code-for-one-city" class="section level2">
 <h2>R Code for one city</h2>
 <ul>
-<li>The setting of the code can loop around several different cities, here we only load one city.</li>
+<li>The code can loop over several cities; here we load only one city.</li>
 </ul>
 <pre class="r"><code>list.of.packages &lt;- c(&quot;raster&quot;, &quot;rgdal&quot;, &quot;Hmisc&quot;, &quot;plyr&quot;, &quot;RColorBrewer&quot;, &quot;googledrive&quot;)
 new.packages &lt;- list.of.packages[!(list.of.packages %in% installed.packages()[,&quot;Package&quot;])]

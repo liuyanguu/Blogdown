@@ -2,7 +2,7 @@
 title: "Drake: powerful tool for automatic reproducible workflow"
 author: "Yang Liu"
 date: "2019-09-15"
-description: "drake is a powerful tool for automatic reproducible workflow. I found it a perfect match when used together with R Markdown . There are great documentations online for drake thus here I only show a simple example workin..."
+description: "A legacy R workflow note showing how drake can cache calculations and speed up R Markdown report rendering, with a note on modern targets workflows."
 categories:
   - "Reproducible Workflow"
 tags:
@@ -34,8 +34,8 @@ resources:
 
 
 
-<p><strong><code>drake</code></strong> is a powerful tool for automatic reproducible workflow. I found it a perfect match when used together with <code>RMarkdown</code>. There are great documentations online for <code>drake</code> thus here I only show a simple example working with <code>RMarkdown</code>.</p>
-<p><code>RMarkdown</code> file could be very slow to generate if lots of calculations are involved. Any small revise makes you rerun everything. When we use <code>drake</code> we can do all the calculations in advance thus the rendering is super fast since we only need to re-do the revised object.</p>
+<p><strong><code>drake</code></strong> is a powerful tool for reproducible R workflows. I found it especially useful when paired with R Markdown reports, because it can cache expensive intermediate results and only rebuild the objects that have changed.</p>
+<p><strong>Maintenance note:</strong> this is a legacy <code>drake</code> example. For new R workflow projects I would usually look at <code>targets</code>, which follows the same core idea with a newer interface. I am keeping the original <code>drake</code> code here because the example is still useful for understanding target-based workflows.</p>
 <p>Using <code>SHAPforxgboost</code> as an example:</p>
 <pre class="r"><code># if needed, update drake
 if(packageVersion(&quot;drake&quot;) &lt; &quot;7.4&quot;) install.packages(&quot;drake&quot;)
@@ -51,7 +51,7 @@ suppressPackageStartupMessages({
 cache_path &lt;- here(&quot;Drake_Cache&quot;)
 if(!dir.exists(cache_path))dir.create(cache_path)
 cache &lt;- drake_cache(path = cache_path)</code></pre>
-<p>The <strong>drake_plan</strong> takes self-defined functions to create each target. All the functions are usually written in a seperate script.</p>
+<p>The <strong>drake_plan</strong> takes user-defined functions to create each target. These functions are usually written in a separate script.</p>
 <pre class="r"><code>get.xgb.mod &lt;- function(dataX){
   y_var &lt;- &quot;diffcwv&quot; 
   # hyperparameter tuning results
@@ -84,9 +84,9 @@ cache &lt;- drake_cache(path = cache_path)</code></pre>
   fig2 = shap.plot.dependence(data_long = shap_long, x = &#39;dayint&#39;, y = &#39;dayint&#39;, color_feature = &#39;Column_WV&#39;),
   fig3 = shap.plot.dependence(data_long = shap_long, x = &#39;dayint&#39;, y = &#39;Column_WV&#39;, color_feature = &#39;Column_WV&#39;),
   
-  report = `RMarkdown`::render(
+  report = rmarkdown::render(
     knitr_in(&quot;Code/drake_md_report.Rmd&quot;),
-    output_format = `RMarkdown`::html_document(toc = TRUE))
+    output_format = rmarkdown::html_document(toc = TRUE))
 )
 
 nemia_config &lt;- drake_config(my_plan, cache = cache) # show the dependency
@@ -95,11 +95,11 @@ vis_drake_graph(nemia_config)
 
 # run the plan
 make(my_plan, cache = cache)</code></pre>
-<p>Notice that it is not a good idea to run <code>drake</code> within a <code>RMarkdown</code> file as <code>drake</code> workflow should be an R script that uses <code>RMarkdown</code> as the output tool. So I cannot really render this post as it is. But these code can run as</p>
+<p>Notice that it is not a good idea to run <code>drake</code> inside an R Markdown file. A <code>drake</code> workflow is usually an R script that uses R Markdown only as the reporting layer.</p>
 <p>Here is how the dependency graph looks like:
 <img src="2019-09-15-drake-powerful-tool-for-automatic-reproducible-workflow_files/dependency%20plot.PNG" /></p>
 <p>If we add an extra figure, only this figure (the black <em>fig3</em>) needs to made:
 <img src="2019-09-15-drake-powerful-tool-for-automatic-reproducible-workflow_files/dependency%20plot2.PNG" /></p>
 <p>Here is <a href="https://github.com/liuyanguu/Blogdown/blob/master/hugo-xmag/Code/drake_md_report.Rmd">how the md file looks like on GitHub</a></p>
-<p>And the <code>drake</code> work plan generates a markdown results automatcially (“drake_md_report.html”) which looks like this:
+<p>The <code>drake</code> work plan then generates the HTML report automatically (<code>drake_md_report.html</code>), which looks like this:
 <img src="2019-09-15-drake-powerful-tool-for-automatic-reproducible-workflow_files/md_report.PNG" /></p>

@@ -2,7 +2,7 @@
 title: "Catalog of my old blog"
 author: "Yang Liu"
 date: "2018-07-01"
-description: "Introducing my new blog written solely in R Markdown When I realized it was so convenient to write blog directly using R Markdown, I searched if there is a specific tool for it. And I found Blogdown , an R package devel..."
+description: "A historical catalog of posts from my earlier Blogger site, with links to older work on statistics, data visualization, R programming, and urban research."
 categories:
   - "Catalog"
 tags:
@@ -33,9 +33,9 @@ resources:
 
 
 
-<div id="introducing-my-new-blog-written-solely-in-r-markdown" class="section level1">
-<h1>Introducing my new blog written solely in <strong>R Markdown</strong></h1>
-<p>When I realized it was so convenient to write blog directly using R Markdown, I searched if there is a specific tool for it. And I found <strong>Blogdown</strong>, an R package developed by Yihui Xie, who also developed R Markdown.</p>
+<div id="about-this-archive" class="section level1">
+<h1>About this archive</h1>
+<p>This page preserves a catalog of posts from my earlier Blogger site before I moved my research notes into an R-based blog. Most of the linked work is exploratory, but it still captures useful examples in statistics, visualization, R programming, and urban research.</p>
 </div>
 <div id="catalog" class="section level1">
 <h1>Catalog</h1>

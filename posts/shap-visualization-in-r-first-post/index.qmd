@@ -2,7 +2,7 @@
 title: "SHAP Visualization in R (first post)"
 author: "Yang Liu"
 date: "2018-10-14"
-description: "Example 1 SHAP summary plot Alternative ways: SHAP dependence plot SHAP interaction effect plot SHAP force plot Example 2 Summary plot Dependence plot for each feature Force plot Stack plot by clustering groups Update 1..."
+description: "The original R post on SHAP visualizations for XGBoost, now linked to the later SHAPforxgboost package vignette."
 categories:
   - "Machine Learning"
   - "Data Visualization"
@@ -55,8 +55,8 @@ resources:
 </ul>
 </div>
 
-<p>Update 19/07/21:</p>
-<p>Since my R Package <strong>SHAPforxgboost</strong> has been released on CRAN, I updated this post using the new functions and illustrate how to use these functions using two datasets. For more information, please refer to: <a href="https://liuyanguu.github.io/post/2019/07/18/visualization-of-shap-for-xgboost/">SHAP visualization for XGBoost in R</a></p>
+<p><strong>Update, 2019-07-21:</strong></p>
+<p>After my R package <strong>SHAPforxgboost</strong> was released on CRAN, I updated the examples here to use the package functions across two datasets. For the fuller package vignette, see <a href="/posts/shap-for-xgboost-in-r-shapforxgboost/">SHAP for XGBoost in R: SHAPforxgboost</a>.</p>
 <div id="example-1" class="section level1">
 <h1>Example 1</h1>
 <p>This is the example I used in the package <strong>SHAPforxgboost</strong></p>

@@ -2,7 +2,7 @@
 title: "Notes on writing an R package"
 author: "Yang Liu"
 date: "2019-07-28"
-description: "Some of my own experience On description Namespace load vs attach Documentation Potential problems when checking the package Some nice suggestions from the CRAN team when submitting the package Although ‘SHAPforxgboost’..."
+description: "Practical notes from preparing the SHAPforxgboost R package for CRAN, including DESCRIPTION, NAMESPACE, documentation, checks, and reviewer feedback."
 categories:
   - "R package"
 page-layout: article
@@ -42,25 +42,25 @@ resources:
 <li><a href="#documentation">Documentation</a></li>
 <li><a href="#potential-problems-when-checking-the-package">Potential problems when checking the package</a></li>
 </ul></li>
-<li><a href="#some-nice-suggestions-from-the-cran-team-when-submitting-the-package">Some nice suggestions from the CRAN team when submitting the package</a></li>
+<li><a href="#some-nice-suggestions-from-the-cran-team-when-submitting-the-package">Helpful suggestions from the CRAN team when submitting the package</a></li>
 </ul>
 </div>
 
-<p>Although <a href="https://github.com/liuyanguu/SHAPforxgboost"><strong>‘SHAPforxgboost’</strong></a> is not a package too complicated, it took me some time to get the package pass all the cran check. Now (Aug.03,2019) it is available on <a href="https://cran.r-project.org/web/packages/SHAPforxgboost/index.html"><strong>cran</strong></a>. Install by either</p>
+<p>Although <a href="https://github.com/liuyanguu/SHAPforxgboost"><strong>SHAPforxgboost</strong></a> is a small package, it still took me some time to get it through the CRAN checks. It has been available on <a href="https://cran.r-project.org/web/packages/SHAPforxgboost/index.html"><strong>CRAN</strong></a> since 2019-08-03. Install it with either:</p>
 <pre class="r"><code>install.packages(&quot;SHAPforxgboost&quot;)</code></pre>
 <p>or</p>
 <pre class="r"><code>devtools::install_github(&quot;liuyanguu/SHAPforxgboost&quot;)</code></pre>
-<p>Use the ‘usethis’ package <a href="https://usethis.r-lib.org/">https://usethis.r-lib.org/</a> to set up the structure of the package.</p>
+<p>Use the <code>usethis</code> package, <a href="https://usethis.r-lib.org/">https://usethis.r-lib.org/</a>, to set up the package structure.</p>
 <div id="some-of-my-own-experience" class="section level1">
 <h1>Some of my own experience</h1>
 <div id="on-description" class="section level2">
 <h2>On description</h2>
-<p>Single quote packages in both Title and Description fields. For example: “This package uses the SHAP values output from <strong>‘xgboost’</strong>”.</p>
+<p>Use single quotes around package names in both the Title and Description fields. For example: “This package uses the SHAP values output from <strong>‘xgboost’</strong>”.</p>
 <ul>
 <li><p>It is unnecessary to add any <strong>Depends</strong> in the <strong>DESCRIPTION</strong> besides <code>R (&gt;= 3.3.0)</code>.</p></li>
-<li><p>The <strong>Imports</strong> part in the <strong>DESCRIPTION</strong> won’t impact what you import into NAMESPACE in the code (although they are both named <em>import</em>). The NAMESPACE is defined by using <code>@import</code> to import packages and functions in the R code. What you import into NAMESPACE are what really matters. But you should also keep the record aligned in the <strong>DESCRIPTION</strong> as cran will check it.</p></li>
+<li><p>The <strong>Imports</strong> field in <strong>DESCRIPTION</strong> does not automatically control what gets imported into <strong>NAMESPACE</strong>, even though both use the word <em>import</em>. The NAMESPACE is defined by <code>@import</code> tags in the R code. What you import into NAMESPACE is what matters at runtime, but the DESCRIPTION record should stay aligned because CRAN checks it.</p></li>
 </ul>
-<p><em>How the DESCRIPTION looks like on cran:</em><br />
+<p><em>How the DESCRIPTION looks on CRAN:</em><br />
 <img src="2019-07-28-some-experience-on-writing-r-package_files/the%20cran%20page.PNG" style="width:80.0%" /></p>
 </div>
 <div id="namespace" class="section level2">
@@ -68,7 +68,7 @@ resources:
 <div id="load-vs-attach" class="section level3">
 <h3>load vs attach</h3>
 <ul>
-<li><p>If you have <code>@import ggplot2</code> anywhere in the R code, the “<code>ggplot2</code>” package will be <strong>loaded</strong> (but not <strong>attached</strong>) and your functions can use <code>ggplot2</code>. Your package knows to search in the <strong>namespace</strong> of <code>ggplot2</code>, but you cannot run functions from <code>ggplot2</code> without typing <code>library(ggplot2)</code>. This is the difference between <strong>attach</strong> and <strong>load</strong> as discussed in Hadley’s “R” package book: loading the package won’t put its functions in the search path, but attaching will.</p>
+<li><p>If you have <code>@import ggplot2</code> anywhere in the R code, the <code>ggplot2</code> package will be <strong>loaded</strong> but not <strong>attached</strong>, and your package functions can use <code>ggplot2</code>. Your package knows to search in the <strong>namespace</strong> of <code>ggplot2</code>, but users cannot call functions from <code>ggplot2</code> without typing <code>library(ggplot2)</code>. This is the difference between <strong>attach</strong> and <strong>load</strong>, as discussed in Hadley’s <em>R Packages</em> book: loading a package does not put its functions on the search path, but attaching it does.</p>
 <ul>
 <li><p>I.e., when others <strong>load and attach</strong> your package, they can use your functions depending on <code>ggplot2</code> but they cannot use the functions from the <code>ggplot2</code> package unless they <strong>load and attach</strong> <code>ggplot2</code> by <code>library(ggplot2)</code>.</p></li>
 <li><p>If you put <code>ggplot2</code> in <strong>Depends</strong> in the <strong>DESCRIPTION</strong>, <code>library(yourPackage)</code> would load and attach <code>ggplot2</code> — same as doing <code>library(ggplot2)</code> — generally speaking you don’t need to do so.</p></li>
@@ -99,9 +99,9 @@ resources:
 </div>
 </div>
 <div id="some-nice-suggestions-from-the-cran-team-when-submitting-the-package" class="section level1">
-<h1>Some nice suggestions from the CRAN team when submitting the package</h1>
+<h1>Helpful suggestions from the CRAN team when submitting the package</h1>
 <ul>
-<li><p>In the description, write package names, software names and API names in single quotes (e.g. ‘Python’). The Title field should be in title case. The description should not start with package name or “This package”.</p></li>
+<li><p>In the description, write package names, software names, and API names in single quotes (e.g. ‘Python’). The Title field should be in title case. The description should not start with the package name or “This package”.</p></li>
 <li><p>Please ensure that you do not use more than 2 cores in your examples.
 Is there any reason why the number of core to use is not an argument of
 e.g. <code>xgboost.fit()</code>?</p></li>

@@ -2,7 +2,7 @@
 title: "R Markdown to GitHub Pages"
 author: "Yang Liu"
 date: "2021-01-06"
-description: "R Markdown into GitHub Pages Example of one of my GitHub pages: You might have read this GitHub and RStudio tutorial by searching this topic. It is quite long and confusing as it tries to teach Git at the same time. You..."
+description: "A concise legacy R Markdown workflow for publishing small GitHub Pages sites, now preserved with a Quarto-era maintenance note."
 categories:
   - "GitHub"
 page-layout: article
@@ -34,17 +34,18 @@ resources:
 
 
 <div id="rmarkdown-into-github-pages" class="section level1">
-<h1>RMarkdown into GitHub Pages</h1>
+<h1>R Markdown into GitHub Pages</h1>
+<p><strong>Maintenance note:</strong> this post preserves a compact R Markdown workflow for small GitHub Pages sites. For this blog itself I have since moved to Quarto, which makes project configuration and rendering cleaner, but the original R Markdown approach is still useful for lightweight sites.</p>
 <p>Example of one of my GitHub pages:
 <img src="https://user-images.githubusercontent.com/11966330/110238718-2a8d3180-7f11-11eb-9655-dd6c4a4c5a3b.JPG" /></p>
-<p>You might have read this <a href="https://resources.github.com/whitepapers/github-and-rstudio/">GitHub and RStudio</a> tutorial by searching this topic. It is quite long and confusing as it tries to teach Git at the same time. You don’t need any of those branch operations. And the example yaml code is not indented correctly (corrected below).</p>
+<p>You might have read this <a href="https://resources.github.com/whitepapers/github-and-rstudio/">GitHub and RStudio</a> tutorial while searching this topic. It is quite long because it teaches Git at the same time. For a small static site, you do not need those branch operations. The example YAML code is also easy to mis-indent, so I corrected it below.</p>
 <p><strong>Here is the short version:</strong></p>
 <ol style="list-style-type: decimal">
 <li>Create in the root directory a yaml file: "_site.yml"</li>
 </ol>
-<p>Make sure the yaml format is indented correct. Most errors come from a wrong format of the yml file, for example, I’d get an error “Format is not of class rmarkdown” when the rendering completes if I remove one space before <code>theme: cosmo</code>.</p>
+<p>Make sure the YAML is indented correctly. Most errors come from malformed <code>.yml</code> files. For example, I get the error “Format is not of class rmarkdown” if I remove one space before <code>theme: cosmo</code>.</p>
 <p>The following example as in the tutorial (format corrected) creates a navbar with website title “Cars”, home page named “HomePage” (using <em>index.html</em>) and another page called “Page 1” (using <em>speed-and-distance.html</em>).</p>
-<p>The name of the html files <code>href</code> match your RMarkdown html output. I’d just name the <strong>.Rmd</strong> files with the same names</p>
+<p>The HTML filenames in <code>href</code> should match your R Markdown HTML output. I would usually name the <strong>.Rmd</strong> files with the same base names.</p>
 <pre class="r"><code>name: &quot;cars&quot;
 output_dir: &quot;docs&quot;
 navbar:
@@ -74,7 +75,7 @@ output:
     theme: cosmo</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Remove the <code>knit</code> and <code>output</code> part from the heading of <strong>.Rmd</strong> files
-So they don’t need their own <code>output</code> anymore</li>
+so they do not need their own <code>output</code> fields anymore.</li>
 </ol>
 <pre class="r"><code>---
 title: &quot;Speed and Distance&quot;
@@ -88,7 +89,7 @@ Think the GitHub page as a one-page site with index.html as the homepage.</p>
 <ol start="4" style="list-style-type: decimal">
 <li>Push to GitHub</li>
 </ol>
-<p>Make sure the homepage is named as <code>index.html</code>. Go to repo settings -&gt; GitHub Pages and point the source to where this<code>index.html</code>file is. Also you can change theme using the “Theme Chooser”.</p>
+<p>Make sure the homepage is named <code>index.html</code>. Go to repository settings -&gt; GitHub Pages and point the source to the folder containing this <code>index.html</code> file. You can also change the theme using the “Theme Chooser”.</p>
 <div class="figure">
 <img src="https://user-images.githubusercontent.com/11966330/104090319-f7496180-5243-11eb-91f9-39cf0ddf30ab.JPG" alt="" />
 <p class="caption">GitHub Page</p>
