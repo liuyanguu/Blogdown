@@ -3,6 +3,7 @@ title: "R Markdown to GitHub Pages"
 author: "Yang Liu"
 date: "2021-01-06"
 description: "A concise legacy R Markdown workflow for publishing small GitHub Pages sites, now preserved with a Quarto-era maintenance note."
+image: "images/Github Page.JPG"
 categories:
   - "GitHub"
 page-layout: article
