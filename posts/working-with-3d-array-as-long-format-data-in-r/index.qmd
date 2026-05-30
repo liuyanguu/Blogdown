@@ -29,9 +29,6 @@ resources:
   - "*.xlsx"
 ---
 
-::: {.callout-note appearance="simple"}
-This migrated post preserves the original rendered output. The original R Markdown source is available as [source.Rmd](source.Rmd).
-:::
 
 
 <link href="/rmarkdown-libs/pagedtable/css/pagedtable.css" rel="stylesheet" />

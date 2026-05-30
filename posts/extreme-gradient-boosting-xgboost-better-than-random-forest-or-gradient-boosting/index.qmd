@@ -29,9 +29,6 @@ resources:
   - "*.xlsx"
 ---
 
-::: {.callout-note appearance="simple"}
-This migrated post preserves the original rendered output. The original R Markdown source is available as [source.Rmd](source.Rmd).
-:::
 
 <script src="../../rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <script src="../../rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>

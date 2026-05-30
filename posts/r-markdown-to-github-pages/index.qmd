@@ -27,9 +27,6 @@ resources:
   - "*.xlsx"
 ---
 
-::: {.callout-note appearance="simple"}
-This migrated post preserves the original rendered output. The original R Markdown source is available as [source.Rmd](source.Rmd).
-:::
 
 
 <link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />

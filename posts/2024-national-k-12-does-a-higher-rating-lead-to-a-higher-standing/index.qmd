@@ -2,7 +2,7 @@
 title: "2024 National K-12: Does a Higher Rating Lead to a Higher Standing?"
 author: "Yang Liu"
 date: "2024-12-15"
-description: "Statistics of 2024 National K-12 Grades Championship https://www.uschess.org/results/2024/k12/ Update: An interactive chart of all players has been added Over 2,600 contestants from 43 states participated in the 2024 Na..."
+description: "A look at participation, rating distributions, and the relationship between rating and final standing at the 2024 National K-12 Grades Championship."
 categories:
   - "Blog"
 tags:
@@ -29,29 +29,25 @@ resources:
   - "*.xlsx"
 ---
 
-::: {.callout-note appearance="simple"}
-This migrated post preserves the original rendered output. The original R Markdown source is available as [source.Rmd](source.Rmd).
-:::
 
 
 
 
-<div style="text-align: center;">
-<p><strong>Statistics of 2024 National K-12 Grades Championship</strong><br />
-<a href="https://www.uschess.org/results/2024/k12/" class="uri">https://www.uschess.org/results/2024/k12/</a></p>
-<p>Update: An interactive chart of all players has been added</p>
-</div>
+The 2024 National K-12 Grades Championship drew more than 2,600 players from 43 states. This note summarizes participation patterns by state and grade, then checks how strongly player rating predicts final standing.
+
+Data source: [US Chess 2024 National K-12 Grades Championship results](https://www.uschess.org/results/2024/k12/).
+
 <div id="over-2600-contestants-from-43-states-participated-in-the-2024-national-k-12-grades-championship" class="section level1">
 <h1>Over 2,600 contestants from 43 states participated in the 2024 National K-12 Grades Championship</h1>
 <p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="768" /></p>
 <p>The 2024 National K-12 Grades Championship attracted a total of 2,679 participants from 43 states. More than 1,000 participants (40%) came from New York, followed by Virginia with 250 participants (9%) and New Jersey with 218 participants (8%).</p>
 <div id="fourth-grade-age-9-is-the-most-competitive-with-nearly-350-participants." class="section level2">
-<h2>Fourth grade (age 9) is the most competitive, with nearly 350 participants.</h2>
+<h2>Fourth grade (age 9) had the largest field, with nearly 350 participants.</h2>
 <p>Grades 3, 4, and 5 have the highest number of participants, while Grade K has the fewest.</p>
 <p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="576" /></p>
 </div>
-<div id="th-grade-boasts-the-highest-average-rating-of-1600." class="section level2">
-<h2>11th Grade boasts the highest average rating of 1,600.</h2>
+<div id="grade-11-highest-average-rating" class="section level2">
+<h2>11th grade had the highest average rating, around 1,600.</h2>
 <p>The average rating of more than 2,600 participants is 1,115, with a median of 1,062 and a standard deviation of 514. Ninety percent of the participants have ratings between 300 and 1,989.</p>
 <p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="576" /></p>
 <p>The plot below shows the distribution of ratings across grades. The mean is indicated by the red bar, and the black bars in the boxplot represent the median.</p>
@@ -59,18 +55,18 @@ This migrated post preserves the original rendered output. The original R Markdo
 </div>
 <div id="does-a-higher-rating-guarantee-a-higher-standing" class="section level2">
 <h2>Does a higher rating guarantee a higher standing?</h2>
-<p>Not necessarily! To make the data comparable across grades, we standardized the standings by calculating the percentile within each grade, scaling the values from 0 to 100. Similarly, we calculated the rating percentile within each grade. (This additional standardization for rating is not necessary when examining each grade separately.)</p>
+<p>Not necessarily. To make the data comparable across grades, I standardized standings by calculating each player's percentile within grade, scaled from 0 to 100. I also calculated rating percentiles within grade, although that extra standardization is not needed when looking at a single grade.</p>
 <p>The plot below illustrates the relationship between standing and rating, both standardized within each grade, with different colors representing different grades.</p>
 <p>While the correlation between standardized rating and percentile is indeed strong, it may not be as strong as some might expect. Although the correlation is statistically significant due to the large sample size, the R-squared value (from a fitted linear regression) is only 0.75. This indicates that the relationship isn’t as robust as it might initially appear. There is substantial variation in standing within each rating percentile. Outliers—such as cases where a high-ranked player drops out mid-match—further weaken the correlation.</p>
 <p>The red lines in the chart represent a LOESS (locally estimated scatterplot smoothing) curve, providing a non-linear fit.</p>
 <p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
 <div id="if-plot-rating-without-standardization" class="section level3">
-<h3>If plot rating without standardization</h3>
+<h3>Rating without standardization</h3>
 <p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="768" /></p>
 </div>
 </div>
 <div id="percentile-of-standing-vs.-rating-by-grade" class="section level2">
-<h2>Percentile of standing vs. Rating by Grade!</h2>
+<h2>Standing percentile vs. rating percentile by grade</h2>
 <iframe src="https://liuyanguu.shinyapps.io/K12_National_Standing_vs_Rating/?showcase=0" width="1152" height="600px" data-external="1">
 </iframe>
 <div id="colored-by-rating-category" class="section level3">
@@ -79,14 +75,14 @@ This migrated post preserves the original rendered output. The original R Markdo
 </div>
 </div>
 <div id="points-achieved-vs.-rating" class="section level2">
-<h2>Points Achieved vs. Rating</h2>
+<h2>Points achieved vs. rating</h2>
 <p>Points achieved determined the final standings. This provides another perspective on the variation in ratings among participants who achieved the same number of points.</p>
-<p><strong>The histogram at the top also shows that most kids achieved 3 or 4 points.</strong></p>
+<p><strong>The histogram at the top also shows that most players scored 3 or 4 points.</strong></p>
 <p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="960" /></p>
 </div>
 <div id="points-achieved-vs.-rating-by-grade" class="section level2">
-<h2>Points Achieved vs. Rating by Grade!</h2>
+<h2>Points achieved vs. rating by grade</h2>
 <p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="1152" /></p>
-{{% tweet user="liuyanguu" id="1868839933550694629" %}}
+<p>Related note: <a href="https://twitter.com/liuyanguu/status/1868839933550694629">standing and rating chart shared on X/Twitter</a>.</p>
 </div>
 </div>

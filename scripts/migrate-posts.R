@@ -309,10 +309,6 @@ migrate_one_post <- function(record, target_root = "posts") {
     "resources:",
     paste0("  - ", vapply(resources, quote_yaml, character(1))),
     "---",
-    "",
-    "::: {.callout-note appearance=\"simple\"}",
-    "This migrated post preserves the original rendered output. The original R Markdown source is available as [source.Rmd](source.Rmd).",
-    ":::",
     ""
   )
 
@@ -373,9 +369,24 @@ write_posts_index <- function(path = "posts/index.qmd") {
   safe_write_lines(lines, path)
 }
 
-migrate_posts <- function() {
+migration_overwrite_enabled <- function() {
+  identical(Sys.getenv("QUARTO_MIGRATE_OVERWRITE"), "true")
+}
+
+migrate_posts <- function(force = migration_overwrite_enabled()) {
   rmds <- discover_posts()
   if (!length(rmds)) stop("No Rmd posts found under hugo-xmag/content/post")
+
+  protected_posts <- dir.exists("posts") && length(list.files("posts", pattern = "\\.qmd$", recursive = TRUE)) > 0
+  if (protected_posts && !force) {
+    stop(
+      paste(
+        "Refusing to overwrite polished Quarto posts.",
+        "Set QUARTO_MIGRATE_OVERWRITE=true only when intentionally regenerating from the archived blogdown sources."
+      ),
+      call. = FALSE
+    )
+  }
 
   if (dir.exists("posts")) unlink("posts", recursive = TRUE, force = TRUE)
   if (dir.exists("post")) unlink("post", recursive = TRUE, force = TRUE)

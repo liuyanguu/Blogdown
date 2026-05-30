@@ -23,10 +23,12 @@ Check the environment:
 source("scripts/setup.R")
 ```
 
-Regenerate migrated posts from the old Hugo/blogdown sources:
+Regenerate migrated posts from the old Hugo/blogdown sources. This overwrites polished Quarto post files, so it is guarded by an explicit environment variable:
 
-```bash
+```powershell
+$env:QUARTO_MIGRATE_OVERWRITE = "true"
 Rscript scripts/migrate-posts.R
+Remove-Item Env:QUARTO_MIGRATE_OVERWRITE
 ```
 
 Preview locally:

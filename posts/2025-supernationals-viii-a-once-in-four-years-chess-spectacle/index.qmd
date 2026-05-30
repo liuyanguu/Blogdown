@@ -2,7 +2,7 @@
 title: "2025 SuperNationals VIII: A Once-in-Four-Years Chess Spectacle"
 author: "Yang Liu"
 date: "2025-05-15"
-description: "Statistics of the 2025 SuperNationals VIII in Orlando https://www.uschess.org/results/2025/sn8/ Overview of Participation Over 5,300 contestants from 47 states participated in the 2025 SuperNationals VIII 4,600 K-12 stu..."
+description: "Participation, section design, rating distributions, and standing patterns from the 2025 SuperNationals VIII chess tournament in Orlando."
 categories:
   - "Blog"
 tags:
@@ -29,17 +29,14 @@ resources:
   - "*.xlsx"
 ---
 
-::: {.callout-note appearance="simple"}
-This migrated post preserves the original rendered output. The original R Markdown source is available as [source.Rmd](source.Rmd).
-:::
 
 
 
 
-<div style="text-align: center;">
-<p><strong>Statistics of the 2025 SuperNationals VIII in Orlando</strong><br />
-<a href="https://www.uschess.org/results/2025/sn8/" class="uri">https://www.uschess.org/results/2025/sn8/</a></p>
-</div>
+SuperNationals VIII brought more than 5,300 chess players to Orlando, including 4,600 K-12 students across 26 sections and roughly 700 Blitz players. This note looks at where participants came from, how the sections were organized, and how rating related to final standing.
+
+Data source: [US Chess 2025 SuperNationals VIII results](https://www.uschess.org/results/2025/sn8/).
+
 <div id="overview-of-participation" class="section level1">
 <h1>Overview of Participation</h1>
 <div id="over-5300-contestants-from-47-states-participated-in-the-2025-supernationals-viii" class="section level2">
@@ -55,9 +52,9 @@ This migrated post preserves the original rendered output. The original R Markdo
 </div>
 <div id="structure-of-the-tournament" class="section level1">
 <h1>Structure of the Tournament</h1>
-<p>One major difference between the 2025 SuperNationals and the 2024 Nationals is how the sections are organized. While the 2024 Nationals featured 13 sections divided solely by grade (K through 12), the 2025 SuperNationals divided players by both grade and rating, resulting in 26 sections. <a href="https://liuyanguu.github.io/post/2024/12/15/2024-national-k-12-does-a-higher-rating-lead-to-a-higher-standing/">See the previous article - analysis of the 2024 Nationals</a>.</p>
+<p>One major difference between the 2025 SuperNationals and the 2024 Nationals is how the sections were organized. While the 2024 Nationals featured 13 sections divided solely by grade (K through 12), the 2025 SuperNationals divided players by both grade and rating, resulting in 26 sections. See the earlier analysis of the <a href="/posts/2024-national-k-12-does-a-higher-rating-lead-to-a-higher-standing/">2024 National K-12 Championship</a>.</p>
 <div id="interesting-highlights" class="section level2">
-<h2>Interesting highlights</h2>
+<h2>Section highlights</h2>
 <ul>
 <li><p>Championship sections were offered for six grade groups: K1, K3, K5, K6, K8, and K12—with K5 having only one Championship section</p></li>
 <li><p>The K12 U1600 section had the highest number of players, with over 300 participants</p></li>
@@ -118,7 +115,7 @@ This migrated post preserves the original rendered output. The original R Markdo
 <h2>Which sections are students from each grade playing in?</h2>
 <ul>
 <li><p>The heatmap below displays the number of attendees from each grade in every section (counts are shown within the cells)</p></li>
-<li><p>Notably, the <strong>K12 Championship</strong> section includes players from Grade 3 through Grade 12!</p></li>
+<li><p>Notably, the <strong>K12 Championship</strong> section includes players from Grade 3 through Grade 12.</p></li>
 </ul>
 <p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
 </div>
@@ -168,13 +165,13 @@ This migrated post preserves the original rendered output. The original R Markdo
 <div id="does-a-higher-rating-guarantee-a-higher-standing" class="section level2">
 <h2>Does a higher rating guarantee a higher standing?</h2>
 <p>The reasonably strong association between standing and rating percentiles within each section is observed only in the Championship sections. The R-squared value from a fitted linear regression is approximately 0.71.
-As discussed in the <a href="https://liuyanguu.github.io/post/2024/12/15/2024-national-k-12-does-a-higher-rating-lead-to-a-higher-standing/">previous article for 2024 Nationals</a>, the R-squared value was similarly high at 0.75.</p>
+As discussed in the <a href="/posts/2024-national-k-12-does-a-higher-rating-lead-to-a-higher-standing/">2024 National K-12 analysis</a>, the R-squared value was similarly high at 0.75.</p>
 <p>Again, this indicates that the relationship isn’t as robust as it might initially appear. There is substantial variation in standing within each rating percentile. Outliers—such as cases where a high-ranked player drops out mid-match—further weaken the correlation.</p>
 <p>The red lines in the chart represent a LOESS curve, providing a non-linear fit.</p>
 <p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="576" /></p>
 </div>
 <div id="an-interactive-app" class="section level2">
-<h2>An interactive app</h2>
+<h2>Interactive app</h2>
 <iframe src="https://liuyanguu.shinyapps.io/K12_SuperNational_2025/?showcase=0" width="1152" height="600px" data-external="1">
 </iframe>
 </div>

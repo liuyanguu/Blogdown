@@ -18,3 +18,11 @@ stopifnot(identical(
   convert_postref('<img src="{{< blogdown/postref >}}index_files/a.png" />'),
   '<img src="index_files/a.png" />'
 ))
+
+old_env <- Sys.getenv("QUARTO_MIGRATE_OVERWRITE", unset = NA_character_)
+Sys.unsetenv("QUARTO_MIGRATE_OVERWRITE")
+stopifnot(!migration_overwrite_enabled())
+Sys.setenv(QUARTO_MIGRATE_OVERWRITE = "true")
+stopifnot(migration_overwrite_enabled())
+Sys.unsetenv("QUARTO_MIGRATE_OVERWRITE")
+if (!is.na(old_env)) Sys.setenv(QUARTO_MIGRATE_OVERWRITE = old_env)
