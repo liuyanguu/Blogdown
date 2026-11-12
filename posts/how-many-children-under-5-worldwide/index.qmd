@@ -2,7 +2,7 @@
 title: "How many children under 5 worldwide?"
 author: "Yang Liu"
 date: "2024-12-13"
-description: "A compact reference for global age-group population totals from the UN World Population Prospects 2024 mid-year estimates."
+description: "A compact reference for world and Africa age-group population totals, with 2025 figures from the UN World Population Prospects 2024 revision."
 categories:
   - "Data Visualization"
 page-layout: article
@@ -31,15 +31,16 @@ resources:
 
 
 
-<p>I wanted a quick reference for common child and youth age-group totals, so I summarized the UN World Population Prospects (WPP) 2024 mid-year estimates.</p>
-<p><strong>World population:</strong> In 2024, the world population is estimated at 8.2 billion (8,162 million). It is projected to peak in 2084 at 10.3 billion.</p>
-<p><strong>Children under age 5:</strong> The number of children under 5 is 647 million in 2024. This figure peaked in 2017 at 698 million and is projected to decline to 550 million by 2100.</p>
-<p><strong>Children aged 0-14:</strong> The population aged 0-14 peaked in 2020 and stands at 2.0 billion in 2024.</p>
-<p><strong>Children and adolescents under age 18:</strong> The population aged 0-17 peaked in 2022 and stands at 2.4 billion (2,413 million) in 2024.</p>
-<p><strong>Children and adolescents under age 20:</strong> The population aged 0-19 is 2.7 billion (2,668 million) in 2024, which is the peak year for this age group.</p>
-<p><strong>Population under age 25:</strong> The population aged 0-24 is 3.3 billion in 2024. It is projected to increase slightly and peak in 2030.</p>
+<p>I wanted a quick reference for common child and youth age-group totals, so I summarized the UN World Population Prospects (WPP) 2024 revision, using 2025 as the reference year. Figures for 2024 onward use the medium projection variant.</p>
+<p><strong>World population:</strong> In 2025, the world population is projected at 8.2 billion (8,232 million). It is projected to peak in 2084 at 10.3 billion.</p>
+<p><strong>Children under age 5:</strong> The number of children under 5 is 644 million in 2025. This figure peaked in 2017 at 698 million and is projected to decline to 550 million by 2100.</p>
+<p><strong>Children aged 0-14:</strong> The population aged 0-14 peaked in 2020 and stands at 2.0 billion (2,008 million) in 2025.</p>
+<p><strong>Children and adolescents under age 18:</strong> The population aged 0-17 peaked in 2022 and stands at 2.4 billion (2,409 million) in 2025.</p>
+<p><strong>Children and adolescents under age 20:</strong> The population aged 0-19 is 2.7 billion (2,667 million) in 2025, just below its peak in 2024.</p>
+<p><strong>Population under age 25:</strong> The population aged 0-24 is 3.3 billion (3,291 million) in 2025. It is projected to increase slightly and peak in 2030.</p>
 <p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
 <p><strong>World population under ages 5, 10, 15, 18, 20, and 25 (millions)</strong></p>
+<div class="table-responsive">
 <table>
 <colgroup>
 <col width="29%" />
@@ -126,6 +127,34 @@ resources:
 </tr>
 </tbody>
 </table>
+</div>
+<p><strong>Africa population under ages 5, 10, 15, 18, 20, and 25 (millions)</strong></p>
+<p>The Africa aggregate covers the entire continent, including Northern Africa.</p>
+<div class="table-responsive">
+<table>
+<thead><tr><th>Population</th><th>Age Group</th><th>2015</th><th>2020</th><th>2025</th><th>2030</th><th>2050</th><th>2100</th></tr></thead>
+<tbody>
+<tr class="odd">
+<td>Under 5 years old</td><td>0-4</td><td>192</td><td>204</td><td>217</td><td>230</td><td>264</td><td>261</td>
+</tr>
+<tr class="even">
+<td>Under 10 years old</td><td>0-9</td><td>360</td><td>391</td><td>417</td><td>442</td><td>519</td><td>524</td>
+</tr>
+<tr class="odd">
+<td>Under 15 years old</td><td>0-14</td><td>504</td><td>557</td><td>601</td><td>640</td><td>763</td><td>789</td>
+</tr>
+<tr class="even">
+<td>Under 18 years old</td><td>0-17</td><td>582</td><td>645</td><td>702</td><td>752</td><td>905</td><td>949</td>
+</tr>
+<tr class="odd">
+<td>Under 20 years old</td><td>0-19</td><td>630</td><td>700</td><td>765</td><td>823</td><td>997</td><td>1,055</td>
+</tr>
+<tr class="even">
+<td>Under 25 years old</td><td>0-24</td><td>740</td><td>823</td><td>906</td><td>985</td><td>1,217</td><td>1,323</td>
+</tr>
+</tbody></table>
+</div>
+<p>Figures are rounded to the nearest million. Values for 2024 onward use the WPP 2024 medium projection variant.</p>
 <p><strong>The same age groups, by sex</strong></p>
 <p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
 <p><strong>Total world population</strong></p>
