@@ -5,7 +5,6 @@ date: "2019-02-24"
 description: "A short R note on embedding a hosted Shiny app inside a static blog page using an iframe or knitr helper."
 categories:
   - "Data Visualization"
-  - "Shiny"
 tags:
   - "Shiny"
 page-layout: article

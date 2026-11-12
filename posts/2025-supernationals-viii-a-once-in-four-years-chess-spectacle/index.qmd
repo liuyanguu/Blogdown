@@ -4,7 +4,7 @@ author: "Yang Liu"
 date: "2025-05-15"
 description: "Participation, section design, rating distributions, and standing patterns from the 2025 SuperNationals VIII chess tournament in Orlando."
 categories:
-  - "Blog"
+  - "Data Visualization"
 tags:
   - "Chess"
 page-layout: article

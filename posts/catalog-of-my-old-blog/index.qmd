@@ -3,8 +3,7 @@ title: "Catalog of my old blog"
 author: "Yang Liu"
 date: "2018-07-01"
 description: "A historical catalog of posts from my earlier Blogger site, with links to older work on statistics, data visualization, R programming, and urban research."
-categories:
-  - "Catalog"
+categories: []
 tags:
   - "Catalog"
 page-layout: article

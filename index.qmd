@@ -8,14 +8,14 @@ format:
 listing:
   contents: "posts/*/index.qmd"
   sort: "date desc"
-  max-items: 6
+  page-size: 6
   type: grid
   categories: true
 ---
 
 ::: {.hero}
 ::: {.hero-copy}
-## Research notes in R, statistics, and population data
+## Research notes in R and statistics
 
 I write about data visualization, demography, statistical workflows, maps, R programming, and the occasional chess analysis. This site is a working notebook: polished enough to read, close enough to the code to stay useful.
 :::

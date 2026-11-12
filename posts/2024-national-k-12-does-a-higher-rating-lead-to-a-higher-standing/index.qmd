@@ -4,7 +4,7 @@ author: "Yang Liu"
 date: "2024-12-15"
 description: "A look at participation, rating distributions, and the relationship between rating and final standing at the 2024 National K-12 Grades Championship."
 categories:
-  - "Blog"
+  - "Data Visualization"
 tags:
   - "Chess"
 page-layout: article

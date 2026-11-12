@@ -4,7 +4,7 @@ author: "Yang Liu"
 date: "2020-01-11"
 description: "A compact R example for melting a 3D array into long-format data, modifying it, and rebuilding the array in the correct dimension order."
 categories:
-  - "Data Engineering"
+  - "Reproducible Workflow"
 tags:
   - "Array"
 page-layout: article

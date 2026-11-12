@@ -52,3 +52,5 @@ Rscript scripts/build.R
 ## Authoring
 
 New posts should be written as Quarto/R Markdown documents with R code chunks. Migrated posts preserve the original rendered output for reliability and keep the original R Markdown source beside each post as `source.Rmd`.
+
+Post categories are limited to `Data Visualization`, `Machine Learning`, `R package`, `Spatial Data`, and `Reproducible Workflow`. Quarto adds the `All` filter automatically; posts without a specific category (such as the old blog catalog) remain visible there.
